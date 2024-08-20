@@ -1,0 +1,23 @@
+{
+  "name": "js13k-starter",
+  "type": "module",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "biome lint ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "js13k-vite-plugins": "0.3.4",
+    "terser": "5.31.1",
+    "typescript": "5.5.3",
+    "vite": "5.3.3"
+  },
+  "dependencies": {
+    "kontra": "^10.0.0"
+  }
+}
