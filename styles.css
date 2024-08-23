@@ -6,6 +6,7 @@
     -webkit-box-shadow:inset 0px 0px 0px 1px #fff;
     -moz-box-shadow:inset 0px 0px 0px 1px #fff;
     box-shadow:inset 0px 0px 0px 1px #fff;
+    /* cursor: none; */
 }
 
 /* Get rid of any margins, set background black, use flexbox to center */

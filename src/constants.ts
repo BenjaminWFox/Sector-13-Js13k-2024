@@ -1,5 +1,6 @@
 export const WIDTH = 1500;
 export const HEIGHT = 2660;
+
 // export const CENTER_X = WIDTH / 2;
 // export const CENTER_Y = HEIGHT / 2;
 // export const PLAYER_ACCELERATION = 0.0015;

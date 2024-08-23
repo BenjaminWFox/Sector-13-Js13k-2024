@@ -2,20 +2,20 @@ import {
   init,
   Sprite,
   GameLoop,
-  Text,
-  load,
-  setImagePath,
-  imageAssets,
   SpriteSheet,
 } from 'kontra';
 import { WIDTH, HEIGHT } from './constants';
-import runnerPath from './assets/images/runner.png';
-import crowRawImage from './assets/images/crow-outline.png';
+import playerShipPath from './assets/images/player-ship.gif';
 
-let { canvas } = init();
+const { canvas } = init();
 
 const loaded = [];
 const totalLoads = 2;
+
+const state = {
+  playerX: 0,
+  playerY: 0
+}
 
 function checkLoaded(loadedImage: HTMLImageElement) {
   loaded.push(loadedImage);
@@ -24,167 +24,81 @@ function checkLoaded(loadedImage: HTMLImageElement) {
   }
 }
 
-let runner: Sprite = Sprite();
-let sprite: Sprite;
-const runnerImg = new Image();
-runnerImg.src = runnerPath;
-runnerImg.width = 44;
-runnerImg.height = 21;
-runnerImg.onload = function() {
-
-  // use spriteSheet to create animations from an image
+let playerShip: Sprite = Sprite();
+const playerShipImg = new Image();
+playerShipImg.src = playerShipPath;
+playerShipImg.width = 35;
+playerShipImg.height = 15;
+playerShipImg.onload = function () {
   let spriteSheet = SpriteSheet({
-    image: runnerImg,
-    frameWidth: 11,
-    frameHeight: 21,
+    image: playerShipImg,
+    frameWidth: 17,
+    frameHeight: 15,
     animations: {
-      // create a named animation: run
-      anythingelse: {
-        frames: '0..3',  // frames 0 through 9
-        frameRate: 30
+      engine: {
+        frames: '0..1',
+        frameRate: 15
       }
     }
   });
-  sprite = Sprite({
-    x: 500,
-    y: 500,
+
+  playerShip = Sprite({
+    x: 1100,
+    y: 1000,
     scaleX: 10,
     scaleY: 10,
-    anchor: {x: 0.5, y: 0.5},
-
-    // required for an animation sprite
+    anchor: { x: 0.5, y: 0.5 },
     animations: spriteSheet.animations
   });
 
-  // const runnerSheet = SpriteSheet({
-  //   image: runnerImg,
-  //   frameWidth: 11,
-  //   frameHeight: 21,
-  //   animations: {
-  //     fly: {
-  //       frames: '0..3',
-  //       frameRate: 30,
-  //     },
-  //     stop: {
-  //       frames: '1',
-  //     },
-  //     hit: {
-  //       frames: '0',
-  //     },
-  //   }
-  // });
-
-  // runner = Sprite({
-  //   x: 500,
-  //   y: 200,
-  //   scaleX: 10,
-  //   scaleY: 10,
-  //   animations: runnerSheet.animations,
-  // });
-
-  checkLoaded(runnerImg);
+  startGame()
 }
 
-/* Crow Pixel Sprite Large */
-const crowImg = new Image();
-crowImg.src = crowRawImage;
-crowImg.width = 650;
-crowImg.height = 65;
-let crowSprite: Sprite;
-crowImg.onload = function () {
-  let spriteSheet = SpriteSheet({
-    image: crowImg,
-    frameWidth: 65,
-    frameHeight: 65,
-    animations: {
-      fly: {
-        frames: '0..9',
-        frameRate: 30,
-      },
-      stop: {
-        frames: '3',
-      },
-      hit: {
-        frames: '0',
-      },
-    },
-  });
-
-  crowSprite = Sprite({
-    x: 200,
-    y: 300,
-    animations: spriteSheet.animations,
-  });
-
-  checkLoaded(crowImg);
-};
-
-// setImagePath('../src/assets/images');
-// let sprite: Sprite = Sprite();
-// load('gg.png').then(function() {
-//   sprite = Sprite({
-//     x: 20,
-//     y: HEIGHT - 400,
-//     width: 16,
-//     height: 15,
-//     scaleX: 10,
-//     scaleY: 10,
-//     image: imageAssets['gg']
-//   });
-// });
-
-// const textBanner = Sprite({
-//   x: 10,
-//   y: HEIGHT - 410,
-//   width: WIDTH - 20,
-//   height: 400,
-//   color: '#e3dc72'
-// })
-
-// const text = Text({
-//   text: "Ahh, I see...it's natural to have some fear of the unknown. You know, I myself was afraid of growing up when I was your age...",
-//   width: WIDTH - 10 - 210,
-//   height: 380,
-//   x: 10 + 200,
-//   y: HEIGHT - 400,
-//   font: '40px Times',
-//   color: 'black',
-//   textAlign: 'left',
-// })
-
-let loop = GameLoop({  // create the main game loop
-  update: function() { // update the game state
-    // sprite.update();
-    sprite.update();
-    crowSprite.update();
-
-    // wrap the sprites position when it reaches
-    // the edge of the screen
-    // if (sprite.x > canvas.width) {
-    //   console.log('Sprite', sprite.x)
-    //   sprite.x = -sprite.width;
-    // }
+let loop = GameLoop({
+  update: function () {
+    playerShip.update();
+    playerShip.x = state.playerX;
+    playerShip.y = state.playerY;
   },
-  render: function() { // render the game state
-    // textBanner.render();
-    // sprite.render();
-    // text.render();
-    sprite.render();
-    crowSprite.render();
-
-    // if (runner.currentAnimation.name !== 'run') {
-    //   console.log('Playing animation...')
-    //   runner.playAnimation('fly');
-    // } else {
-    //   console.log(runner.currentAnimation);
-    // }
+  render: function () {
+    playerShip.render();
   }
 });
 
+let cRatioW = canvas.offsetWidth / WIDTH;
+let cRatioH = canvas.offsetHeight / HEIGHT;
+let canvasAdjustLeft = canvas.offsetLeft / cRatioW;
+let canvasAdjustRight = canvas.offsetTop / cRatioH;
+
+window.addEventListener('resize', () => {
+  cRatioW = canvas.offsetWidth / WIDTH;
+  cRatioH = canvas.offsetHeight / HEIGHT;
+  canvasAdjustLeft = canvas.offsetLeft / cRatioW;
+  canvasAdjustRight = canvas.offsetTop / cRatioH;
+})
+
 function startGame() {
-  console.log('Starting game', sprite)
-  sprite.playAnimation('anythingelse');
-  crowSprite.playAnimation('fly');
-  // console.log(sprite.animations, sprite.currentAnimation.name);
+  const b = document.getElementById('b')!;
+  playerShip.playAnimation('engine');
+
+  cRatioW = canvas.offsetWidth / WIDTH;
+  cRatioH = canvas.offsetHeight / HEIGHT;
+  canvasAdjustLeft = canvas.offsetLeft / cRatioW;
+  canvasAdjustRight = canvas.offsetTop / cRatioH;
+
+  console.log(canvas.offsetWidth, canvas.offsetHeight)
+  state.playerX = ((b.offsetWidth / 2) / cRatioW) - canvasAdjustLeft;
+  state.playerY = ((b.offsetHeight / 1.25) / cRatioH) - canvasAdjustRight;
+
+  console.log(state.playerX, state.playerY)
+
   loop.start();
 }
+
+// Mouse Handler
+document.getElementById('c')!.addEventListener('mousemove', (e) => {
+  console.log(e);
+
+  state.playerX = (e.x / cRatioW) - canvasAdjustLeft;
+  state.playerY = (e.y / cRatioH) - canvasAdjustRight;
+});
