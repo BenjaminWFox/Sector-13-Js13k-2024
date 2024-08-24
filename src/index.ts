@@ -17,6 +17,13 @@ let body;
 let time = 0;
 
 
+// Enemy Spawn Numbers
+const xPosition = 1000;
+const waveXSpread = 200;
+const shipXSpeed = 100; // Higher = Slower
+const enemySpawnInterval = 40
+
+
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -24,14 +31,16 @@ export function getRandomIntMinMaxInclusive(min: number, max: number) {
 
 class EnemyManager {
   enemies: Array<Sprite> = []
+  spawned = 0;
 
   add() {
     console.log('Spawn Enemy');
     this.enemies.push(getEnemyShip());
+    this.spawned += 1;
   }
   update() {
     for (const enemy of this.enemies) {
-      enemy.x = (Math.cos(enemy.y / 40) * 400) + 1000
+      enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
       enemy.update();
     }
   }
@@ -60,7 +69,7 @@ let loop = GameLoop({
   render: function () {
     time += 1;
 
-    if (time % 30 === 0) {
+    if (time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
       enemyManager.add();
     }
 
