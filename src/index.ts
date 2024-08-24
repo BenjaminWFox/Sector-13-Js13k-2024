@@ -5,63 +5,68 @@ import {
   SpriteSheet,
 } from 'kontra';
 import { WIDTH, HEIGHT } from './constants';
-import playerShipPath from './assets/images/player-ship.gif';
+import { makeSprites, playerShip, getEnemyShip } from './sprites';
 
 const { canvas } = init();
-
-const loaded = [];
-const totalLoads = 2;
-
 const state = {
   playerX: 0,
   playerY: 0
 }
 
-function checkLoaded(loadedImage: HTMLImageElement) {
-  loaded.push(loadedImage);
-  if (loaded.length === totalLoads && startGame) {
-    startGame();
+let body;
+let time = 0;
+
+
+export function getRandomIntMinMaxInclusive(min: number, max: number) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+class EnemyManager {
+  enemies: Array<Sprite> = []
+
+  add() {
+    console.log('Spawn Enemy');
+    this.enemies.push(getEnemyShip());
+  }
+  update() {
+    for (const enemy of this.enemies) {
+      enemy.x = (Math.cos(enemy.y / 40) * 400) + 1000
+      enemy.update();
+    }
+  }
+  render() {
+    for (const enemy of this.enemies) {
+      if (enemy.y > (canvas.offsetHeight / cRatioH)) {
+        enemy.opacity = 0;
+      }
+      enemy.render()
+    }
+  }
+  purge() {
+    this.enemies = this.enemies.filter((e) => e.opacity !== 0)
   }
 }
-
-let playerShip: Sprite = Sprite();
-const playerShipImg = new Image();
-playerShipImg.src = playerShipPath;
-playerShipImg.width = 35;
-playerShipImg.height = 15;
-playerShipImg.onload = function () {
-  let spriteSheet = SpriteSheet({
-    image: playerShipImg,
-    frameWidth: 17,
-    frameHeight: 15,
-    animations: {
-      engine: {
-        frames: '0..1',
-        frameRate: 15
-      }
-    }
-  });
-
-  playerShip = Sprite({
-    x: 1100,
-    y: 1000,
-    scaleX: 10,
-    scaleY: 10,
-    anchor: { x: 0.5, y: 0.5 },
-    animations: spriteSheet.animations
-  });
-
-  startGame()
-}
+const enemyManager = new EnemyManager();
 
 let loop = GameLoop({
-  update: function () {
+  update: function (dt) {
     playerShip.update();
     playerShip.x = state.playerX;
     playerShip.y = state.playerY;
+
+    enemyManager.update();
   },
   render: function () {
+    time += 1;
+
+    if (time % 30 === 0) {
+      enemyManager.add();
+    }
+
     playerShip.render();
+    enemyManager.render();
+    enemyManager.purge();
   }
 });
 
@@ -70,15 +75,8 @@ let cRatioH = canvas.offsetHeight / HEIGHT;
 let canvasAdjustLeft = canvas.offsetLeft / cRatioW;
 let canvasAdjustRight = canvas.offsetTop / cRatioH;
 
-window.addEventListener('resize', () => {
-  cRatioW = canvas.offsetWidth / WIDTH;
-  cRatioH = canvas.offsetHeight / HEIGHT;
-  canvasAdjustLeft = canvas.offsetLeft / cRatioW;
-  canvasAdjustRight = canvas.offsetTop / cRatioH;
-})
-
 function startGame() {
-  const b = document.getElementById('b')!;
+  body = document.getElementById('body')!;
   playerShip.playAnimation('engine');
 
   cRatioW = canvas.offsetWidth / WIDTH;
@@ -87,8 +85,8 @@ function startGame() {
   canvasAdjustRight = canvas.offsetTop / cRatioH;
 
   console.log(canvas.offsetWidth, canvas.offsetHeight)
-  state.playerX = ((b.offsetWidth / 2) / cRatioW) - canvasAdjustLeft;
-  state.playerY = ((b.offsetHeight / 1.25) / cRatioH) - canvasAdjustRight;
+  state.playerX = ((body.offsetWidth / 2) / cRatioW) - canvasAdjustLeft;
+  state.playerY = ((body.offsetHeight / 1.25) / cRatioH) - canvasAdjustRight;
 
   console.log(state.playerX, state.playerY)
 
@@ -97,8 +95,17 @@ function startGame() {
 
 // Mouse Handler
 document.getElementById('c')!.addEventListener('mousemove', (e) => {
-  console.log(e);
-
   state.playerX = (e.x / cRatioW) - canvasAdjustLeft;
   state.playerY = (e.y / cRatioH) - canvasAdjustRight;
 });
+
+// Resize Handler
+window.addEventListener('resize', () => {
+  cRatioW = canvas.offsetWidth / WIDTH;
+  cRatioH = canvas.offsetHeight / HEIGHT;
+  canvasAdjustLeft = canvas.offsetLeft / cRatioW;
+  canvasAdjustRight = canvas.offsetTop / cRatioH;
+
+})
+
+makeSprites(startGame);
