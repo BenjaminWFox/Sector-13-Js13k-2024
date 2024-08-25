@@ -10,12 +10,9 @@ import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import { SCALE } from './constants';
+import { titleScene } from './scenes';
 
-function createSpriteByUnscaledCoords(img: HTMLImageElement, x: number, y: number) {
-
-}
-
-function uuidv4() {
+export function uuidv4() {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
     (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
   );
@@ -35,11 +32,9 @@ let enemySheet: SpriteSheet;
 function makeSprites(startFn: () => void) {
 
   function checkLoaded(loadedImage: HTMLImageElement) {
-    console.log('checkloaded', loaded.length);
     loaded.push(loadedImage);
 
     if (loaded.length === totalLoads && startFn) {
-      console.log('Start');
       startFn();
     }
   }
@@ -155,7 +150,7 @@ const textTypes: Record<string, TextType> = {
   },
 }
 
-function getTextSprite(text: string, x: number, y: number, type: TextType, bold = true) {
+function getTextSprite(text: string, x: number, y: number, type: TextType, scale: number, bold = true) {
   text = bold ? text.toUpperCase() : text;
   const { letterWidth, letterHeight, characters, image } = type;
   const textCanvas = document.createElement('canvas') as HTMLCanvasElement;
@@ -168,15 +163,13 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, bold 
     const char = textArr[i];
     const charIndex = characters.indexOf(char);
 
-    console.log('Char index is', charIndex)
-
     context.drawImage(image, charIndex * letterWidth, 0, letterWidth, letterHeight, i * letterWidth, 0, letterWidth, letterHeight);
   }
 
   const textSprite = Sprite({
     image: textCanvas,
-    scaleX: SCALE,
-    scaleY: SCALE,
+    scaleX: scale,
+    scaleY: scale,
     x: x * SCALE,
     y: y * SCALE,
   });
@@ -184,9 +177,9 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, bold 
   return textSprite;
 }
 
-const getBoldText = (text: string, x: number, y: number) => getTextSprite(text, x, y, textTypes.letterBold);
-const getText = (text: string, x: number, y: number) => getTextSprite(text, x, y, textTypes.letter, false);
-const getBoldNumbers = (text: string, x: number, y: number) => getTextSprite(text, x, y, textTypes.numberBold);
-const getNumbers = (text: string, x: number, y: number) => getTextSprite(text, x, y, textTypes.number, false);
+const getBoldText = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.letterBold, scale);
+const getText = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.letter, scale, false);
+const getBoldNumbers = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.numberBold, scale);
+const getNumbers = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.number, scale, false);
 
 export { makeSprites, playerShip, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers };

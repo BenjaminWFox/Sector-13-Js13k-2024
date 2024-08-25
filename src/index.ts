@@ -2,9 +2,13 @@ import {
   init,
   Sprite,
   GameLoop,
+  initPointer,
+  Button,
 } from 'kontra';
-import { WIDTH, HEIGHT, SCALE } from './constants';
-import { makeSprites, playerShip, getEnemyShip, getBoldText, getBoldNumbers } from './sprites';
+import { WIDTH, HEIGHT } from './constants';
+import { makeSprites, playerShip, getEnemyShip, getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
+import { gameScene, selectScene, titleScene } from './scenes';
+import { data } from './data';
 
 const { canvas } = init();
 const state = {
@@ -19,13 +23,11 @@ let pauseText: Sprite;
 let sectorText: Sprite;
 let thirteenText: Sprite;
 
-
 // Enemy Spawn Numbers
-const xPosition = 1000;
+const xPosition = 750;
 const waveXSpread = 200;
 const shipXSpeed = 120; // Higher = Slower
 const enemySpawnInterval = 40
-
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
@@ -37,13 +39,12 @@ class EnemyManager {
   spawned = 0;
 
   add() {
-    console.log('Spawn Enemy');
     this.enemies.push(getEnemyShip());
     this.spawned += 1;
   }
   update() {
     for (const enemy of this.enemies) {
-      enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + 750
+      enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
       enemy.update();
     }
   }
@@ -63,27 +64,26 @@ const enemyManager = new EnemyManager();
 
 const loop = GameLoop({
   update: function () {
-    playerShip.update();
-    playerShip.x = state.playerX;
-    playerShip.y = state.playerY;
+    // playerShip.update();
+    // playerShip.x = state.playerX;
+    // playerShip.y = state.playerY;
 
-    enemyManager.update();
+    // enemyManager.update();
   },
   render: function () {
     time += 1;
 
-    if (time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
-      enemyManager.add();
-    }
+    // if (time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
+    //   enemyManager.add();
+    // }
 
-    playerShip.render();
-    enemyManager.render();
-    enemyManager.purge();
-    // lettersSprite.render();
-    scoreText.render();
-    pauseText.render();
-    sectorText.render();
-    thirteenText.render();
+    // playerShip.render();
+    // enemyManager.render();
+    // enemyManager.purge();
+
+    titleScene.render();
+    // selectScene.render();
+    // gameScene.render();
   }
 });
 
@@ -93,31 +93,81 @@ let canvasAdjustLeft = canvas.offsetLeft / cRatioW;
 let canvasAdjustRight = canvas.offsetTop / cRatioH;
 
 let startGame = () => {
+  initPointer();
   body = document.getElementById('body')!;
-  console.log('Starting Game', body, playerShip);
 
   cRatioW = canvas.offsetWidth / WIDTH;
   cRatioH = canvas.offsetHeight / HEIGHT;
   canvasAdjustLeft = canvas.offsetLeft / cRatioW;
   canvasAdjustRight = canvas.offsetTop / cRatioH;
 
-  console.log('Canvas', canvas, canvas.offsetWidth, canvas.offsetHeight)
   state.playerX = ((body.offsetWidth / 2) / cRatioW) - canvasAdjustLeft;
   state.playerY = ((body.offsetHeight / 1.25) / cRatioH) - canvasAdjustRight;
 
-  console.log('State', state.playerX, state.playerY)
+  titleScene.add(
+    ...(() => [
+      // title
+      getBoldText(data.labels.sector, 11, 38, 32),
+      // number 13
+      getBoldNumbers(data.labels.thirteen, 59, 70, 32),
+      // start
+      getBoldText(data.labels.start, 59, 164),
+      // Sprite({
+      //   x: 300,
+      //   y: 400,
+      //   anchor: { x: 0.5, y: 0.5 },
 
-  // const lScaledX = ((lettersSprite.x * SCALE));
-  // const lScaledY = ((lettersSprite.y * SCALE));
-  // lettersSprite.x = lScaledX;
-  // lettersSprite.y = lScaledY;
+      //   // required for a rectangle sprite
+      //   width: 200,
+      //   height: 40,
+      //   color: 'red'
+      // }),
+      // Button({
+      //   x: 300,
+      //   y: 100,
+      //   anchor: { x: 0.5, y: 0.5 },
 
-  scoreText = getBoldText('score', 5, 7);
-  pauseText = getBoldText('pause', 112, 7);
-  sectorText = getBoldText('sector', 56, 2);
-  thirteenText = getBoldNumbers('13', 70, 12)
+      //   // required for a rectangle sprite
+      //   width: 200,
+      //   height: 40,
+      //   color: 'red',
+      //   text: {
+      //     text: 'Interact with me',
+      //     color: 'white',
+      //     font: '20px Arial, sans-serif',
+      //     anchor: { x: 0.5, y: 0.5 }
+      //   }
+      // })
+    ])(),
+  )
 
-  console.log('scoreText', scoreText);
+  console.log(titleScene.objects[0])
+
+  // coordinates of each button for sector selection
+  const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]
+  ];
+  selectScene.add(
+    ...(() => [
+      getBoldText(data.labels.select, 33, 21),
+      getBoldText(data.labels.sector, 77, 21),
+      // sector select buttons
+      ...arr.map(([x, y]) => getText(data.labels.sector, x, y)),
+      ...arr.map(([x, y], i) => getNumbers((i + 1).toString(), x + 8, y + 6))
+    ])(),
+  )
+
+  gameScene.add(
+    ...(() => [
+      // score
+      getBoldText(data.labels.score, 5, 7),
+      // pause
+      getBoldText(data.labels.pause, 112, 7),
+      // sector
+      getBoldText(data.labels.sector, 56, 2),
+      // 13
+      getBoldNumbers(data.labels.thirteen, 70, 12)
+    ])(),
+  )
 
   loop.start();
 }
