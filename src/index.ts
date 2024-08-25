@@ -18,10 +18,10 @@ const state = {
 
 let body;
 let time = 0;
-let scoreText: Sprite;
-let pauseText: Sprite;
-let sectorText: Sprite;
-let thirteenText: Sprite;
+// let scoreText: Sprite;
+// let pauseText: Sprite;
+// let sectorText: Sprite;
+// let thirteenText: Sprite;
 
 // Enemy Spawn Numbers
 const xPosition = 750;
@@ -81,9 +81,9 @@ const loop = GameLoop({
     enemyManager.render();
     enemyManager.purge();
 
-    // titleScene.render();
+    titleScene.render();
     // selectScene.render();
-    gameScene.render();
+    // gameScene.render();
   }
 });
 
@@ -112,32 +112,32 @@ let startGame = () => {
       getBoldNumbers(data.labels.thirteen, 59, 70, 32),
       // start
       getBoldText(data.labels.start, 59, 164),
-      // Sprite({
-      //   x: 300,
-      //   y: 400,
-      //   anchor: { x: 0.5, y: 0.5 },
+      Sprite({
+        x: 300,
+        y: 400,
+        anchor: { x: 0.5, y: 0.5 },
 
-      //   // required for a rectangle sprite
-      //   width: 200,
-      //   height: 40,
-      //   color: 'red'
-      // }),
-      // Button({
-      //   x: 300,
-      //   y: 100,
-      //   anchor: { x: 0.5, y: 0.5 },
+        // required for a rectangle sprite
+        width: 200,
+        height: 40,
+        color: 'red'
+      }),
+      Button({
+        x: 300,
+        y: 100,
+        anchor: { x: 0.5, y: 0.5 },
 
-      //   // required for a rectangle sprite
-      //   width: 200,
-      //   height: 40,
-      //   color: 'red',
-      //   text: {
-      //     text: 'Interact with me',
-      //     color: 'white',
-      //     font: '20px Arial, sans-serif',
-      //     anchor: { x: 0.5, y: 0.5 }
-      //   }
-      // })
+        // required for a rectangle sprite
+        width: 200,
+        height: 40,
+        color: 'red',
+        text: {
+          text: 'Interact with me',
+          color: 'white',
+          font: '20px Arial, sans-serif',
+          anchor: { x: 0.5, y: 0.5 }
+        }
+      })
     ])(),
   )
 

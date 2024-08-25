@@ -18,6 +18,6 @@
     "vite": "5.3.3"
   },
   "dependencies": {
-    "kontra": "^10.0.1"
+    "kontra": "^10.0.2"
   }
 }

@@ -10,7 +10,7 @@ import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import { SCALE } from './constants';
-import { titleScene } from './scenes';
+// import { titleScene } from './scenes';
 
 export function uuidv4() {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
