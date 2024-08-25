@@ -1,4 +1,5 @@
 import {
+  Button,
   Sprite,
   SpriteSheet,
 } from 'kontra';
@@ -10,6 +11,7 @@ import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import { SCALE } from './constants';
+import { data } from './data';
 // import { titleScene } from './scenes';
 
 export function uuidv4() {
@@ -20,14 +22,6 @@ export function uuidv4() {
 
 const loaded = [];
 const totalLoads = 4;
-
-let lettersBoldImg: HTMLImageElement = document.createElement('img');
-let lettersImg: HTMLImageElement = document.createElement('img');
-let numbersBoldImg: HTMLImageElement = document.createElement('img');
-let numbersImg: HTMLImageElement = document.createElement('img');
-
-let playerShip: Sprite = Sprite();
-let enemySheet: SpriteSheet;
 
 function makeSprites(startFn: () => void) {
 
@@ -42,35 +36,32 @@ function makeSprites(startFn: () => void) {
   const playerShipImg = new Image();
   playerShipImg.src = playerShipPath;
   playerShipImg.onload = function () {
-    let spriteSheet = SpriteSheet({
-      image: playerShipImg,
-      frameWidth: 17,
-      frameHeight: 15,
-      animations: {
-        engine: {
-          frames: '0..1',
-          frameRate: 15
-        }
-      }
-    });
-
-    playerShip = Sprite({
+    data.sprites.player = Sprite({
       x: 1100,
       y: 1000,
       scaleX: 10,
       scaleY: 10,
       anchor: { x: 0.5, y: 0.5 },
-      animations: spriteSheet.animations
+      animations: SpriteSheet({
+        image: playerShipImg,
+        frameWidth: 17,
+        frameHeight: 15,
+        animations: {
+          engine: {
+            frames: '0..1',
+            frameRate: 15
+          }
+        }
+      }).animations
     });
 
     checkLoaded(playerShipImg);
   }
 
-  const enemyShipImg = new Image();
-  enemyShipImg.src = enemyShipPath;
-  enemyShipImg.onload = function () {
-    enemySheet = SpriteSheet({
-      image: enemyShipImg,
+  data.images.enemy.src = enemyShipPath;
+  data.images.enemy.onload = function () {
+    data.spriteSheets.enemy = SpriteSheet({
+      image: data.images.enemy,
       frameWidth: 15,
       frameHeight: 12,
       animations: {
@@ -81,27 +72,27 @@ function makeSprites(startFn: () => void) {
       }
     });
 
-    checkLoaded(enemyShipImg);
+    checkLoaded(data.images.enemy);
   }
 
-  lettersBoldImg.src = lettersBoldPath;
-  lettersBoldImg.onload = () => {
-    checkLoaded(lettersBoldImg)
+  data.images.lettersBold.src = lettersBoldPath;
+  data.images.lettersBold.onload = () => {
+    checkLoaded(data.images.lettersBold)
   }
 
-  lettersImg.src = lettersPath;
-  lettersImg.onload = () => {
-    checkLoaded(lettersImg)
+  data.images.letters.src = lettersPath;
+  data.images.letters.onload = () => {
+    checkLoaded(data.images.letters)
   }
 
-  numbersBoldImg.src = numbersBoldPath;
-  numbersBoldImg.onload = () => {
-    checkLoaded(numbersBoldImg)
+  data.images.numbersBold.src = numbersBoldPath;
+  data.images.numbersBold.onload = () => {
+    checkLoaded(data.images.numbersBold)
   }
 
-  numbersImg.src = numbersPath;
-  numbersImg.onload = () => {
-    checkLoaded(numbersImg)
+  data.images.numbers.src = numbersPath;
+  data.images.numbers.onload = () => {
+    checkLoaded(data.images.numbers)
   }
 }
 
@@ -113,7 +104,7 @@ function getEnemyShip() {
     scaleY: 10,
     anchor: { x: 0.5, y: 0.5 },
     dy: 4,
-    animations: enemySheet.animations
+    animations: data.spriteSheets.enemy!.animations
   });
 }
 
@@ -125,33 +116,38 @@ type TextType = {
 }
 const textTypes: Record<string, TextType> = {
   letterBold: {
-    image: lettersBoldImg,
+    image: data.images.lettersBold,
     letterWidth: 7,
     letterHeight: 8,
     characters: 'ACELOPRSTU',
   },
   letter: {
-    image: lettersImg,
+    image: data.images.letters,
     letterWidth: 4,
     letterHeight: 5,
     characters: 'ceorst',
   },
   numberBold: {
-    image: numbersBoldImg,
+    image: data.images.numbersBold,
     letterWidth: 7,
     letterHeight: 8,
     characters: '13',
   },
   number: {
-    image: numbersImg,
+    image: data.images.numbers,
     letterWidth: 4,
     letterHeight: 5,
     characters: '0123456789',
   },
 }
-
-function getTextSprite(text: string, x: number, y: number, type: TextType, scale: number, bold = true) {
-  text = bold ? text.toUpperCase() : text;
+type Options = {
+  bold?: boolean;
+  scale?: number;
+  button?: boolean;
+  onDown?: () => void;
+}
+function getTextSprite(text: string, x: number, y: number, type: TextType, options: Options = {}) {
+  text = options.bold ? text.toUpperCase() : text;
   const { letterWidth, letterHeight, characters, image } = type;
   const textCanvas = document.createElement('canvas') as HTMLCanvasElement;
   const context = textCanvas.getContext('2d')!;
@@ -166,20 +162,23 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, scale
     context.drawImage(image, charIndex * letterWidth, 0, letterWidth, letterHeight, i * letterWidth, 0, letterWidth, letterHeight);
   }
 
-  const textSprite = Sprite({
+  const textSprite = {
     image: textCanvas,
-    scaleX: scale,
-    scaleY: scale,
+    scaleX: options.scale || SCALE,
+    scaleY: options.scale || SCALE,
     x: x * SCALE,
     y: y * SCALE,
-  });
+  };
 
-  return textSprite;
+  return (options.button || !!options.onDown) ? Button({
+    ...textSprite,
+    onDown: options.onDown
+  }) : Sprite({ ...textSprite });
 }
 
-const getBoldText = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.letterBold, scale);
-const getText = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.letter, scale, false);
-const getBoldNumbers = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.numberBold, scale);
-const getNumbers = (text: string, x: number, y: number, scale = SCALE) => getTextSprite(text, x, y, textTypes.number, scale, false);
+const getBoldText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterBold, { ...options, bold: true });
+const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letter, options);
+const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, options);
+const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, { ...options, bold: true });
 
-export { makeSprites, playerShip, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers };

@@ -1,23 +1,83 @@
+import { Scene, Sprite, SpriteSheet } from "kontra";
+import { HEIGHT, WIDTH } from "./constants";
 
-function initData() {
+function makeElement<T>(el: string) { return document.createElement(el) as T };
+const makeImage = () => makeElement<HTMLImageElement>('img');
+
+type Data = {
+  elements: {
+    body: HTMLElement,
+    canvas: HTMLCanvasElement
+  };
+  scenes: Record<string, Scene>;
+  labels: Record<string, string>;
+  images: Record<string, HTMLImageElement>;
+  sprites: Record<string, Sprite>;
+  spriteSheets: Record<string, SpriteSheet | undefined>;
+  calculations: Record<string, number>;
+}
+
+const labels = {
+  sector: 'sector',
+  pause: 'pause',
+  score: 'score',
+  thirteen: '13',
+  start: 'start',
+  select: 'select',
+  title: 'title',
+  game: 'game',
+  pregame: 'pregame',
+}
+
+function initData(): Data {
   return {
-    scenes: {
-      title: 'title',
-      select: 'select',
-      pregame: 'pregame',
-      game: 'game',
+    elements: {
+      body: makeElement<HTMLElement>('body'),
+      canvas: makeElement<HTMLCanvasElement>('canvas')!,
     },
-    labels: {
-      sector: 'sector',
-      pause: 'pause',
-      score: 'score',
-      thirteen: '13',
-      start: 'start',
-      select: 'select',
+    scenes: {
+      title: Scene({ id: labels.title }),
+      select: Scene({ id: labels.select }),
+      pregame: Scene({ id: labels.pregame }),
+      game: Scene({ id: labels.game }),
+    },
+    labels,
+    images: {
+      letters: makeImage(),
+      lettersBold: makeImage(),
+      numbers: makeImage(),
+      numbersBold: makeImage(),
+      player: makeImage(),
+      enemy: makeImage(),
+    },
+    sprites: {
+      player: Sprite(),
+      enemy: Sprite(),
+    },
+    spriteSheets: {
+      player: undefined,
+      enemy: undefined,
+    },
+    calculations: {
+      canvasRatioWidth: 0,
+      canvasRatioHeight: 0,
+      canvasAdjustLeft: 0,
+      canvasAdjustRight: 0,
     }
   }
 }
 
 const data = { ...initData() }
 
-export { data }
+function initCalculations(c: HTMLCanvasElement) {
+  data.calculations.canvasRatioWidth = c.offsetWidth / WIDTH;
+  data.calculations.canvasRatioHeight = c.offsetHeight / HEIGHT;
+  data.calculations.canvasAdjustLeft = c.offsetLeft / data.calculations.canvasRatioWidth;
+  data.calculations.canvasAdjustRight = c.offsetTop / data.calculations.canvasRatioHeight;
+}
+function initElements(c: HTMLCanvasElement, b: HTMLElement) {
+  data.elements.canvas = c;
+  data.elements.body = b;
+}
+
+export { data, initCalculations, initElements }
