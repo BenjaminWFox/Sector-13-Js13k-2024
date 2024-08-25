@@ -2,10 +2,9 @@ import {
   init,
   Sprite,
   GameLoop,
-  SpriteSheet,
 } from 'kontra';
-import { WIDTH, HEIGHT } from './constants';
-import { makeSprites, playerShip, getEnemyShip } from './sprites';
+import { WIDTH, HEIGHT, SCALE } from './constants';
+import { makeSprites, playerShip, getEnemyShip, getBoldText, getBoldNumbers } from './sprites';
 
 const { canvas } = init();
 const state = {
@@ -15,12 +14,16 @@ const state = {
 
 let body;
 let time = 0;
+let scoreText: Sprite;
+let pauseText: Sprite;
+let sectorText: Sprite;
+let thirteenText: Sprite;
 
 
 // Enemy Spawn Numbers
 const xPosition = 1000;
 const waveXSpread = 200;
-const shipXSpeed = 100; // Higher = Slower
+const shipXSpeed = 120; // Higher = Slower
 const enemySpawnInterval = 40
 
 
@@ -40,7 +43,7 @@ class EnemyManager {
   }
   update() {
     for (const enemy of this.enemies) {
-      enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
+      enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + 750
       enemy.update();
     }
   }
@@ -58,8 +61,8 @@ class EnemyManager {
 }
 const enemyManager = new EnemyManager();
 
-let loop = GameLoop({
-  update: function (dt) {
+const loop = GameLoop({
+  update: function () {
     playerShip.update();
     playerShip.x = state.playerX;
     playerShip.y = state.playerY;
@@ -76,6 +79,11 @@ let loop = GameLoop({
     playerShip.render();
     enemyManager.render();
     enemyManager.purge();
+    // lettersSprite.render();
+    scoreText.render();
+    pauseText.render();
+    sectorText.render();
+    thirteenText.render();
   }
 });
 
@@ -84,20 +92,32 @@ let cRatioH = canvas.offsetHeight / HEIGHT;
 let canvasAdjustLeft = canvas.offsetLeft / cRatioW;
 let canvasAdjustRight = canvas.offsetTop / cRatioH;
 
-function startGame() {
+let startGame = () => {
   body = document.getElementById('body')!;
-  playerShip.playAnimation('engine');
+  console.log('Starting Game', body, playerShip);
 
   cRatioW = canvas.offsetWidth / WIDTH;
   cRatioH = canvas.offsetHeight / HEIGHT;
   canvasAdjustLeft = canvas.offsetLeft / cRatioW;
   canvasAdjustRight = canvas.offsetTop / cRatioH;
 
-  console.log(canvas.offsetWidth, canvas.offsetHeight)
+  console.log('Canvas', canvas, canvas.offsetWidth, canvas.offsetHeight)
   state.playerX = ((body.offsetWidth / 2) / cRatioW) - canvasAdjustLeft;
   state.playerY = ((body.offsetHeight / 1.25) / cRatioH) - canvasAdjustRight;
 
-  console.log(state.playerX, state.playerY)
+  console.log('State', state.playerX, state.playerY)
+
+  // const lScaledX = ((lettersSprite.x * SCALE));
+  // const lScaledY = ((lettersSprite.y * SCALE));
+  // lettersSprite.x = lScaledX;
+  // lettersSprite.y = lScaledY;
+
+  scoreText = getBoldText('score', 5, 7);
+  pauseText = getBoldText('pause', 112, 7);
+  sectorText = getBoldText('sector', 56, 2);
+  thirteenText = getBoldNumbers('13', 70, 12)
+
+  console.log('scoreText', scoreText);
 
   loop.start();
 }

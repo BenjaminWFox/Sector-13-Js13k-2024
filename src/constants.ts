@@ -1,5 +1,6 @@
 export const WIDTH = 1500;
 export const HEIGHT = 2660;
+export const SCALE = 10;
 
 // export const CENTER_X = WIDTH / 2;
 // export const CENTER_Y = HEIGHT / 2;
