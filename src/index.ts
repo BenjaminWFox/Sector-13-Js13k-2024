@@ -64,26 +64,26 @@ const enemyManager = new EnemyManager();
 
 const loop = GameLoop({
   update: function () {
-    // playerShip.update();
-    // playerShip.x = state.playerX;
-    // playerShip.y = state.playerY;
+    playerShip.update();
+    playerShip.x = state.playerX;
+    playerShip.y = state.playerY;
 
-    // enemyManager.update();
+    enemyManager.update();
   },
   render: function () {
     time += 1;
 
-    // if (time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
-    //   enemyManager.add();
-    // }
+    if (time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
+      enemyManager.add();
+    }
 
-    // playerShip.render();
-    // enemyManager.render();
-    // enemyManager.purge();
+    playerShip.render();
+    enemyManager.render();
+    enemyManager.purge();
 
-    titleScene.render();
+    // titleScene.render();
     // selectScene.render();
-    // gameScene.render();
+    gameScene.render();
   }
 });
 
