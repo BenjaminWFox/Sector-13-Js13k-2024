@@ -39,7 +39,7 @@ const loop = GameLoop({
 
     data.scenes.title.render();
     data.scenes.select.render();
-    // gameScene.render();
+    data.scenes.select.render();
   }
 });
 

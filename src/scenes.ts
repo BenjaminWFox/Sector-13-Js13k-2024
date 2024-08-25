@@ -1,4 +1,3 @@
-import { Sprite, Button } from 'kontra';
 import { data } from './data';
 import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 
