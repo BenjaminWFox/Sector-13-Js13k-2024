@@ -27,6 +27,7 @@ const labels = {
   title: 'title',
   game: 'game',
   pregame: 'pregame',
+  stars: 'stars',
 }
 
 function initData(): Data {
@@ -40,6 +41,7 @@ function initData(): Data {
       select: Scene({ id: labels.select }),
       pregame: Scene({ id: labels.pregame }),
       game: Scene({ id: labels.game }),
+      stars: Scene({ id: labels.stars }),
     },
     labels,
     images: {

@@ -23,7 +23,6 @@ class EnemyManager {
   }
   render() {
     for (const enemy of this.enemies) {
-      console.log(data.calculations.canvasRatioHeight);
       if (enemy.y > (data.elements.canvas.offsetHeight / data.calculations.canvasRatioHeight)) {
         enemy.opacity = 0;
       }

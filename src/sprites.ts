@@ -21,10 +21,9 @@ export function uuidv4() {
 }
 
 const loaded = [];
-const totalLoads = 4;
+const totalLoads = 6;
 
 function makeSprites(startFn: () => void) {
-
   function checkLoaded(loadedImage: HTMLImageElement) {
     loaded.push(loadedImage);
 
@@ -146,6 +145,7 @@ type Options = {
   button?: boolean;
   onDown?: () => void;
 }
+
 function getTextSprite(text: string, x: number, y: number, type: TextType, options: Options = {}) {
   text = options.bold ? text.toUpperCase() : text;
   const { letterWidth, letterHeight, characters, image } = type;
@@ -178,7 +178,7 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
 
 const getBoldText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterBold, { ...options, bold: true });
 const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letter, options);
-const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, options);
-const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, { ...options, bold: true });
+const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
+const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 
 export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers };
