@@ -71,7 +71,6 @@ function initScenes() {
 
     update() {
       if (this.y >= HEIGHT) {
-        console.log(data.scenes.stars.objects.length);
         data.scenes.stars.remove(this);
         data.scenes.stars.add(new Star())
       }

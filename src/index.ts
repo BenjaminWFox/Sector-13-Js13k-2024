@@ -3,6 +3,7 @@ import {
   GameLoop,
   initPointer,
   lerp,
+  Sprite,
 } from 'kontra';
 import { makeSprites } from './sprites';
 import { initScenes } from './scenes';
@@ -13,6 +14,22 @@ import { state } from './state'
 const { canvas } = init();
 
 const enemySpawnInterval = 40
+
+const bullets: Array<Projectile> = []
+class Projectile {
+  sprite: Sprite;
+
+  constructor() {
+    this.sprite = Sprite({
+      x: state.playerX - 10,
+      y: state.playerY - 100,
+      width: 10,
+      height: 20,
+      color: 'red',
+      dy: -12
+    })
+  }
+}
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
@@ -28,6 +45,7 @@ const loop = GameLoop({
 
     if (!data.scenes.game.hidden) {
       enemyManager.update();
+      bullets.forEach(bullet => { bullet.sprite.update(); })
     }
 
     data.scenes.title.update();
@@ -46,6 +64,16 @@ const loop = GameLoop({
       if (state.time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
         enemyManager.add();
       }
+      if (state.time % 20 === 0 && state.time < 30) {
+        console.log('FIRE!')
+        bullets.push(new Projectile())
+      }
+      bullets.forEach(bullet => {
+        bullet.sprite.render();
+        console.log(canvas.getContext('2d')?.getImageData(
+          bullet.sprite.x, bullet.sprite.y, 1, 1
+        ))
+      })
 
       enemyManager.render();
       enemyManager.purge();
@@ -64,6 +92,7 @@ let startGame = () => {
   initScenes();
   state.loop = loop;
   // data.scenes.title.show();
+  data.scenes.game.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 
