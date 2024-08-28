@@ -59,7 +59,7 @@ function initScenes() {
       const { initial } = properties;
       const dy = [1, 2];
       if (!initial) {
-        dy.push(8);
+        dy.push(5);
       }
       this.width = 10;
       this.height = 10

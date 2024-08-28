@@ -65,6 +65,8 @@ function initData(): Data {
       canvasRatioHeight: 0,
       canvasAdjustLeft: 0,
       canvasAdjustRight: 0,
+      canvasMaxHeight: 0,
+      canvasMaxWidth: 0,
     }
   }
 }
@@ -76,6 +78,8 @@ function initCalculations(c: HTMLCanvasElement) {
   data.calculations.canvasRatioHeight = c.offsetHeight / HEIGHT;
   data.calculations.canvasAdjustLeft = c.offsetLeft / data.calculations.canvasRatioWidth;
   data.calculations.canvasAdjustRight = c.offsetTop / data.calculations.canvasRatioHeight;
+  data.calculations.canvasMaxHeight = data.elements.canvas.offsetHeight / data.calculations.canvasRatioHeight;
+  data.calculations.canvasMaxWidth = data.elements.canvas.offsetWidth / data.calculations.canvasRatioWidth;
 }
 function initElements(c: HTMLCanvasElement, b: HTMLElement) {
   data.elements.canvas = c;

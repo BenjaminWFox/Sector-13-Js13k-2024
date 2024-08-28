@@ -5,20 +5,13 @@ import {
 } from 'kontra';
 import playerShipPath from './assets/images/player-ship.gif';
 import enemyShipPath from './assets/images/enemy-ship.gif';
-
 import lettersBoldPath from './assets/images/lettersBold.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import { SCALE } from './constants';
 import { data } from './data';
-// import { titleScene } from './scenes';
-
-export function uuidv4() {
-  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-  );
-}
+import { state } from './state';
 
 const loaded = [];
 const totalLoads = 6;
@@ -107,6 +100,17 @@ function getEnemyShip() {
   });
 }
 
+function getBullet() {
+  return Sprite({
+    x: state.playerX - 10,
+    y: state.playerY - 100,
+    width: 10,
+    height: 30,
+    color: 'red',
+    dy: -20
+  })
+}
+
 type TextType = {
   image: HTMLImageElement,
   letterWidth: number,
@@ -181,4 +185,4 @@ const getText = (text: string, x: number, y: number, options?: {}) => getTextSpr
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet };

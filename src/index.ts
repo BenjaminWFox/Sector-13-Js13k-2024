@@ -3,33 +3,18 @@ import {
   GameLoop,
   initPointer,
   lerp,
-  Sprite,
+  collides,
 } from 'kontra';
-import { makeSprites } from './sprites';
+import { getBullet, getEnemyShip, makeSprites } from './sprites';
 import { initScenes } from './scenes';
-import { enemyManager } from './enemyManager';
+import { bulletManager, enemyManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
+import { sector1 } from './sectorManager';
 
 const { canvas } = init();
 
 const enemySpawnInterval = 40
-
-const bullets: Array<Projectile> = []
-class Projectile {
-  sprite: Sprite;
-
-  constructor() {
-    this.sprite = Sprite({
-      x: state.playerX - 10,
-      y: state.playerY - 100,
-      width: 10,
-      height: 20,
-      color: 'red',
-      dy: -12
-    })
-  }
-}
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
@@ -44,8 +29,9 @@ const loop = GameLoop({
     data.sprites.player.update();
 
     if (!data.scenes.game.hidden) {
-      enemyManager.update();
-      bullets.forEach(bullet => { bullet.sprite.update(); })
+      // enemyManager.update();
+      bulletManager.update();
+      sector1.update();
     }
 
     data.scenes.title.update();
@@ -54,34 +40,26 @@ const loop = GameLoop({
   },
 
   render: function () {
-    state.time += 1;
     data.scenes.stars.render();
 
     data.sprites.player.render();
 
     if (!data.scenes.game.hidden) {
 
-      if (state.time % enemySpawnInterval === 0 && enemyManager.spawned < 13) {
-        enemyManager.add();
+      if (state.time % 20 === 0) {
+        bulletManager.add(getBullet())
       }
-      if (state.time % 20 === 0 && state.time < 30) {
-        console.log('FIRE!')
-        bullets.push(new Projectile())
-      }
-      bullets.forEach(bullet => {
-        bullet.sprite.render();
-        console.log(canvas.getContext('2d')?.getImageData(
-          bullet.sprite.x, bullet.sprite.y, 1, 1
-        ))
-      })
 
-      enemyManager.render();
-      enemyManager.purge();
+      sector1.render(state.time, bulletManager.assets);
+      bulletManager.render();
+
     }
 
     data.scenes.title.render();
     data.scenes.select.render();
     data.scenes.game.render();
+
+    state.time += 1;
   }
 });
 
@@ -102,16 +80,12 @@ let startGame = () => {
 // Mouse Handler
 document.getElementById('c')!.addEventListener('mousemove', (e) => {
   if (!data.scenes.game.hidden && state.shipEngaged) {
-    // state.playerX = (e.x / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft;
-    // state.playerY = (e.y / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight;
     state.playerX = lerp(state.playerX, (e.x / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .05);
     state.playerY = lerp(state.playerY, (e.y / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight, .05);
   }
 });
 document.getElementById('c')!.addEventListener('touchmove', (e) => {
   if (!data.scenes.game.hidden && state.shipEngaged) {
-    // state.playerX = (e.targetTouches[0].clientX / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft;
-    // state.playerY = (e.targetTouches[0].clientY / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight;
     state.playerX = lerp(state.playerX, (e.targetTouches[0].clientX / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .5);
     state.playerY = lerp(state.playerY, (e.targetTouches[0].clientY / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight - 150, .5);
   }
@@ -123,9 +97,11 @@ window.addEventListener('resize', () => {
 })
 
 function allowMove() {
+  data.elements.body.style.cursor = "none";
   state.shipEngaged = true;
 }
 function preventMove() {
+  data.elements.body.style.cursor = "pointer";
   state.shipEngaged = false;
 }
 
