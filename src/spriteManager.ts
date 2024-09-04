@@ -9,12 +9,14 @@ const shipXSpeed = 120; // Higher = Slower
 
 export class Manager {
   assets: Array<Sprite> = [];
-  // asset: Sprite;
   spawned = 0;
+  id: string | undefined;
+  completed: boolean = false;
   updater: (sprite: Sprite) => void = () => { };
 
-  constructor(updaterFn?: (sprite: Sprite) => void) {
+  constructor(updaterFn?: (sprite: Sprite) => void, id?: string) {
     if (updaterFn) this.updater = updaterFn.bind(this);
+    this.id = id;
   }
 
   add(sprite: Sprite) {

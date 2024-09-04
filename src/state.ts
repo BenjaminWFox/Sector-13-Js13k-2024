@@ -3,13 +3,14 @@ import { SCALE } from "./constants"
 
 function initState() {
   return {
-    currentSector: 0,
+    currentSector: 1,
     shipEngaged: false,
     loop: undefined as unknown as GameLoop,
     paused: false,
     playerX: 75 * SCALE,
     playerY: 234 * SCALE,
-    time: 0
+    totalTime: 0,
+    sectorTime: 0,
   }
 }
 

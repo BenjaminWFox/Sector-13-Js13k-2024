@@ -1,4 +1,4 @@
-import { Scene, Sprite, SpriteSheet } from "kontra";
+import { Scene, SceneClass, SceneConstructor, Sprite, SpriteSheet } from "kontra";
 import { HEIGHT, WIDTH } from "./constants";
 
 function makeElement<T>(el: string) { return document.createElement(el) as T };
@@ -15,6 +15,14 @@ type Data = {
   sprites: Record<string, Sprite>;
   spriteSheets: Record<string, SpriteSheet | undefined>;
   calculations: Record<string, number>;
+}
+
+class SceneX extends SceneClass {
+  started = false;
+
+  constructor(properties: any) {
+    super(properties);
+  }
 }
 
 const labels = {
@@ -40,7 +48,7 @@ function initData(): Data {
       title: Scene({ id: labels.title }),
       select: Scene({ id: labels.select }),
       pregame: Scene({ id: labels.pregame }),
-      game: Scene({ id: labels.game }),
+      game: new SceneX({ id: labels.game }),
       stars: Scene({ id: labels.stars }),
     },
     labels,

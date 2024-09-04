@@ -1,4 +1,4 @@
-import { randInt, SpriteClass } from 'kontra';
+import { getStoreItem, randInt, Sprite, SpriteClass } from 'kontra';
 import { data } from './data';
 import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
@@ -24,6 +24,7 @@ function initScenes() {
   const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]];
   const playGameSector = (i: number) => {
     console.log('Playing', i);
+    state.currentSector = i;
 
     data.scenes.game.add(
       ...(() => [
@@ -33,14 +34,24 @@ function initScenes() {
         getBoldText(data.labels.pause, 112, 7, { onDown: () => state.loop.isStopped ? state.loop.start() : state.loop.stop() }),
         // sector
         getBoldText(data.labels.sector, 56, 2),
-        // 13
+        // sector number
         getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 })
       ])(),
     );
 
     data.scenes.game.show();
     data.scenes.select.hide();
-    state.currentSector = i;
+  }
+
+  function clearUnreached(s: Sprite, i: number) {
+    let n = `${i + 1}`;
+
+    if (i > 0 && !getStoreItem(`${n}`)) {
+      s.opacity = .5;
+      s.onDown = () => { };
+    }
+
+    return s
   }
 
   data.scenes.select.add(
@@ -48,8 +59,8 @@ function initScenes() {
       getBoldText(data.labels.select, 33, 21),
       getBoldText(data.labels.sector, 77, 21),
       // sector select buttons
-      ...arr.map(([x, y], i) => getText(data.labels.sector, x, y, { onDown: () => playGameSector(i + 1) })),
-      ...arr.map(([x, y], i) => getNumbers((i + 1).toString(), x + 8, y + 6, { onDown: () => playGameSector(i + 1) }))
+      ...arr.map(([x, y], i) => clearUnreached(getText(data.labels.sector, x, y, { onDown: () => playGameSector(i + 1) }), i)),
+      ...arr.map(([x, y], i) => clearUnreached(getNumbers((i + 1).toString(), x + 8, y + 6, { onDown: () => playGameSector(i + 1) }), i))
     ])(),
   );
 

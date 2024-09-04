@@ -4,21 +4,33 @@ import {
   initPointer,
   lerp,
   collides,
+  Sprite,
+  setStoreItem,
 } from 'kontra';
-import { getBullet, getEnemyShip, makeSprites } from './sprites';
+import { getBullet, getEnemyShip, getNumbers, makeSprites } from './sprites';
 import { initScenes } from './scenes';
 import { bulletManager, enemyManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
-import { sector1 } from './sectorManager';
+import { currentSector, Sector, sector1, sector2, sector3, sectors } from './sectorManager';
 
 const { canvas } = init();
-
-const enemySpawnInterval = 40
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+let currentGameSector: Sector;
+function nextSector() {
+  state.sectorTime = 0;
+  ++state.currentSector;
+  if (state.currentSector > sectors.length) {
+    loop.stop();
+  } else {
+    setStoreItem(`${state.currentSector}`, 1)
+    currentGameSector = currentSector();
+  }
 }
 
 const loop = GameLoop({
@@ -31,7 +43,7 @@ const loop = GameLoop({
     if (!data.scenes.game.hidden) {
       // enemyManager.update();
       bulletManager.update();
-      sector1.update();
+      currentGameSector.update();
     }
 
     data.scenes.title.update();
@@ -46,11 +58,15 @@ const loop = GameLoop({
 
     if (!data.scenes.game.hidden) {
 
-      if (state.time % 20 === 0) {
+      if (state.totalTime % 20 === 0) {
         bulletManager.add(getBullet())
       }
 
-      sector1.render(state.time, bulletManager.assets);
+      currentGameSector.render(state.sectorTime, bulletManager.assets);
+      // console.log('Done render');
+      if (currentGameSector.completed) {
+        nextSector();
+      }
       bulletManager.render();
 
     }
@@ -59,7 +75,8 @@ const loop = GameLoop({
     data.scenes.select.render();
     data.scenes.game.render();
 
-    state.time += 1;
+    state.totalTime += 1;
+    state.sectorTime += 1;
   }
 });
 
@@ -69,8 +86,9 @@ let startGame = () => {
   initCalculations(canvas);
   initScenes();
   state.loop = loop;
-  // data.scenes.title.show();
-  data.scenes.game.show();
+  data.scenes.title.show();
+  currentGameSector = currentSector()
+  // data.scenes.game.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 
