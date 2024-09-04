@@ -3,11 +3,13 @@ import { data } from './data';
 import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
+import { currentSector } from './sectorManager';
 
 function initScenes() {
   data.scenes.title.hide();
   data.scenes.select.hide();
   data.scenes.game.hide();
+  data.scenes.end.hide();
 
   data.scenes.title.add(
     ...(() => [
@@ -24,7 +26,8 @@ function initScenes() {
   const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]];
   const playGameSector = (i: number) => {
     console.log('Playing', i);
-    state.currentSector = i;
+    state.currentSectorNumber = i;
+    state.currentSectorClass = currentSector();
 
     data.scenes.game.add(
       ...(() => [
@@ -62,6 +65,12 @@ function initScenes() {
       ...arr.map(([x, y], i) => clearUnreached(getText(data.labels.sector, x, y, { onDown: () => playGameSector(i + 1) }), i)),
       ...arr.map(([x, y], i) => clearUnreached(getNumbers((i + 1).toString(), x + 8, y + 6, { onDown: () => playGameSector(i + 1) }), i))
     ])(),
+  );
+
+  data.scenes.end.add(
+    ...(() => [
+      getBoldText(data.labels.restart, 59, 164, { button: true, onDown: () => { window.location.reload(); } }),
+    ])()
   );
 
   class Star extends SpriteClass {

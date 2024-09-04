@@ -3,16 +3,14 @@ import {
   GameLoop,
   initPointer,
   lerp,
-  collides,
-  Sprite,
   setStoreItem,
 } from 'kontra';
-import { getBullet, getEnemyShip, getNumbers, makeSprites } from './sprites';
+import { getBullet, makeSprites } from './sprites';
 import { initScenes } from './scenes';
-import { bulletManager, enemyManager } from './spriteManager';
+import { bulletManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
-import { currentSector, Sector, sector1, sector2, sector3, sectors } from './sectorManager';
+import { currentSector, sectors } from './sectorManager';
 
 const { canvas } = init();
 
@@ -21,15 +19,19 @@ export function getRandomIntMinMaxInclusive(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-let currentGameSector: Sector;
 function nextSector() {
   state.sectorTime = 0;
-  ++state.currentSector;
-  if (state.currentSector > sectors.length) {
-    loop.stop();
+  ++state.currentSectorNumber;
+
+  if (state.currentSectorNumber > sectors.length) {
+    data.scenes.game.hide();
+    data.scenes.end.show();
   } else {
-    setStoreItem(`${state.currentSector}`, 1)
-    currentGameSector = currentSector();
+    setStoreItem(`${state.currentSectorNumber}`, 1)
+
+    state.currentSectorClass = currentSector();
+
+    console.log('Next sector')
   }
 }
 
@@ -43,12 +45,13 @@ const loop = GameLoop({
     if (!data.scenes.game.hidden) {
       // enemyManager.update();
       bulletManager.update();
-      currentGameSector.update();
+      state.currentSectorClass.update();
     }
 
     data.scenes.title.update();
     data.scenes.select.update();
     data.scenes.game.update();
+    data.scenes.end.update();
   },
 
   render: function () {
@@ -62,9 +65,9 @@ const loop = GameLoop({
         bulletManager.add(getBullet())
       }
 
-      currentGameSector.render(state.sectorTime, bulletManager.assets);
+      state.currentSectorClass.render(state.sectorTime, bulletManager.assets);
       // console.log('Done render');
-      if (currentGameSector.completed) {
+      if (state.currentSectorClass.completed) {
         nextSector();
       }
       bulletManager.render();
@@ -74,6 +77,7 @@ const loop = GameLoop({
     data.scenes.title.render();
     data.scenes.select.render();
     data.scenes.game.render();
+    data.scenes.end.render();
 
     state.totalTime += 1;
     state.sectorTime += 1;
@@ -87,7 +91,6 @@ let startGame = () => {
   initScenes();
   state.loop = loop;
   data.scenes.title.show();
-  currentGameSector = currentSector()
   // data.scenes.game.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;

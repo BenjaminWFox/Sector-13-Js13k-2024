@@ -32,7 +32,7 @@ export class Sector {
   }
 
   update() {
-    this.data.forEach(([spawnStart, totalSpawn, spawnSpacing, spriteFactory, manager]) => {
+    this.data.forEach(([, , , , manager]) => {
       manager.update()
     });
   }
@@ -42,7 +42,7 @@ export class Sector {
       return;
     } else if (!this.loaded) {
       data.scenes.game.remove(data.scenes.game.objects[3]);
-      data.scenes.game.add(getNumbers(state.currentSector.toString(), state.currentSector < 10 ? 74 : 70, 12, { scale: 20 }));
+      data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
       (data.scenes.game.objects[2] as Sprite).y = 120 * SCALE;
       (data.scenes.game.objects[2] as Sprite).dy = -15;
       (data.scenes.game.objects[3] as Sprite).y = 130 * SCALE;
@@ -109,6 +109,6 @@ const sector3 = new Sector([
   [0, 1, 40, getEnemyShip, new Manager(neutral(1200))],
 ])
 const sectors = [sector1, sector2, sector3]
-const currentSector = () => sectors[state.currentSector - 1]
+const currentSector = () => sectors[state.currentSectorNumber - 1]
 
 export { currentSector, sectors, sector1, sector2, sector3 }
