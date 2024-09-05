@@ -11,6 +11,7 @@ import { bulletManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, sectors } from './sectorManager';
+import { sfx } from './music';
 
 const { canvas } = init();
 
@@ -22,6 +23,8 @@ export function getRandomIntMinMaxInclusive(min: number, max: number) {
 function nextSector() {
   state.sectorTime = 0;
   ++state.currentSectorNumber;
+
+  sfx(data.sounds.sectorClear);
 
   if (state.currentSectorNumber > sectors.length) {
     data.scenes.game.hide();
@@ -43,7 +46,6 @@ const loop = GameLoop({
     data.sprites.player.update();
 
     if (!data.scenes.game.hidden) {
-      // enemyManager.update();
       bulletManager.update();
       state.currentSectorClass.update();
     }

@@ -4,6 +4,7 @@ import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
+import { playSong, zzfxSong } from './music';
 
 function initScenes() {
   data.scenes.title.hide();
@@ -18,7 +19,13 @@ function initScenes() {
       // number 13
       getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
       // start
-      getBoldText(data.labels.start, 59, 164, { button: true, onDown: () => { data.scenes.title.hide(); data.scenes.select.show(); } }),
+      getBoldText(data.labels.start, 59, 164, {
+        button: true, onDown: () => {
+          data.scenes.title.hide(); data.scenes.select.show();
+
+          playSong(zzfxSong);
+        }
+      }),
     ])(),
   )
 

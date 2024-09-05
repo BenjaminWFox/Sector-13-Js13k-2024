@@ -4,6 +4,7 @@ import { Manager } from "./spriteManager";
 import { data } from "./data";
 import { state } from "./state";
 import { SCALE } from "./constants";
+import { sfx } from "./music";
 
 const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
   (enemy: Sprite) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
@@ -78,6 +79,7 @@ export class Sector {
             if (collides(bullet, enemy)) {
               enemy.opacity = 0;
               bullet.opacity = 0;
+              sfx([5, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952]);
             }
             if (collides(data.sprites.player, enemy)) {
               enemy.opacity = 0;
@@ -94,19 +96,19 @@ export class Sector {
 }
 
 const sector1 = new Sector([
-  [0, 1, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
-  [0, 1, 40, getEnemyShip, new Manager(cosFn(120, -200, 300), 'B')],
-  [13 * 20, 1, 40, getEnemyShip, new Manager(neutral(750))],
+  [0, 13, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
+  [0, 13, 40, getEnemyShip, new Manager(cosFn(120, -200, 300), 'B')],
+  [13 * 20, 13, 40, getEnemyShip, new Manager(neutral(750))],
 ]);
 const sector2 = new Sector([
-  [0, 1, 40, getEnemyShip, new Manager(cosFn(200, 200, 450))],
-  [0, 1, 40, getEnemyShip, new Manager(cosFn(200, -200, 1050))],
+  [0, 13, 40, getEnemyShip, new Manager(cosFn(200, 200, 450))],
+  [0, 13, 40, getEnemyShip, new Manager(cosFn(200, -200, 1050))],
 ])
 const sector3 = new Sector([
-  [0, 1, 40, getEnemyShip, new Manager(neutral(300))],
-  [0, 1, 40, getEnemyShip, new Manager(neutral(600))],
-  [0, 1, 40, getEnemyShip, new Manager(neutral(900))],
-  [0, 1, 40, getEnemyShip, new Manager(neutral(1200))],
+  [0, 13, 40, getEnemyShip, new Manager(neutral(300))],
+  [0, 13, 40, getEnemyShip, new Manager(neutral(600))],
+  [0, 13, 40, getEnemyShip, new Manager(neutral(900))],
+  [0, 13, 40, getEnemyShip, new Manager(neutral(1200))],
 ])
 const sectors = [sector1, sector2, sector3]
 const currentSector = () => sectors[state.currentSectorNumber - 1]

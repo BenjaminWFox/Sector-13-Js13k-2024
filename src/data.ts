@@ -5,6 +5,7 @@ function makeElement<T>(el: string) { return document.createElement(el) as T };
 const makeImage = () => makeElement<HTMLImageElement>('img');
 
 type Data = {
+  sounds: Record<string, Array<number | undefined>>
   elements: {
     body: HTMLElement,
     canvas: HTMLCanvasElement
@@ -34,6 +35,10 @@ const labels = {
 
 function initData(): Data {
   return {
+    sounds: {
+      sectorClear: [1.9, , 52, .18, .19, .21, 1, 1.4, , , 418, .14, .18, .2, , , .39, .63, .24],
+      bullet: [.7, , 450, .03, .08, .17, 1, 1.1, -6, 16, , , , , , , , .85, .2, , 161],
+    },
     elements: {
       body: makeElement<HTMLElement>('body'),
       canvas: makeElement<HTMLCanvasElement>('canvas')!,
