@@ -1,17 +1,18 @@
 import {
   init,
   GameLoop,
-  initPointer,
   lerp,
   setStoreItem,
+  Sprite,
 } from 'kontra';
 import { getBullet, getLife, getScore, makeSprites } from './sprites';
-import { initScenes } from './scenes';
+import { initScenes, playGameSector } from './scenes';
 import { bulletManager, explosionManager, lifeManager } from './spriteManager';
-import { data, initCalculations, initElements } from './data';
+import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, endGame, sectors } from './sectorManager';
-import { sfx } from './music';
+import { playSong, sfx, zzfxSong } from './music';
+import { SCALE } from './constants';
 
 const { canvas } = init();
 
@@ -115,16 +116,15 @@ const loop = GameLoop({
     state.sectorTime += 1;
 
     if (Math.abs(state.playerX - state.moveToX) > 5) {
-      state.playerX = lerp(state.playerX, (state.moveToX / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .5);
+      state.playerX = lerp(state.playerX, adjustedX(state.moveToX), .5);
     }
     if (Math.abs(state.playerY - state.moveToY) > 5) {
-      state.playerY = lerp(state.playerY, (state.moveToY / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight - state.touchOffset, .5);
+      state.playerY = lerp(state.playerY, adjustedY(state.moveToY) - state.touchOffset, .5);
     }
   }
 });
 
 let startGame = () => {
-  initPointer();
   initElements(canvas, document.getElementById('body')!)
   initCalculations(canvas);
   initScenes();
@@ -151,6 +151,48 @@ document.getElementById('c')!.addEventListener('touchmove', (e) => {
     state.touchOffset = 150;
     state.moveToX = e.targetTouches[0].clientX;
     state.moveToY = e.targetTouches[0].clientY;
+  }
+})
+
+function clickedInBounds(x: number, y: number, s: Sprite, scale = SCALE) {
+  if (
+    x > s.x &&
+    x < s.x + (s.width * scale) &&
+    y > s.y &&
+    y < s.y + (s.height * scale)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+document.getElementById('c')!.addEventListener('mouseup', (e) => {
+  if (!data.scenes.title.hidden) {
+    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.start)) {
+      data.scenes.title.hide(); data.scenes.select.show();
+      playSong(zzfxSong);
+    }
+  }
+
+  if (!data.scenes.game.hidden) {
+    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.pause)) {
+      state.loop.isStopped ? state.loop.start() : state.loop.stop()
+    }
+  }
+
+  if (!data.scenes.select.hidden) {
+    for (const [index, sprite] of Object.entries(data.buttons.sectors)) {
+      if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), sprite) && sprite.opacity === 1) {
+        playGameSector(Number(index) + 1)
+      }
+    }
+  }
+
+  if (!data.scenes.end.hidden) {
+    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.restart)) {
+      window.location.reload();
+    }
   }
 })
 

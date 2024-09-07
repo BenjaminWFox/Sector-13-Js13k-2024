@@ -16,6 +16,12 @@ type Data = {
   sprites: Record<string, Sprite>;
   spriteSheets: Record<string, SpriteSheet | undefined>;
   calculations: Record<string, number>;
+  buttons: {
+    start: Sprite;
+    pause: Sprite;
+    restart: Sprite;
+    sectors: Record<string, Sprite>;
+  }
 }
 
 const labels = {
@@ -83,6 +89,12 @@ function initData(): Data {
       canvasAdjustRight: 0,
       canvasMaxHeight: 0,
       canvasMaxWidth: 0,
+    },
+    buttons: {
+      start: Sprite(),
+      pause: Sprite(),
+      restart: Sprite(),
+      sectors: {}
     }
   }
 }
@@ -101,5 +113,12 @@ function initElements(c: HTMLCanvasElement, b: HTMLElement) {
   data.elements.canvas = c;
   data.elements.body = b;
 }
+function adjustedX(x: number) {
+  return (x / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft
+}
 
-export { data, initCalculations, initElements }
+function adjustedY(y: number) {
+  return (y / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight
+}
+
+export { data, initCalculations, initElements, adjustedX, adjustedY }

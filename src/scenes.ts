@@ -4,7 +4,32 @@ import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
-import { playSong, sfx, zzfxSong } from './music';
+import { sfx } from './music';
+
+const playGameSector = (i: number) => {
+  console.log('Playing', i);
+  sfx(data.sounds.sectorClear);
+  state.currentSectorNumber = i;
+  state.currentSectorClass = currentSector();
+
+  data.buttons.pause = getBoldText(data.labels.pause, 112, 7)
+  data.scenes.game.add(
+    ...(() => [
+      // score
+      getBoldText(data.labels.score, 5, 7),
+      // pause
+      data.buttons.pause,
+      // sector
+      getBoldText(data.labels.sector, 56, 2),
+      // sector number
+      getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 }),
+      getNumbers('0000000000', 5, 18),
+    ])(),
+  );
+
+  data.scenes.game.show();
+  data.scenes.select.hide();
+}
 
 function initScenes() {
   data.scenes.title.hide();
@@ -12,74 +37,65 @@ function initScenes() {
   data.scenes.game.hide();
   data.scenes.end.hide();
 
-  data.scenes.title.add(
-    ...(() => [
-      // title
-      getBoldText(data.labels.sector, 11, 38, { scale: 32 }),
-      // number 13
-      getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
-      // start
-      getBoldText(data.labels.start, 59, 164, {
-        button: true, onDown: () => {
-          data.scenes.title.hide(); data.scenes.select.show();
-
-          playSong(zzfxSong);
-        }
-      }),
-    ])(),
-  )
+  data.buttons.start = getBoldText(data.labels.start, 59, 164),
+    data.scenes.title.add(
+      ...(() => [
+        // title
+        getBoldText(data.labels.sector, 11, 38, { scale: 32 }),
+        // number 13
+        getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
+        // start
+        data.buttons.start
+      ])(),
+    )
 
   // coordinates of each button for sector selection
   const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]];
-  const playGameSector = (i: number) => {
-    console.log('Playing', i);
-    sfx(data.sounds.sectorClear);
-    state.currentSectorNumber = i;
-    state.currentSectorClass = currentSector();
-
-    data.scenes.game.add(
-      ...(() => [
-        // score
-        getBoldText(data.labels.score, 5, 7),
-        // pause
-        getBoldText(data.labels.pause, 112, 7, { onDown: () => state.loop.isStopped ? state.loop.start() : state.loop.stop() }),
-        // sector
-        getBoldText(data.labels.sector, 56, 2),
-        // sector number
-        getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 }),
-        getNumbers('0000000000', 5, 18),
-      ])(),
-    );
-
-    data.scenes.game.show();
-    data.scenes.select.hide();
-  }
 
   function clearUnreached(s: Sprite, i: number) {
     let n = `${i + 1}`;
 
     if (i > 0 && !getStoreItem(`${n}`)) {
       s.opacity = .5;
-      s.onDown = () => { };
     }
 
     return s
   }
+
+  const textSprites = [...arr.map(([x, y], i) => clearUnreached(
+    getText(data.labels.sector, x, y), i)
+  )]
+  const numberSprites = [...arr.map(([x, y], i) => clearUnreached(
+    getNumbers((i + 1).toString(), x + 8, y + 6), i
+  ))]
+
+  textSprites.forEach((s, i) => {
+    console.log('Creating button', i)
+    data.buttons.sectors[i] = Sprite({
+      x: s.x,
+      y: s.y,
+      width: s.width,
+      height: s.height + numberSprites[i].height,
+      opacity: s.opacity,
+      id: `Button ${i}`
+    })
+  })
 
   data.scenes.select.add(
     ...(() => [
       getBoldText(data.labels.select, 33, 21),
       getBoldText(data.labels.sector, 77, 21),
       // sector select buttons
-      ...arr.map(([x, y], i) => clearUnreached(getText(data.labels.sector, x, y, { onDown: () => playGameSector(i + 1) }), i)),
-      ...arr.map(([x, y], i) => clearUnreached(getNumbers((i + 1).toString(), x + 8, y + 6, { onDown: () => playGameSector(i + 1) }), i))
+      ...textSprites,
+      ...numberSprites
     ])(),
   );
 
+  data.buttons.restart = getBoldText(data.labels.restart, 52, 151)
   data.scenes.end.add(
     ...(() => [
       getBoldText(data.labels.gameover, 5, 51, { scale: 26 }),
-      getBoldText(data.labels.restart, 52, 151, { button: true, onDown: () => { window.location.reload(); } }),
+      data.buttons.restart,
     ])()
   );
   data.scenes.end.onShow = () => {
@@ -125,4 +141,4 @@ function initScenes() {
   data.scenes.stars.add()
 }
 
-export { initScenes }
+export { initScenes, playGameSector }

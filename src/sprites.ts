@@ -218,7 +218,6 @@ type Options = {
   bold?: boolean;
   scale?: number;
   button?: boolean;
-  onDown?: () => void;
 }
 
 function getTextSprite(text: string, x: number, y: number, type: TextType, options: Options = {}) {
@@ -237,18 +236,13 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
     context.drawImage(image, charIndex * letterWidth, 0, letterWidth, letterHeight, i * letterWidth, 0, letterWidth, letterHeight);
   }
 
-  const textSprite = {
+  return Sprite({
     image: textCanvas,
     scaleX: options.scale || SCALE,
     scaleY: options.scale || SCALE,
     x: x * SCALE,
     y: y * SCALE,
-  };
-
-  return (options.button || !!options.onDown) ? Button({
-    ...textSprite,
-    onDown: options.onDown
-  }) : Sprite({ ...textSprite });
+  });
 }
 
 const getBoldText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterBold, { ...options, bold: true });
