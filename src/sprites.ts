@@ -1,5 +1,6 @@
 import {
   Button,
+  randInt,
   Sprite,
   SpriteSheet,
 } from 'kontra';
@@ -9,12 +10,13 @@ import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
+import explosionPath from './assets/images/explosion.gif';
 import { SCALE, WIDTH } from './constants';
 import { data } from './data';
 import { state } from './state';
 
 const loaded = [];
-const totalLoads = 6;
+const totalLoads = 7;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -102,6 +104,11 @@ function makeSprites(startFn: () => void) {
   data.images.numbers.onload = () => {
     checkLoaded(data.images.numbers)
   }
+
+  data.images.explosion.src = explosionPath;
+  data.images.explosion.onload = () => {
+    checkLoaded(data.images.explosion)
+  }
 }
 
 function getEnemyShip() {
@@ -124,6 +131,30 @@ function getBullet() {
     height: 30,
     color: 'red',
     dy: -20
+  })
+}
+
+function getExplosion(x: number, y: number) {
+  const r = randInt(1, 4);
+  return Sprite({
+    x,
+    y,
+    scaleX: SCALE,
+    scaleY: SCALE,
+    rotation: r === 4 ? 90 : r === 3 ? 180 : r === 2 ? 270 : 0,
+    anchor: { x: 0.5, y: 0.5 },
+    animations: SpriteSheet({
+      image: data.images.explosion,
+      frameWidth: 17,
+      frameHeight: 15,
+      animations: {
+        explode: {
+          frames: '0..2',
+          frameRate: 8,
+          loop: false
+        }
+      }
+    }).animations
   })
 }
 
@@ -221,5 +252,6 @@ const getBoldText = (text: string, x: number, y: number, options?: {}) => getTex
 const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letter, options);
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
+const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife, getScore, getExplosion };

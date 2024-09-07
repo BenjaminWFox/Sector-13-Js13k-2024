@@ -62,15 +62,18 @@ function initData(): Data {
       numbersBold: makeImage(),
       player: makeImage(),
       enemy: makeImage(),
+      explosion: makeImage(),
     },
     sprites: {
       player: Sprite(),
       enemy: Sprite(),
       life: Sprite(),
+      explosion: Sprite(),
     },
     spriteSheets: {
       player: undefined,
       enemy: undefined,
+      explosion: undefined,
     },
     calculations: {
       canvasRatioWidth: 0,

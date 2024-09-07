@@ -60,8 +60,12 @@ export class Manager {
 const enemyManager = new Manager(
   (enemy) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
 )
-const bulletManager = new Manager()
+const bulletManager = new Manager();
 
-const lifeManager = new Manager()
+const lifeManager = new Manager();
 
-export { enemyManager, bulletManager, lifeManager }
+const explosionManager = new Manager(
+  (explosion) => { explosion.animations.explode.isStopped ? explosion.opacity = 0 : explosion.opacity -= .05 }
+);
+
+export { enemyManager, bulletManager, lifeManager, explosionManager }

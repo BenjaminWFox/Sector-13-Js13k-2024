@@ -45,7 +45,8 @@ function initScenes() {
         // sector
         getBoldText(data.labels.sector, 56, 2),
         // sector number
-        getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 })
+        getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 }),
+        getNumbers('0000000000', 5, 18),
       ])(),
     );
 
@@ -92,7 +93,8 @@ function initScenes() {
         dy.push(5);
       }
       this.width = 10;
-      this.height = 10
+      this.height = 10;
+      this.opacity = randInt(25, 75) * .01;
       this.color = '#fff';
       this.x = randInt(0, WIDTH_ORIGINAL) * SCALE;
       this.y = (initial ? randInt(0, HEIGHT_ORIGINAL) : randInt(-4, 0)) * SCALE;

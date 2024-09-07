@@ -1,6 +1,6 @@
 import { collides, Sprite } from "kontra"
-import { getEnemyShip, getNumbers } from "./sprites"
-import { Manager } from "./spriteManager";
+import { getEnemyShip, getExplosion, getNumbers } from "./sprites"
+import { explosionManager, Manager } from "./spriteManager";
 import { data } from "./data";
 import { state } from "./state";
 import { SCALE } from "./constants";
@@ -42,12 +42,17 @@ export class Sector {
     if (this.completed) {
       return;
     } else if (!this.loaded) {
-      data.scenes.game.remove(data.scenes.game.objects[3]);
-      data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
-      (data.scenes.game.objects[2] as Sprite).y = 120 * SCALE;
-      (data.scenes.game.objects[2] as Sprite).dy = -15;
-      (data.scenes.game.objects[3] as Sprite).y = 130 * SCALE;
-      (data.scenes.game.objects[3] as Sprite).dy = -15;
+      // data.scenes.game.remove(data.scenes.game.objects[3]);
+      // data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
+      data.scenes.game.objects[3] = getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 });
+      // (data.scenes.game.objects[2] as Sprite).y = 120 * SCALE;
+      // (data.scenes.game.objects[2] as Sprite).dy = -15;
+      // (data.scenes.game.objects[3] as Sprite).y = 130 * SCALE;
+      // (data.scenes.game.objects[3] as Sprite).dy = -15;
+      (data.scenes.game.objects[2] as Sprite).y = 270 * SCALE;
+      (data.scenes.game.objects[2] as Sprite).dy = -40;
+      (data.scenes.game.objects[3] as Sprite).y = 280 * SCALE;
+      (data.scenes.game.objects[3] as Sprite).dy = -40;
       this.loaded = true;
     } else if (!this.started) {
       if ((data.scenes.game.objects[2] as Sprite).y < 2 * SCALE) {
@@ -76,13 +81,20 @@ export class Sector {
           if (bullet.opacity === 0) return;
 
           manager.assets.forEach(enemy => {
+            if (enemy.opacity === 0) return;
+
             if (collides(bullet, enemy)) {
               enemy.opacity = 0;
               bullet.opacity = 0;
+              state.score += 100 * state.scoreMult;
+              explosionManager.add(getExplosion(enemy.x, enemy.y));
               sfx([5, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952]);
             }
+
+            if (state.invulnerable) return;
+
             if (collides(data.sprites.player, enemy)) {
-              if (state.lives > 0 && !state.invulnerable) {
+              if (state.lives > 0) {
                 enemy.opacity = 0;
                 data.sprites.player.opacity = .5;
                 state.lives -= 1;
@@ -100,20 +112,22 @@ export class Sector {
   }
 }
 
+const spawns = 13
+
 const sector1 = new Sector([
-  [0, 13, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
-  [0, 13, 40, getEnemyShip, new Manager(cosFn(120, -200, 300), 'B')],
-  [13 * 20, 13, 40, getEnemyShip, new Manager(neutral(750))],
+  [0, spawns, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
+  [0, spawns, 40, getEnemyShip, new Manager(cosFn(120, -200, 300), 'B')],
+  // [13 * 20, 13, 40, getEnemyShip, new Manager(neutral(750))],
 ]);
 const sector2 = new Sector([
-  [0, 13, 40, getEnemyShip, new Manager(cosFn(200, 200, 450))],
-  [0, 13, 40, getEnemyShip, new Manager(cosFn(200, -200, 1050))],
+  [0, spawns, 40, getEnemyShip, new Manager(cosFn(200, 200, 450))],
+  [0, spawns, 40, getEnemyShip, new Manager(cosFn(200, -200, 1050))],
 ])
 const sector3 = new Sector([
-  [0, 13, 40, getEnemyShip, new Manager(neutral(300))],
-  [0, 13, 40, getEnemyShip, new Manager(neutral(600))],
-  [0, 13, 40, getEnemyShip, new Manager(neutral(900))],
-  [0, 13, 40, getEnemyShip, new Manager(neutral(1200))],
+  [0, spawns, 40, getEnemyShip, new Manager(neutral(300))],
+  [0, spawns, 40, getEnemyShip, new Manager(neutral(600))],
+  [0, spawns, 40, getEnemyShip, new Manager(neutral(900))],
+  [0, spawns, 40, getEnemyShip, new Manager(neutral(1200))],
 ])
 const sectors = [sector1, sector2, sector3]
 const currentSector = () => sectors[state.currentSectorNumber - 1]

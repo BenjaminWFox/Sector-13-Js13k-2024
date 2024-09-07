@@ -15,8 +15,6 @@ const zzfxP = (...t) => {
   return e
 }
 
-export const sfx = (s: Array<number | undefined>) => zzfx(...s);
-
 // zzfxG() - the sound generator -- returns an array of sample data
 const zzfxG = (q = 1, k = .05, c = 220, e = 0, t = 0, u = .1, r = 0, F = 1, v = 0, z = 0, w = 0, A = 0, l = 0, B = 0, x = 0, G = 0, d = 0, y = 1, m = 0, C = 0) => {
   let b = 2 * Math.PI, H = v *= 500 * b / zzfxR ** 2, I = (0 < x ? 1 : -1) * b / 4, D = c *= (1 + 2 * k * Math.random() - k) * b / zzfxR, Z = [], g = 0, E = 0, a = 0, n = 1, J = 0, K = 0, f = 0, p, h;
@@ -90,6 +88,9 @@ export const renderSong = song => new Promise(resolve => requestIdleCallback(() 
 let currentNode = null;
 let currentSong = null;
 let currentBuffer = null;
+
+export const sfx = (s: Array<number | undefined>) => zzfx(...s);
+
 export const playSong = async song => {
   if (currentNode) {
     stopSong();

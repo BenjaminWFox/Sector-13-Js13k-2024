@@ -5,9 +5,9 @@ import {
   lerp,
   setStoreItem,
 } from 'kontra';
-import { getBullet, getLife, makeSprites } from './sprites';
+import { getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes } from './scenes';
-import { bulletManager, lifeManager } from './spriteManager';
+import { bulletManager, explosionManager, lifeManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, sectors } from './sectorManager';
@@ -38,6 +38,8 @@ function nextSector() {
   }
 }
 
+let lastScoreUpdate = 0;
+
 const loop = GameLoop({
   update: function () {
     data.scenes.stars.update();
@@ -48,6 +50,7 @@ const loop = GameLoop({
     if (!data.scenes.game.hidden) {
       bulletManager.update();
       lifeManager.update();
+      explosionManager.update();
       state.currentSectorClass.update();
     }
 
@@ -63,6 +66,11 @@ const loop = GameLoop({
     data.sprites.player.render();
 
     if (!data.scenes.game.hidden) {
+      if (lastScoreUpdate !== state.score) {
+        console.log('UPDATE SCORE');
+        data.scenes.game.objects[4] = getScore();
+        lastScoreUpdate = state.score;
+      }
 
       if (state.totalTime % 20 === 0) {
         bulletManager.add(getBullet())
@@ -96,6 +104,7 @@ const loop = GameLoop({
 
       bulletManager.render();
       lifeManager.render();
+      explosionManager.render();
     }
 
     data.scenes.title.render();
