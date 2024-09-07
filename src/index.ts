@@ -7,7 +7,7 @@ import {
 } from 'kontra';
 import { getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes, playGameSector } from './scenes';
-import { bulletManager, explosionManager, lifeManager } from './spriteManager';
+import { bulletManager, explosionManager, lifeManager, powerupManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, endGame, sectors } from './sectorManager';
@@ -52,6 +52,7 @@ const loop = GameLoop({
       lifeManager.update();
       explosionManager.update();
       state.currentSectorClass.update();
+      powerupManager.update();
     }
 
     data.scenes.title.update();
@@ -71,8 +72,24 @@ const loop = GameLoop({
         lastScoreUpdate = state.score;
       }
 
-      if (state.totalTime % 20 === 0 && !state.gameOver) {
-        bulletManager.add(getBullet())
+      // Weaponry
+      if (!state.gameOver) {
+        // Singe shot (possible double ROF)
+        if (state.totalTime % (state.powerups.doublerate ? 10 : 20) === 0 && !state.gameOver) {
+          bulletManager.add(getBullet())
+        }
+
+        // Tri-shot (regular ROF)
+        if (state.totalTime % 20 === 0 && state.powerups.trishot) {
+          bulletManager.add(getBullet({ dx: -10 }))
+          bulletManager.add(getBullet({ dx: 10 }))
+        }
+
+        // Wing-show (regular ROF)
+        if (state.totalTime % 20 === 0 && state.powerups.wingshot) {
+          bulletManager.add(getBullet({ x: state.playerX - 100, y: state.playerY }))
+          bulletManager.add(getBullet({ x: state.playerX + 100, y: state.playerY }))
+        }
       }
 
       if (state.lives >= 0) {
@@ -105,6 +122,7 @@ const loop = GameLoop({
       bulletManager.render();
       lifeManager.render();
       explosionManager.render();
+      powerupManager.render();
     }
 
     data.scenes.title.render();
@@ -171,7 +189,7 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   if (!data.scenes.title.hidden) {
     if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.start)) {
       data.scenes.title.hide(); data.scenes.select.show();
-      playSong(zzfxSong);
+      // playSong(zzfxSong);
     }
   }
 

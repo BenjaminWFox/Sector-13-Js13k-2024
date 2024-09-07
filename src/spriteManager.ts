@@ -1,6 +1,7 @@
-import { Sprite } from 'kontra'
+import { collides, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
+import { state } from './state';
 
 // Enemy Spawn Numbers
 const xPosition = 300;
@@ -62,8 +63,22 @@ const bulletManager = new Manager();
 
 const lifeManager = new Manager();
 
+const powerupManager = new Manager(
+  (powerup) => {
+    if (collides(data.sprites.player, powerup)) {
+      powerup.opacity = 0;
+      const kind = (powerup.currentAnimation.name as keyof typeof state.powerups);
+      if (state.powerups[kind]) {
+        // Something about score multiplyer?
+      } else {
+        state.powerups[kind] = true;
+      }
+    }
+  }
+);
+
 const explosionManager = new Manager(
   (explosion) => { explosion.animations.explode.isStopped ? explosion.opacity = 0 : explosion.opacity -= .05 }
 );
 
-export { enemyManager, bulletManager, lifeManager, explosionManager }
+export { enemyManager, bulletManager, lifeManager, explosionManager, powerupManager }

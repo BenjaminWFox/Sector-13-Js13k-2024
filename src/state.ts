@@ -23,9 +23,24 @@ function initState() {
     invulnerable: false,
     invulnableralFlash: .1,
     gameOver: false,
+    powerups: {
+      wingshot: false,
+      trishot: false,
+      doublerate: false,
+      bomb: false,
+      wingbomb: false,
+      shield: false,
+      extralife: false,
+    },
   }
 }
 
 const state = { ...initState() }
 
-export { state }
+function resetPowerups() {
+  Object.keys(state.powerups).forEach((key) => {
+    state.powerups[key as keyof typeof state.powerups] = false;
+  })
+}
+
+export { state, resetPowerups }

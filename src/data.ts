@@ -21,7 +21,8 @@ type Data = {
     pause: Sprite;
     restart: Sprite;
     sectors: Record<string, Sprite>;
-  }
+  },
+  powerupprobability: Record<string, Array<number>>
 }
 
 const labels = {
@@ -70,17 +71,20 @@ function initData(): Data {
       player: makeImage(),
       enemy: makeImage(),
       explosion: makeImage(),
+      powerups: makeImage(),
     },
     sprites: {
       player: Sprite(),
       enemy: Sprite(),
       life: Sprite(),
       explosion: Sprite(),
+      powerup: Sprite(),
     },
     spriteSheets: {
       player: undefined,
       enemy: undefined,
       explosion: undefined,
+      powerups: undefined,
     },
     calculations: {
       canvasRatioWidth: 0,
@@ -95,6 +99,15 @@ function initData(): Data {
       pause: Sprite(),
       restart: Sprite(),
       sectors: {}
+    },
+    powerupprobability: {
+      wingshot: [1, 50],
+      trishot: [51, 100],
+      doublerate: [101, 150],
+      bomb: [151, 200],
+      wingbomb: [201, 250],
+      shield: [251, 300],
+      extralife: [301, 350],
     }
   }
 }

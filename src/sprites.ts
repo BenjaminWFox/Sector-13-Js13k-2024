@@ -1,5 +1,4 @@
 import {
-  Button,
   randInt,
   Sprite,
   SpriteSheet,
@@ -11,13 +10,14 @@ import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import explosionPath from './assets/images/explosion.gif';
+import powerupPath from './assets/images/powerups.gif';
 import { SCALE, WIDTH } from './constants';
 import { data } from './data';
 import { state } from './state';
 import { sfx } from './music';
 
 const loaded = [];
-const totalLoads = 7;
+const totalLoads = 8;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -86,6 +86,47 @@ function makeSprites(startFn: () => void) {
     checkLoaded(data.images.enemy);
   }
 
+  data.images.powerups.src = powerupPath;
+  data.images.powerups.onload = function () {
+    data.spriteSheets.powerups = SpriteSheet({
+      image: data.images.powerups,
+      frameWidth: 7,
+      frameHeight: 7,
+      animations: {
+        wingshot: {
+          frames: '0',
+          frameRate: 0,
+        },
+        trishot: {
+          frames: '1',
+          frameRate: 0
+        },
+        doublerate: {
+          frames: '2',
+          frameRate: 0
+        },
+        bomb: {
+          frames: '3',
+          frameRate: 0
+        },
+        wingbomb: {
+          frames: '4',
+          frameRate: 0
+        },
+        shield: {
+          frames: '5',
+          frameRate: 0
+        },
+        extralife: {
+          frames: '6',
+          frameRate: 0
+        },
+      }
+    });
+
+    checkLoaded(data.images.powerup);
+  }
+
   data.images.lettersBold.src = lettersBoldPath;
   data.images.lettersBold.onload = () => {
     checkLoaded(data.images.lettersBold)
@@ -124,16 +165,40 @@ function getEnemyShip() {
   });
 }
 
-function getBullet() {
+function getBullet(override = {}) {
   sfx(data.sounds.bullet);
+
   return Sprite({
     x: state.playerX - 10,
     y: state.playerY - 100,
     width: 10,
     height: 30,
     color: 'red',
-    dy: -20
+    dy: -20,
+    ...override
   })
+}
+
+function getPowerup(x: number, y: number): Sprite | undefined {
+  const prob = randInt(1, 1000);
+  for (const [key, value] of Object.entries(data.powerupprobability)) {
+    if (prob >= value[0] && prob <= value[1]) {
+      const s = Sprite({
+        x,
+        y,
+        scaleX: SCALE,
+        scaleY: SCALE,
+        width: 7,
+        height: 7,
+        dy: randInt(2, 9),
+        animations: data.spriteSheets.powerups?.animations
+      });
+      s.playAnimation(key);
+      return s;
+    }
+  }
+
+  return;
 }
 
 function getExplosion(x: number, y: number) {
@@ -251,4 +316,4 @@ const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => get
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife, getScore, getExplosion };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife, getScore, getExplosion, getPowerup };

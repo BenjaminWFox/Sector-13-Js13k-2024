@@ -7,7 +7,6 @@ import { currentSector } from './sectorManager';
 import { sfx } from './music';
 
 const playGameSector = (i: number) => {
-  console.log('Playing', i);
   sfx(data.sounds.sectorClear);
   state.currentSectorNumber = i;
   state.currentSectorClass = currentSector();
@@ -70,7 +69,6 @@ function initScenes() {
   ))]
 
   textSprites.forEach((s, i) => {
-    console.log('Creating button', i)
     data.buttons.sectors[i] = Sprite({
       x: s.x,
       y: s.y,

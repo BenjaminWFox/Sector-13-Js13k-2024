@@ -1,8 +1,8 @@
 import { collides, Sprite } from "kontra"
-import { getEnemyShip, getExplosion, getNumbers } from "./sprites"
-import { explosionManager, Manager } from "./spriteManager";
+import { getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
+import { explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data } from "./data";
-import { state } from "./state";
+import { resetPowerups, state } from "./state";
 import { SCALE } from "./constants";
 
 const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
@@ -83,11 +83,15 @@ export class Sector {
               bullet.opacity = 0;
               state.score += 100 * state.scoreMult;
               explosionManager.add(getExplosion(enemy.x, enemy.y));
+              const powerup = getPowerup(enemy.x, enemy.y);
+              if (powerup) powerupManager.add(powerup);
             }
 
             if (state.invulnerable) return;
 
             if (collides(data.sprites.player, enemy)) {
+              resetPowerups();
+
               if (state.lives >= 0) {
                 explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
                 enemy.opacity = 0;
@@ -115,7 +119,7 @@ export class Sector {
   }
 }
 
-const spawns = 1
+const spawns = 13
 
 const sector1 = new Sector([
   [0, spawns, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
