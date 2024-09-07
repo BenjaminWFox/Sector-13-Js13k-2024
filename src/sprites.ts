@@ -14,6 +14,7 @@ import explosionPath from './assets/images/explosion.gif';
 import { SCALE, WIDTH } from './constants';
 import { data } from './data';
 import { state } from './state';
+import { sfx } from './music';
 
 const loaded = [];
 const totalLoads = 7;
@@ -124,6 +125,7 @@ function getEnemyShip() {
 }
 
 function getBullet() {
+  sfx(data.sounds.bullet);
   return Sprite({
     x: state.playerX - 10,
     y: state.playerY - 100,
@@ -135,6 +137,7 @@ function getBullet() {
 }
 
 function getExplosion(x: number, y: number) {
+  sfx(data.sounds.explode);
   const r = randInt(1, 4);
   return Sprite({
     x,

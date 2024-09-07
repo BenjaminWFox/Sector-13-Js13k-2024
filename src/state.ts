@@ -16,12 +16,13 @@ function initState() {
     totalTime: 0,
     sectorTime: 0,
     touchOffset: 0,
-    lives: 3,
+    lives: 1,
     score: 0,
     scoreMult: 1,
-    invulnerableAt: 0,
+    invulnerableAt: -500,
     invulnerable: false,
     invulnableralFlash: .1,
+    gameOver: false,
   }
 }
 

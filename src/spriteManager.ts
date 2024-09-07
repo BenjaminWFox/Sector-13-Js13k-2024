@@ -1,7 +1,6 @@
 import { Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { sfx } from './music';
 
 // Enemy Spawn Numbers
 const xPosition = 300;
@@ -23,7 +22,6 @@ export class Manager {
   add(sprite: Sprite) {
     this.assets.push(sprite);
     this.spawned += 1;
-    sfx(data.sounds.bullet);
   }
   pop() {
     this.assets.pop();

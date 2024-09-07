@@ -10,7 +10,7 @@ import { initScenes } from './scenes';
 import { bulletManager, explosionManager, lifeManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
-import { currentSector, sectors } from './sectorManager';
+import { currentSector, endGame, sectors } from './sectorManager';
 import { sfx } from './music';
 
 const { canvas } = init();
@@ -27,14 +27,11 @@ function nextSector() {
   sfx(data.sounds.sectorClear);
 
   if (state.currentSectorNumber > sectors.length) {
-    data.scenes.game.hide();
-    data.scenes.end.show();
+    endGame();
   } else {
     setStoreItem(`${state.currentSectorNumber}`, 1)
 
     state.currentSectorClass = currentSector();
-
-    console.log('Next sector')
   }
 }
 
@@ -43,8 +40,10 @@ let lastScoreUpdate = 0;
 const loop = GameLoop({
   update: function () {
     data.scenes.stars.update();
-    data.sprites.player.x = state.playerX;
-    data.sprites.player.y = state.playerY;
+    if (!state.gameOver) {
+      data.sprites.player.x = state.playerX;
+      data.sprites.player.y = state.playerY;
+    }
     data.sprites.player.update();
 
     if (!data.scenes.game.hidden) {
@@ -67,12 +66,11 @@ const loop = GameLoop({
 
     if (!data.scenes.game.hidden) {
       if (lastScoreUpdate !== state.score) {
-        console.log('UPDATE SCORE');
         data.scenes.game.objects[4] = getScore();
         lastScoreUpdate = state.score;
       }
 
-      if (state.totalTime % 20 === 0) {
+      if (state.totalTime % 20 === 0 && !state.gameOver) {
         bulletManager.add(getBullet())
       }
 
@@ -85,12 +83,13 @@ const loop = GameLoop({
         }
       }
       if (state.invulnerable) {
-        if (state.totalTime - state.invulnerableAt > 100) {
+        // Loop runs 60fps, so 2.25 seconds invulnerable:
+        if (state.totalTime - state.invulnerableAt > 135) {
           state.invulnerable = false;
+          data.sprites.player.opacity = 1;
         } else {
           data.sprites.player.opacity += state.invulnableralFlash;
-
-          if (data.sprites.player.opacity === 1 || data.sprites.player.opacity < .5) {
+          if (data.sprites.player.opacity >= 1 || data.sprites.player.opacity < .5) {
             state.invulnableralFlash *= -1
           }
         }
@@ -98,7 +97,7 @@ const loop = GameLoop({
 
       state.currentSectorClass.render(state.sectorTime, bulletManager.assets);
 
-      if (state.currentSectorClass.completed) {
+      if (state.currentSectorClass.completed && !state.gameOver) {
         nextSector();
       }
 

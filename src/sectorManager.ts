@@ -4,7 +4,6 @@ import { explosionManager, Manager } from "./spriteManager";
 import { data } from "./data";
 import { state } from "./state";
 import { SCALE } from "./constants";
-import { sfx } from "./music";
 
 const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
   (enemy: Sprite) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
@@ -88,22 +87,30 @@ export class Sector {
               bullet.opacity = 0;
               state.score += 100 * state.scoreMult;
               explosionManager.add(getExplosion(enemy.x, enemy.y));
-              sfx([5, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952]);
             }
 
             if (state.invulnerable) return;
 
             if (collides(data.sprites.player, enemy)) {
-              if (state.lives > 0) {
+              if (state.lives >= 0) {
+                explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
                 enemy.opacity = 0;
-                data.sprites.player.opacity = .5;
-                state.lives -= 1;
-                state.invulnerableAt = state.totalTime;
+                data.sprites.player.opacity = 0;
+                state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
                 state.invulnerable = true;
+
+                if (state.lives === 0) {
+                  endGame();
+                } else {
+                  setTimeout(() => {
+                    data.sprites.player.opacity = .75
+                  }, 250)
+                }
+
+                state.lives -= 1;
               }
             }
           })
-
         })
 
         manager.render();
@@ -112,7 +119,7 @@ export class Sector {
   }
 }
 
-const spawns = 13
+const spawns = 1
 
 const sector1 = new Sector([
   [0, spawns, 40, getEnemyShip, new Manager(cosFn(120, 200, 1200), 'A')],
@@ -132,4 +139,12 @@ const sector3 = new Sector([
 const sectors = [sector1, sector2, sector3]
 const currentSector = () => sectors[state.currentSectorNumber - 1]
 
-export { currentSector, sectors, sector1, sector2, sector3 }
+function endGame() {
+  state.gameOver = true;
+  setTimeout(() => {
+    data.scenes.game.hide();
+    data.scenes.end.show();
+  }, 2000)
+}
+
+export { currentSector, sectors, sector1, sector2, sector3, endGame }

@@ -4,7 +4,7 @@ import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
-import { playSong, zzfxSong } from './music';
+// import { playSong, zzfxSong } from './music';
 
 function initScenes() {
   data.scenes.title.hide();
@@ -23,7 +23,7 @@ function initScenes() {
         button: true, onDown: () => {
           data.scenes.title.hide(); data.scenes.select.show();
 
-          playSong(zzfxSong);
+          // playSong(zzfxSong);
         }
       }),
     ])(),
@@ -78,11 +78,17 @@ function initScenes() {
   data.scenes.end.add(
     ...(() => [
       getBoldText(data.labels.gameover, 5, 51, { scale: 26 }),
-      getBoldText(data.labels.winner, 32, 101, { scale: 22 }),
-      // getBoldText(data.labels.loser, 40, 101, { scale: 22 }),
       getBoldText(data.labels.restart, 52, 151, { button: true, onDown: () => { window.location.reload(); } }),
     ])()
   );
+  data.scenes.end.onShow = () => {
+    if (state.lives < 0) {
+      data.scenes.end.add(getBoldText(data.labels.loser, 40, 101, { scale: 22 }))
+    } else {
+      data.scenes.end.add(getBoldText(data.labels.winner, 32, 101, { scale: 22 }))
+    }
+    data.sprites.player.dy = -30;
+  }
 
   class Star extends SpriteClass {
     constructor(properties: any = {}) {
