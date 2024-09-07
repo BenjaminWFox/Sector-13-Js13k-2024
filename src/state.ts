@@ -10,9 +10,12 @@ function initState() {
     loop: undefined as unknown as GameLoop,
     paused: false,
     playerX: 75 * SCALE,
+    moveToX: 75 * SCALE,
     playerY: 234 * SCALE,
+    moveToY: 234 * SCALE,
     totalTime: 0,
     sectorTime: 0,
+    touchOffset: 0,
   }
 }
 

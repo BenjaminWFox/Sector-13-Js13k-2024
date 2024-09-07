@@ -83,6 +83,13 @@ const loop = GameLoop({
 
     state.totalTime += 1;
     state.sectorTime += 1;
+
+    if (Math.abs(state.playerX - state.moveToX) > 5) {
+      state.playerX = lerp(state.playerX, (state.moveToX / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .5);
+    }
+    if (Math.abs(state.playerY - state.moveToY) > 5) {
+      state.playerY = lerp(state.playerY, (state.moveToY / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight - state.touchOffset, .5);
+    }
   }
 });
 
@@ -103,14 +110,16 @@ let startGame = () => {
 // Mouse Handler
 document.getElementById('c')!.addEventListener('mousemove', (e) => {
   if (!data.scenes.game.hidden && state.shipEngaged) {
-    state.playerX = lerp(state.playerX, (e.x / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .05);
-    state.playerY = lerp(state.playerY, (e.y / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight, .05);
+    state.touchOffset = 150;
+    state.moveToX = e.x;
+    state.moveToY = e.y;
   }
 });
 document.getElementById('c')!.addEventListener('touchmove', (e) => {
   if (!data.scenes.game.hidden && state.shipEngaged) {
-    state.playerX = lerp(state.playerX, (e.targetTouches[0].clientX / data.calculations.canvasRatioWidth) - data.calculations.canvasAdjustLeft, .5);
-    state.playerY = lerp(state.playerY, (e.targetTouches[0].clientY / data.calculations.canvasRatioHeight) - data.calculations.canvasAdjustRight - 150, .5);
+    state.touchOffset = 150;
+    state.moveToX = e.targetTouches[0].clientX;
+    state.moveToY = e.targetTouches[0].clientY;
   }
 })
 

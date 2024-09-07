@@ -5,7 +5,7 @@ import {
 } from 'kontra';
 import playerShipPath from './assets/images/player-ship.gif';
 import enemyShipPath from './assets/images/enemy-ship.gif';
-import lettersBoldPath from './assets/images/lettersBold.gif';
+import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
@@ -122,7 +122,7 @@ const textTypes: Record<string, TextType> = {
     image: data.images.lettersBold,
     letterWidth: 7,
     letterHeight: 8,
-    characters: 'ACELOPRSTU',
+    characters: 'ACEGILMNOPRSTUVW',
   },
   letter: {
     image: data.images.letters,
