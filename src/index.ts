@@ -5,9 +5,9 @@ import {
   lerp,
   setStoreItem,
 } from 'kontra';
-import { getBullet, makeSprites } from './sprites';
+import { getBullet, getLife, makeSprites } from './sprites';
 import { initScenes } from './scenes';
-import { bulletManager } from './spriteManager';
+import { bulletManager, lifeManager } from './spriteManager';
 import { data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, sectors } from './sectorManager';
@@ -47,6 +47,7 @@ const loop = GameLoop({
 
     if (!data.scenes.game.hidden) {
       bulletManager.update();
+      lifeManager.update();
       state.currentSectorClass.update();
     }
 
@@ -67,13 +68,34 @@ const loop = GameLoop({
         bulletManager.add(getBullet())
       }
 
+      if (state.lives >= 0) {
+        while (lifeManager.assets.length < state.lives) {
+          lifeManager.add(getLife(lifeManager.assets.length))
+        }
+        while (lifeManager.assets.length > state.lives) {
+          lifeManager.pop();
+        }
+      }
+      if (state.invulnerable) {
+        if (state.totalTime - state.invulnerableAt > 100) {
+          state.invulnerable = false;
+        } else {
+          data.sprites.player.opacity += state.invulnableralFlash;
+
+          if (data.sprites.player.opacity === 1 || data.sprites.player.opacity < .5) {
+            state.invulnableralFlash *= -1
+          }
+        }
+      }
+
       state.currentSectorClass.render(state.sectorTime, bulletManager.assets);
-      // console.log('Done render');
+
       if (state.currentSectorClass.completed) {
         nextSector();
       }
-      bulletManager.render();
 
+      bulletManager.render();
+      lifeManager.render();
     }
 
     data.scenes.title.render();
@@ -99,8 +121,9 @@ let startGame = () => {
   initCalculations(canvas);
   initScenes();
   state.loop = loop;
-  data.scenes.title.show();
+  // data.scenes.end.show();
   // data.scenes.game.show();
+  data.scenes.title.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 

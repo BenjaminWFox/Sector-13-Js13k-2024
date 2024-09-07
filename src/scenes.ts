@@ -76,7 +76,10 @@ function initScenes() {
 
   data.scenes.end.add(
     ...(() => [
-      getBoldText(data.labels.restart, 59, 164, { button: true, onDown: () => { window.location.reload(); } }),
+      getBoldText(data.labels.gameover, 5, 51, { scale: 26 }),
+      getBoldText(data.labels.winner, 32, 101, { scale: 22 }),
+      // getBoldText(data.labels.loser, 40, 101, { scale: 22 }),
+      getBoldText(data.labels.restart, 52, 151, { button: true, onDown: () => { window.location.reload(); } }),
     ])()
   );
 

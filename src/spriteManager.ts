@@ -25,6 +25,10 @@ export class Manager {
     this.spawned += 1;
     sfx(data.sounds.bullet);
   }
+  pop() {
+    this.assets.pop();
+  }
+
   get total() {
     return this.assets.length;
   }
@@ -58,4 +62,6 @@ const enemyManager = new Manager(
 )
 const bulletManager = new Manager()
 
-export { enemyManager, bulletManager }
+const lifeManager = new Manager()
+
+export { enemyManager, bulletManager, lifeManager }

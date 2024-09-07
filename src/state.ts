@@ -16,6 +16,10 @@ function initState() {
     totalTime: 0,
     sectorTime: 0,
     touchOffset: 0,
+    lives: 3,
+    invulnerableAt: 0,
+    invulnerable: false,
+    invulnableralFlash: .1,
   }
 }
 

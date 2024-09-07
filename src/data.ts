@@ -31,6 +31,9 @@ const labels = {
   stars: 'stars',
   end: 'end',
   restart: 'restart',
+  gameover: 'gameover',
+  winner: 'winner',
+  loser: 'loser',
 }
 
 function initData(): Data {
@@ -63,6 +66,7 @@ function initData(): Data {
     sprites: {
       player: Sprite(),
       enemy: Sprite(),
+      life: Sprite(),
     },
     spriteSheets: {
       player: undefined,

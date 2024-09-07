@@ -82,8 +82,13 @@ export class Sector {
               sfx([5, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952]);
             }
             if (collides(data.sprites.player, enemy)) {
-              enemy.opacity = 0;
-              data.sprites.player.opacity = 0;
+              if (state.lives > 0 && !state.invulnerable) {
+                enemy.opacity = 0;
+                data.sprites.player.opacity = .5;
+                state.lives -= 1;
+                state.invulnerableAt = state.totalTime;
+                state.invulnerable = true;
+              }
             }
           })
 

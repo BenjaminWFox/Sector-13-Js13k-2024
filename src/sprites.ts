@@ -9,7 +9,7 @@ import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
-import { SCALE } from './constants';
+import { SCALE, WIDTH } from './constants';
 import { data } from './data';
 import { state } from './state';
 
@@ -25,9 +25,9 @@ function makeSprites(startFn: () => void) {
     }
   }
 
-  const playerShipImg = new Image();
-  playerShipImg.src = playerShipPath;
-  playerShipImg.onload = function () {
+  // const playerShipImg = new Image();
+  data.images.player.src = playerShipPath;
+  data.images.player.onload = function () {
     data.sprites.player = Sprite({
       x: 1100,
       y: 1000,
@@ -35,7 +35,7 @@ function makeSprites(startFn: () => void) {
       scaleY: 10,
       anchor: { x: 0.5, y: 0.5 },
       animations: SpriteSheet({
-        image: playerShipImg,
+        image: data.images.player,
         frameWidth: 17,
         frameHeight: 15,
         animations: {
@@ -47,7 +47,23 @@ function makeSprites(startFn: () => void) {
       }).animations
     });
 
-    checkLoaded(playerShipImg);
+    data.sprites.life = Sprite({
+      scaleX: 6,
+      scaleY: 6,
+      animations: SpriteSheet({
+        image: data.images.player,
+        frameWidth: 17,
+        frameHeight: 15,
+        animations: {
+          engine: {
+            frames: '0',
+            frameRate: 0
+          }
+        }
+      }).animations
+    })
+
+    checkLoaded(data.images.player);
   }
 
   data.images.enemy.src = enemyShipPath;
@@ -108,6 +124,27 @@ function getBullet() {
     height: 30,
     color: 'red',
     dy: -20
+  })
+}
+
+function getLife(x: number) {
+  return Sprite({
+    y: 210,
+    x: WIDTH - ((18 * 6) * (1 + x)),
+    scaleX: 6,
+    scaleY: 6,
+    anchor: { x: 0.5, y: 0.5 },
+    animations: SpriteSheet({
+      image: data.images.player,
+      frameWidth: 17,
+      frameHeight: 15,
+      animations: {
+        engine: {
+          frames: '0',
+          frameRate: 0
+        }
+      }
+    }).animations
   })
 }
 
@@ -185,4 +222,4 @@ const getText = (text: string, x: number, y: number, options?: {}) => getTextSpr
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife };
