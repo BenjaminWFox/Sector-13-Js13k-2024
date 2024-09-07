@@ -44,10 +44,6 @@ export class Sector {
       // data.scenes.game.remove(data.scenes.game.objects[3]);
       // data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
       data.scenes.game.objects[3] = getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 });
-      // (data.scenes.game.objects[2] as Sprite).y = 120 * SCALE;
-      // (data.scenes.game.objects[2] as Sprite).dy = -15;
-      // (data.scenes.game.objects[3] as Sprite).y = 130 * SCALE;
-      // (data.scenes.game.objects[3] as Sprite).dy = -15;
       (data.scenes.game.objects[2] as Sprite).y = 270 * SCALE;
       (data.scenes.game.objects[2] as Sprite).dy = -40;
       (data.scenes.game.objects[3] as Sprite).y = 280 * SCALE;
