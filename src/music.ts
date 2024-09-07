@@ -51,7 +51,7 @@ const zzfxV = .3
 const zzfxR = 44100
 
 // zzfxX - the common audio context
-const zzfxX = new (top.AudioContext || webkitAudioContext);
+const zzfxX = new (AudioContext || webkitAudioContext);
 
 //! ZzFXM (v2.0.3) | (C) Keith Clark | MIT | https://github.com/keithclark/ZzFXM
 export const zzfxM = (n, f, t, e = 125) => {

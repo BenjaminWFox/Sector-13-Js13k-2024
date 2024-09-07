@@ -4,7 +4,7 @@ import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
-// import { playSong, zzfxSong } from './music';
+import { playSong, sfx, zzfxSong } from './music';
 
 function initScenes() {
   data.scenes.title.hide();
@@ -23,7 +23,7 @@ function initScenes() {
         button: true, onDown: () => {
           data.scenes.title.hide(); data.scenes.select.show();
 
-          // playSong(zzfxSong);
+          playSong(zzfxSong);
         }
       }),
     ])(),
@@ -33,6 +33,7 @@ function initScenes() {
   const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]];
   const playGameSector = (i: number) => {
     console.log('Playing', i);
+    sfx(data.sounds.sectorClear);
     state.currentSectorNumber = i;
     state.currentSectorClass = currentSector();
 
