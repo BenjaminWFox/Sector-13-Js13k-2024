@@ -92,7 +92,11 @@ export class Sector {
             if (collides(data.sprites.player, enemy)) {
               resetPowerups();
 
-              if (state.lives >= 0) {
+              if (state.playershield > 0) {
+                explosionManager.add(getExplosion(enemy.x, enemy.y));
+                enemy.opacity = 0;
+                state.playershield -= 1;
+              } else if (state.lives >= 0) {
                 explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
                 enemy.opacity = 0;
                 data.sprites.player.opacity = 0;
