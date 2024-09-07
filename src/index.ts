@@ -8,7 +8,9 @@ import {
 init();
 
 initPointer()
-let button: Button = Button({
+let button: Button;
+
+button = Button({
   // sprite properties
   x: 5,
   y: 5,
@@ -23,10 +25,10 @@ let button: Button = Button({
   },
 
   onDown() {
-    console.log('Button Down')
+    button.color = 'red'
   },
   onUp() {
-    console.log('Button Up')
+    button.color = 'blue'
   }
 });
 
