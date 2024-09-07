@@ -193,7 +193,7 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   if (!data.scenes.title.hidden) {
     if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.start)) {
       data.scenes.title.hide(); data.scenes.select.show();
-      // playSong(zzfxSong);
+      playSong(zzfxSong);
     }
   }
 
