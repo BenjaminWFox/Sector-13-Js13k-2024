@@ -41,6 +41,7 @@ const labels = {
   gameover: 'gameover',
   winner: 'winner',
   loser: 'loser',
+  extralife: 'extralife',
 }
 
 function initData(): Data {
@@ -72,6 +73,7 @@ function initData(): Data {
       enemy: makeImage(),
       explosion: makeImage(),
       powerups: makeImage(),
+      shield: makeImage(),
     },
     sprites: {
       player: Sprite(),
@@ -85,6 +87,7 @@ function initData(): Data {
       enemy: undefined,
       explosion: undefined,
       powerups: undefined,
+      shield: undefined,
     },
     calculations: {
       canvasRatioWidth: 0,
@@ -106,7 +109,7 @@ function initData(): Data {
       doublerate: [101, 150],
       bomb: [151, 200],
       wingbomb: [201, 250],
-      shield: [251, 300],
+      shield: [51, 800],
       extralife: [301, 350],
     }
   }

@@ -11,13 +11,14 @@ import lettersPath from './assets/images/letters.gif';
 import numbersPath from './assets/images/numbers.gif';
 import explosionPath from './assets/images/explosion.gif';
 import powerupPath from './assets/images/powerups.gif';
+import shieldPath from './assets/images/shield.png';
 import { SCALE, WIDTH } from './constants';
 import { data } from './data';
 import { state } from './state';
 import { sfx } from './music';
 
 const loaded = [];
-const totalLoads = 8;
+const totalLoads = 9;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -84,6 +85,35 @@ function makeSprites(startFn: () => void) {
     });
 
     checkLoaded(data.images.enemy);
+  }
+
+  data.images.shield.src = shieldPath;
+  data.images.shield.onload = function () {
+    data.spriteSheets.shield = SpriteSheet({
+      image: data.images.shield,
+      frameWidth: 21,
+      frameHeight: 21,
+      animations: {
+        4: {
+          frames: '0',
+          frameRate: 0
+        },
+        3: {
+          frames: '1',
+          frameRate: 0
+        },
+        2: {
+          frames: '2',
+          frameRate: 0
+        },
+        1: {
+          frames: '3',
+          frameRate: 0
+        }
+      }
+    });
+
+    checkLoaded(data.images.shield);
   }
 
   data.images.powerups.src = powerupPath;
@@ -247,6 +277,17 @@ function getLife(x: number) {
   })
 }
 
+function getShield(x: number, y: number) {
+  return Sprite({
+    x,
+    y,
+    scaleX: SCALE,
+    scaleY: SCALE,
+    anchor: { x: 0.5, y: 0.5 },
+    animations: data.spriteSheets.shield?.animations
+  })
+}
+
 type TextType = {
   image: HTMLImageElement,
   letterWidth: number,
@@ -316,4 +357,4 @@ const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => get
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getBullet, getLife, getScore, getExplosion, getPowerup };
+export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getShield, getBullet, getLife, getScore, getExplosion, getPowerup };

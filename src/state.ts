@@ -30,8 +30,8 @@ function initState() {
       bomb: false,
       wingbomb: false,
       shield: false,
-      extralife: false,
     },
+    playershield: 0
   }
 }
 

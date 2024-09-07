@@ -7,7 +7,7 @@ import {
 } from 'kontra';
 import { getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes, playGameSector } from './scenes';
-import { bulletManager, explosionManager, lifeManager, powerupManager } from './spriteManager';
+import { bulletManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { state } from './state'
 import { currentSector, endGame, sectors } from './sectorManager';
@@ -53,6 +53,7 @@ const loop = GameLoop({
       explosionManager.update();
       state.currentSectorClass.update();
       powerupManager.update();
+      playerShieldManager.update();
     }
 
     data.scenes.title.update();
@@ -90,6 +91,8 @@ const loop = GameLoop({
           bulletManager.add(getBullet({ x: state.playerX - 100, y: state.playerY }))
           bulletManager.add(getBullet({ x: state.playerX + 100, y: state.playerY }))
         }
+
+
       }
 
       if (state.lives >= 0) {
@@ -123,6 +126,7 @@ const loop = GameLoop({
       lifeManager.render();
       explosionManager.render();
       powerupManager.render();
+      playerShieldManager.render();
     }
 
     data.scenes.title.render();
