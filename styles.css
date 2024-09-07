@@ -1,12 +1,5 @@
 #c {
-    width: 100vw;
-    outline: 0;
-    image-rendering: pixelated; /* You definitely want this if you are doing pixel art */
     background-color: #000;
-    -webkit-box-shadow:0px 0px 0px 1px #fff;
-    -moz-box-shadow:0px 0px 0px 1px #fff;
-    box-shadow:0px 0px 0px 1px #fff;
-    /* cursor: none; */
 }
 
 /* Get rid of any margins, set background black, use flexbox to center */
@@ -21,16 +14,3 @@ html, body {
 }
 
 /* Input whatever aspect ratio you use here */
-@media (min-aspect-ratio: 9/16) {
-    #c {
-        height: 100vh;
-        width: auto;
-    }
-}
-
-@media (orientation: portrait)
-    and (max-device-width: 800px) {
-    #c {
-        height: calc(100vh - 75px);
-    }
-}
