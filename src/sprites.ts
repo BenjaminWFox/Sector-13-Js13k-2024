@@ -209,6 +209,19 @@ function getBullet(override = {}) {
   })
 }
 
+function getBomb(override = {}) {
+  sfx(data.sounds.bullet);
+
+  return Sprite({
+    x: state.playerX - 10,
+    y: state.playerY - 100,
+    width: 30,
+    height: 30,
+    color: 'purple',
+    ...override
+  })
+}
+
 function getPowerup(x: number, y: number): Sprite | undefined {
   const prob = randInt(1, 1000);
   for (const [key, value] of Object.entries(data.powerupprobability)) {
@@ -357,4 +370,18 @@ const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => get
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);
 
-export { makeSprites, getEnemyShip, getBoldText, getText, getBoldNumbers, getNumbers, getShield, getBullet, getLife, getScore, getExplosion, getPowerup };
+export {
+  makeSprites,
+  getEnemyShip,
+  getBoldText,
+  getText,
+  getBoldNumbers,
+  getNumbers,
+  getShield,
+  getBullet,
+  getLife,
+  getScore,
+  getExplosion,
+  getPowerup,
+  getBomb
+};

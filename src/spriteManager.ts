@@ -1,22 +1,24 @@
-import { collides, Sprite } from 'kontra'
+import { state } from './state';
+import { collides, lerp, randInt, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { state } from './state';
-import { getShield } from './sprites';
+import { getExplosion, getShield } from './sprites';
+import { currentSector } from './sectorManager';
 
 // Enemy Spawn Numbers
 const xPosition = 300;
 const waveXSpread = -200;
 const shipXSpeed = 120; // Higher = Slower
 
+type UpdaterFn = (sprite: Sprite) => void;
 export class Manager {
   assets: Array<Sprite> = [];
   spawned = 0;
   id: string | undefined;
   completed: boolean = false;
-  updater: (sprite: Sprite) => void = () => { };
+  updater: UpdaterFn = () => { };
 
-  constructor(updaterFn?: (sprite: Sprite) => void, id?: string) {
+  constructor(updaterFn?: UpdaterFn, id?: string) {
     if (updaterFn) this.updater = updaterFn.bind(this);
     this.id = id;
   }
@@ -100,10 +102,54 @@ const playerShieldManager = new Manager(
   }
 )
 
+class BombManager extends Manager {
+  targets: WeakMap<Sprite, Sprite> = new WeakMap();
+
+  constructor() {
+    super()
+  }
+
+  update() {
+    this.assets.forEach((bomb) => {
+      if (bomb.opacity === 0) return;
+
+      let target = this.targets.get(bomb)
+
+      if (target && target.opacity === 0) {
+        explosionManager.add(getExplosion(bomb.x, bomb.y));
+        bomb.opacity = 0;
+        return;
+      }
+
+      if (!target) {
+        const enemy = currentSector().getRandomEnemy()
+
+        if (!enemy) {
+          explosionManager.add(getExplosion(bomb.x, bomb.y));
+          bomb.opacity = 0;
+          return;
+        }
+
+        this.targets.set(bomb, enemy)
+
+        target = enemy
+      }
+      let lerpNum = state.playerY < target.y ? .075 : .025;
+
+      bomb.x = lerp(bomb.x, target.x, lerpNum);
+      bomb.y = lerp(bomb.y, target.y, lerpNum);
+
+      bomb.update();
+    })
+  }
+}
+
+const bombManager = new BombManager();
+
 
 
 const explosionManager = new Manager(
   (explosion) => { explosion.animations.explode.isStopped ? explosion.opacity = 0 : explosion.opacity -= .05 }
 );
 
-export { enemyManager, bulletManager, lifeManager, explosionManager, powerupManager, playerShieldManager }
+export { enemyManager, bulletManager, lifeManager, explosionManager, powerupManager, playerShieldManager, bombManager }

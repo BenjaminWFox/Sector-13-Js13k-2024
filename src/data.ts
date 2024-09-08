@@ -104,13 +104,13 @@ function initData(): Data {
       sectors: {}
     },
     powerupprobability: {
-      wingshot: [1, 50],
-      trishot: [51, 100],
-      doublerate: [101, 150],
-      bomb: [151, 200],
-      wingbomb: [201, 250],
-      shield: [51, 800],
-      extralife: [301, 350],
+      wingshot: [1, 10],
+      trishot: [100, 110],
+      doublerate: [200, 210],
+      bomb: [0, 500],
+      wingbomb: [501, 999],
+      shield: [500, 510],
+      extralife: [600, 605],
     }
   }
 }

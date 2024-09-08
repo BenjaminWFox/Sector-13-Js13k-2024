@@ -5,11 +5,11 @@ import {
   setStoreItem,
   Sprite,
 } from 'kontra';
-import { getBullet, getLife, getScore, makeSprites } from './sprites';
-import { initScenes, playGameSector } from './scenes';
-import { bulletManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
-import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { state } from './state'
+import { getBomb, getBullet, getLife, getScore, makeSprites } from './sprites';
+import { initScenes, playGameSector } from './scenes';
+import { bombManager, bulletManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
+import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, sectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
 import { SCALE } from './constants';
@@ -48,12 +48,16 @@ const loop = GameLoop({
     data.sprites.player.update();
 
     if (!data.scenes.game.hidden) {
+      /**
+       * GAME UPDATES
+       */
       bulletManager.update();
       lifeManager.update();
       explosionManager.update();
       state.currentSectorClass.update();
       powerupManager.update();
       playerShieldManager.update();
+      bombManager.update()
     }
 
     data.scenes.title.update();
@@ -76,23 +80,32 @@ const loop = GameLoop({
       // Weaponry
       if (!state.gameOver) {
         // Singe shot (possible double ROF)
-        if (state.totalTime % (state.powerups.doublerate ? 10 : 20) === 0 && !state.gameOver) {
+        if (!state.gameOver && state.totalTime % (state.powerups.doublerate ? 10 : 20) === 0) {
           bulletManager.add(getBullet())
         }
 
         // Tri-shot (regular ROF)
-        if (state.totalTime % 20 === 0 && state.powerups.trishot) {
+        if (state.powerups.trishot && state.totalTime % 20 === 0) {
           bulletManager.add(getBullet({ dx: -10 }))
           bulletManager.add(getBullet({ dx: 10 }))
         }
 
         // Wing-show (regular ROF)
-        if (state.totalTime % 20 === 0 && state.powerups.wingshot) {
-          bulletManager.add(getBullet({ x: state.playerX - 100, y: state.playerY }))
-          bulletManager.add(getBullet({ x: state.playerX + 100, y: state.playerY }))
+        if (state.powerups.wingshot && state.totalTime % 20 === 0) {
+          bulletManager.add(getBullet({ x: state.playerX - 90, y: state.playerY }))
+          bulletManager.add(getBullet({ x: state.playerX + 90, y: state.playerY }))
         }
 
+        // Single-Bomb
+        if (state.powerups.bomb && state.totalTime % 60 === 0) {
+          bombManager.add(getBomb())
+        }
 
+        // Single-Bomb
+        if (state.powerups.wingbomb && state.totalTime % 60 === 0) {
+          bombManager.add(getBomb({ x: state.playerX - 80, y: state.playerY }))
+          bombManager.add(getBomb({ x: state.playerX + 80, y: state.playerY }))
+        }
       }
 
       if (state.lives >= 0) {
@@ -116,17 +129,20 @@ const loop = GameLoop({
         }
       }
 
-      state.currentSectorClass.render(state.sectorTime, bulletManager.assets);
+      state.currentSectorClass.render(state.sectorTime);
 
       if (state.currentSectorClass.completed && !state.gameOver) {
         nextSector();
       }
-
+      /**
+       * GAME RENDERS
+       */
       bulletManager.render();
       lifeManager.render();
       explosionManager.render();
       powerupManager.render();
       playerShieldManager.render();
+      bombManager.render();
     }
 
     data.scenes.title.render();
@@ -193,7 +209,7 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   if (!data.scenes.title.hidden) {
     if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.start)) {
       data.scenes.title.hide(); data.scenes.select.show();
-      playSong(zzfxSong);
+      // playSong(zzfxSong);
     }
   }
 

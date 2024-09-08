@@ -1,8 +1,8 @@
-import { collides, Sprite } from "kontra"
+import { collides, randInt, Sprite } from "kontra"
 import { getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
-import { explosionManager, Manager, powerupManager } from "./spriteManager";
-import { data } from "./data";
 import { resetPowerups, state } from "./state";
+import { bombManager, bulletManager, explosionManager, Manager, powerupManager } from "./spriteManager";
+import { data } from "./data";
 import { SCALE } from "./constants";
 
 const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
@@ -27,6 +27,15 @@ export class Sector {
     this.data = sector;
   }
 
+  getRandomEnemy() {
+    const enemies: Array<Sprite> = []
+    this.data.forEach(([, , , , manager]) => {
+      manager.assets.forEach(asset => enemies.push(asset))
+    })
+
+    return enemies[randInt(0, enemies.length - 1)]
+  }
+
   reset() {
     this.loaded = this.started = this.completed = false;
   }
@@ -37,7 +46,7 @@ export class Sector {
     });
   }
 
-  render(t: number, bullets: Array<Sprite>) {
+  render(t: number) {
     if (this.completed) {
       return;
     } else if (!this.loaded) {
@@ -72,15 +81,13 @@ export class Sector {
           return;
         }
 
-        bullets.forEach(bullet => {
-          if (bullet.opacity === 0) return;
-
+        function checkProjectileAgainstEnemies(projectile: Sprite) {
           manager.assets.forEach(enemy => {
             if (enemy.opacity === 0) return;
 
-            if (collides(bullet, enemy)) {
+            if (collides(projectile, enemy)) {
               enemy.opacity = 0;
-              bullet.opacity = 0;
+              projectile.opacity = 0;
               state.score += 100 * state.scoreMult;
               explosionManager.add(getExplosion(enemy.x, enemy.y));
               const powerup = getPowerup(enemy.x, enemy.y);
@@ -88,34 +95,53 @@ export class Sector {
             }
 
             if (state.invulnerable) return;
-
-            if (collides(data.sprites.player, enemy)) {
-              resetPowerups();
-
-              if (state.playershield > 0) {
-                explosionManager.add(getExplosion(enemy.x, enemy.y));
-                enemy.opacity = 0;
-                state.playershield -= 1;
-              } else if (state.lives >= 0) {
-                explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
-                enemy.opacity = 0;
-                data.sprites.player.opacity = 0;
-                state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
-                state.invulnerable = true;
-
-                if (state.lives === 0) {
-                  endGame();
-                } else {
-                  setTimeout(() => {
-                    data.sprites.player.opacity = .75
-                  }, 250)
-                }
-
-                state.lives -= 1;
-              }
-            }
           })
+        }
+
+        // Check enemies against bullets
+        bulletManager.assets.forEach(bullet => {
+          if (bullet.opacity === 0) return;
+
+          checkProjectileAgainstEnemies(bullet);
         })
+
+        // Check enemies against bombs
+        bombManager.assets.forEach(bomb => {
+          if (bomb.opacity === 0) return;
+
+          checkProjectileAgainstEnemies(bomb);
+        })
+
+        // Check enemies against player
+        manager.assets.forEach(enemy => {
+          if (collides(data.sprites.player, enemy)) {
+            resetPowerups();
+
+            if (state.playershield > 0) {
+              explosionManager.add(getExplosion(enemy.x, enemy.y));
+              enemy.opacity = 0;
+              state.playershield -= 1;
+            } else if (state.lives >= 0) {
+              explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
+              enemy.opacity = 0;
+              data.sprites.player.opacity = 0;
+              state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
+              state.invulnerable = true;
+
+              if (state.lives === 0) {
+                endGame();
+              } else {
+                setTimeout(() => {
+                  data.sprites.player.opacity = .75
+                }, 250)
+              }
+
+              state.lives -= 1;
+            }
+          }
+        })
+
+
 
         manager.render();
       }
