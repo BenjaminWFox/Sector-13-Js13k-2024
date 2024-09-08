@@ -10,15 +10,15 @@ const xPosition = 300;
 const waveXSpread = -200;
 const shipXSpeed = 120; // Higher = Slower
 
-type UpdaterFn = (sprite: Sprite) => void;
+type UpdaterFn<T extends Sprite | Enemy> = (sprite: T) => void;
 export class Manager<T extends Sprite | Enemy> {
   assets: Array<T> = [];
   spawned = 0;
   id: string | undefined;
   completed: boolean = false;
-  updater: UpdaterFn = () => { };
+  updater: UpdaterFn<T> = () => { };
 
-  constructor(updaterFn?: UpdaterFn, id?: string) {
+  constructor(updaterFn?: UpdaterFn<T>, id?: string) {
     if (updaterFn) this.updater = updaterFn.bind(this);
     this.id = id;
   }
@@ -149,7 +149,10 @@ class BombManager extends Manager<Sprite> {
   }
 }
 
-const enemyLaserManager = new Manager();
+// const enemyLaserManager = new Manager();
+// const enemyBulletManager = new Manager();
+// const enemyBombManager = new Manager();
+const enemyProjectileManager = new Manager();
 
 const bombManager = new BombManager();
 
@@ -167,5 +170,5 @@ export {
   powerupManager,
   playerShieldManager,
   bombManager,
-  enemyLaserManager
+  enemyProjectileManager
 }

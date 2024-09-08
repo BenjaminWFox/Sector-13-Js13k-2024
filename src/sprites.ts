@@ -7,9 +7,12 @@ import {
 import playerShipPath from './assets/images/player-ship.gif';
 import enemyBlueOnePath from './assets/images/enemy-ship.gif';
 import enemyGreenPath from './assets/images/enemyGreen.gif';
-import enemyYellowPath from './assets/images/enemyYellow.gif';
+import enemyYellowOnePath from './assets/images/enemyYellowOne.gif';
+import enemyYellowTwoPath from './assets/images/enemyYellowTwo.gif';
 import enemyPinkPath from './assets/images/enemyPink.gif';
 import enemyBlueTwoPath from './assets/images/enemyBlueTwo.gif';
+import enemyBulletPath from './assets/images/enemyBullet.gif';
+import enemyBombPath from './assets/images/enemyBomb.gif';
 import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
@@ -21,9 +24,10 @@ import { SCALE, WIDTH } from './constants';
 import { data, Enemies } from './data';
 import { state } from './state';
 import { sfx } from './music';
+import { enemyProjectileManager } from './spriteManager';
 
 const loaded = [];
-const totalLoads = 13;
+const totalLoads = 16;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -34,7 +38,6 @@ function makeSprites(startFn: () => void) {
     }
   }
 
-  // const playerShipImg = new Image();
   data.images.player.src = playerShipPath;
   data.images.player.onload = function () {
     data.sprites.player = Sprite({
@@ -109,10 +112,10 @@ function makeSprites(startFn: () => void) {
     checkLoaded(data.images[Enemies.enemyGreen]);
   }
 
-  data.images[Enemies.enemyYellow].src = enemyYellowPath;
-  data.images[Enemies.enemyYellow].onload = function () {
-    data.spriteSheets[Enemies.enemyYellow] = SpriteSheet({
-      image: data.images[Enemies.enemyYellow],
+  data.images[Enemies.enemyYellowOne].src = enemyYellowOnePath;
+  data.images[Enemies.enemyYellowOne].onload = function () {
+    data.spriteSheets[Enemies.enemyYellowOne] = SpriteSheet({
+      image: data.images[Enemies.enemyYellowOne],
       frameWidth: 11,
       frameHeight: 11,
       animations: {
@@ -123,7 +126,24 @@ function makeSprites(startFn: () => void) {
       }
     });
 
-    checkLoaded(data.images[Enemies.enemyYellow]);
+    checkLoaded(data.images[Enemies.enemyYellowTwo]);
+  }
+
+  data.images[Enemies.enemyYellowTwo].src = enemyYellowTwoPath;
+  data.images[Enemies.enemyYellowTwo].onload = function () {
+    data.spriteSheets[Enemies.enemyYellowTwo] = SpriteSheet({
+      image: data.images[Enemies.enemyYellowTwo],
+      frameWidth: 11,
+      frameHeight: 11,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 10
+        }
+      }
+    });
+
+    checkLoaded(data.images[Enemies.enemyYellowTwo]);
   }
 
   data.images[Enemies.enemyPink].src = enemyPinkPath;
@@ -158,6 +178,40 @@ function makeSprites(startFn: () => void) {
     });
 
     checkLoaded(data.images[Enemies.enemyBlueTwo]);
+  }
+
+  data.images.enemyBullet.src = enemyBulletPath;
+  data.images.enemyBullet.onload = function () {
+    data.spriteSheets.enemyBullet = SpriteSheet({
+      image: data.images.enemyBullet,
+      frameWidth: 3,
+      frameHeight: 3,
+      animations: {
+        engine: {
+          frames: '0',
+          frameRate: 0
+        }
+      }
+    });
+
+    checkLoaded(data.images.enemyBullet);
+  }
+
+  data.images.enemyBomb.src = enemyBombPath;
+  data.images.enemyBomb.onload = function () {
+    data.spriteSheets.enemyBomb = SpriteSheet({
+      image: data.images.enemyBomb,
+      frameWidth: 5,
+      frameHeight: 5,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 4
+        }
+      }
+    });
+
+    checkLoaded(data.images.enemyBomb);
   }
 
   data.images.shield.src = shieldPath;
@@ -257,17 +311,27 @@ function makeSprites(startFn: () => void) {
 }
 
 export class Enemy extends SpriteClass {
+  initialized = false;
+  startTime = 0;
   shield?: Sprite = undefined;
   shieldIntegrity: number = 0;
+  type: Enemies;
+  odx: number = 0;
+  ody: number = 0;
 
   constructor(properties: any) {
     super(properties);
     this.type = properties.type;
+    this.startTime = state.totalTime;
 
     if (this.type === Enemies.enemyGreen) {
       this.shield = getShield(this.x, this.y)
       this.shieldIntegrity = 4;
     }
+  }
+
+  get lifespan() {
+    return state.totalTime - this.startTime;
   }
 
   hit() {
@@ -307,9 +371,30 @@ export class Enemy extends SpriteClass {
         this.shield?.playAnimation('4')
         break;
     }
+
     if (this.shield) {
       this.shield.x = this.x;
       this.shield.y = this.y;
+    }
+
+    switch (this.type) {
+      case Enemies.enemyBlueOne:
+        if (randInt(0, 500) === 0) {
+          enemyProjectileManager.add(getEnemyLaser(this.x, this.y, { dy: this.dy + 10 }))
+        }
+        break;
+      case Enemies.enemyYellowOne:
+        if (this.lifespan % 120 === 0) {
+          enemyProjectileManager.add(getEnemyBomb(this.x, this.y, { dy: this.ody, dx: this.odx }))
+        }
+        break;
+      case Enemies.enemyBlueTwo:
+        if (randInt(0, 500) === 0) {
+          enemyProjectileManager.add(getEnemyBullet(this.x, this.y, { dy: this.dy + 10 }))
+        }
+        break;
+      default:
+        break;
     }
 
     super.draw();
@@ -363,6 +448,28 @@ function getEnemyLaser(x: number, y: number, override = {}) {
     width: 10,
     height: 100,
     color: '#ff00ff',
+    ...override
+  })
+}
+
+function getEnemyBomb(x: number, y: number, override = {}) {
+  return Sprite({
+    x,
+    y,
+    scaleX: 10,
+    scaleY: 10,
+    animations: data.spriteSheets.enemyBomb?.animations,
+    ...override
+  })
+}
+
+function getEnemyBullet(x: number, y: number, override = {}) {
+  return Sprite({
+    x,
+    y,
+    scaleX: 10,
+    scaleY: 10,
+    animations: data.spriteSheets.enemyBullet?.animations,
     ...override
   })
 }
@@ -532,5 +639,7 @@ export {
   getExplosion,
   getPowerup,
   getBomb,
-  getEnemyLaser
+  getEnemyLaser,
+  getEnemyBomb,
+  getEnemyBullet
 };

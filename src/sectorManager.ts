@@ -1,13 +1,9 @@
-import { collides, randInt, Sprite } from "kontra"
+import { collides, degToRad, randInt, Sprite } from "kontra"
 import { Enemy, getEnemyLaser, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
-import { bombManager, bulletManager, enemyLaserManager, explosionManager, Manager, powerupManager } from "./spriteManager";
+import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
 import { SCALE } from "./constants";
-
-const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
-  (enemy: Sprite) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
-const neutral = (startX: number, dy?: number) => (enemy: Sprite) => { enemy.x = startX; enemy.dy = dy || 8; }
 
 type spawnStartTime = number;
 type totalSpawns = number;
@@ -47,13 +43,13 @@ function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Spri
 }
 
 function managePlayerHit(enemy: Sprite) {
-  resetPowerups();
-
   if (state.playershield > 0) {
     explosionManager.add(getExplosion(enemy.x, enemy.y));
     enemy.opacity = 0;
     state.playershield -= 1;
   } else if (state.lives >= 0) {
+    resetPowerups();
+
     explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
     enemy.opacity = 0;
     data.sprites.player.opacity = 0;
@@ -158,9 +154,9 @@ export class Sector {
         if (!state.invulnerable) {
           // Check enemies against player
           manager.assets.forEach(enemy => {
-            if (randInt(0, 500) === 0) {
-              enemyLaserManager.add(getEnemyLaser(enemy.x, enemy.y, { dy: enemy.dy + 10 }))
-            }
+            // if (randInt(0, 500) === 0) {
+            //   enemyProjectileManager.add(getEnemyLaser(enemy.x, enemy.y, { dy: enemy.dy + 10 }))
+            // }
 
             if (collides(data.sprites.player, enemy.shield ? enemy.shield : enemy)) {
               managePlayerHit(enemy);
@@ -169,7 +165,7 @@ export class Sector {
 
           // Check player against enemy projectiles
           if (!state.invulnerable) {
-            enemyLaserManager.assets.forEach(laser => {
+            enemyProjectileManager.assets.forEach(laser => {
               if (laser.opacity === 0) return;
 
               checkProjectileAgainstPlayer(laser);
@@ -183,24 +179,63 @@ export class Sector {
   }
 }
 
+const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number) =>
+  (enemy: Enemy) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
+const neutral = (startX: number, dy?: number) => (enemy: Enemy) => { enemy.x = startX; enemy.dy = dy || 8; }
+const yellowOne = (startX: number, startY: number, dx: number, dy: number, rotation: 90 | 180 | 270 | 0) => (enemy: Enemy) => {
+  if (!enemy.initialized) {
+    enemy.x = startX * SCALE;
+    enemy.y = startY * SCALE;
+    enemy.dx = dx;
+    enemy.dy = dy;
+    enemy.odx = dx;
+    enemy.ody = dy;
+    enemy.rotation = degToRad(rotation);
+    enemy.initialized = true;
+  }
+
+  if (dx < 0) {
+    if (enemy.x < (startX - 8) * SCALE) enemy.dx = 0;
+  } else {
+    if (enemy.x > (startX + 8) * SCALE) enemy.dx = 0;
+  }
+
+  if (dy < 0) {
+    if (enemy.y < (startY - 8) * SCALE) enemy.dy = 0;
+  } else {
+    if (enemy.y > (startY + 8) * SCALE) enemy.dy = 0;
+  }
+
+  if (enemy.lifespan > 360) {
+    enemy.dx = dx * -1;
+    enemy.dy = dy * -1;
+  }
+}
+
 const spawns = 13
 
 const sector1 = new Sector([
   // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 200, 1200))],
   // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -200, 300))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyGreen, new Manager(cosFn(120, -200, 300))],
+  // [0, spawns, 40, getEnemyShip, Enemies.enemyGreen, new Manager(cosFn(120, -200, 300))],
 ]);
 const sector2 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, -200, 1050))],
 ]);
 const sector3 = new Sector([
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 266, -4, -4, 0))],
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 266, 4, -4, 90))],
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180))],
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270))],
+])
+const sector4 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(600, 18))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(900, 18))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
 ])
-const sectors = [sector1, sector2, sector3]
+const sectors = [sector1, sector2, sector3, sector4]
 const currentSector = () => sectors[state.currentSectorNumber - 1]
 
 function endGame() {

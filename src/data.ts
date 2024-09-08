@@ -49,7 +49,8 @@ export enum Enemies {
   enemyBlueTwo = 'blueTwo',
   enemyGreen = 'green',
   enemyPink = 'pink',
-  enemyYellow = 'yellow',
+  enemyYellowOne = 'yellowOne',
+  enemyYellowTwo = 'yellowTwo',
 }
 
 function initData(): Data {
@@ -81,10 +82,13 @@ function initData(): Data {
       explosion: makeImage(),
       powerups: makeImage(),
       shield: makeImage(),
+      enemyBullet: makeImage(),
+      enemyBomb: makeImage(),
       [Enemies.enemyBlueOne]: makeImage(),
       [Enemies.enemyBlueTwo]: makeImage(),
       [Enemies.enemyGreen]: makeImage(),
-      [Enemies.enemyYellow]: makeImage(),
+      [Enemies.enemyYellowOne]: makeImage(),
+      [Enemies.enemyYellowTwo]: makeImage(),
       [Enemies.enemyPink]: makeImage(),
     },
     sprites: {
@@ -99,10 +103,13 @@ function initData(): Data {
       explosion: undefined,
       powerups: undefined,
       shield: undefined,
+      enemyBullet: undefined,
+      enemyBomb: undefined,
       [Enemies.enemyBlueOne]: undefined,
       [Enemies.enemyBlueTwo]: undefined,
       [Enemies.enemyGreen]: undefined,
-      [Enemies.enemyYellow]: undefined,
+      [Enemies.enemyYellowOne]: undefined,
+      [Enemies.enemyYellowTwo]: undefined,
       [Enemies.enemyPink]: undefined,
     },
     calculations: {
@@ -120,12 +127,12 @@ function initData(): Data {
       sectors: {}
     },
     powerupprobability: {
-      wingshot: [1, 10],
-      trishot: [100, 110],
-      doublerate: [200, 210],
-      bomb: [300, 310],
-      wingbomb: [400, 410],
-      shield: [500, 510],
+      wingshot: [1, 15],
+      trishot: [100, 115],
+      doublerate: [200, 215],
+      bomb: [300, 315],
+      wingbomb: [400, 415],
+      shield: [500, 820],
       extralife: [600, 605],
     }
   }
