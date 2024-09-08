@@ -1,7 +1,10 @@
 import {
+  angleToTarget,
+  movePoint,
   randInt,
   Sprite,
   SpriteClass,
+  SpriteConstructor,
   SpriteSheet,
 } from 'kontra';
 import playerShipPath from './assets/images/player-ship.gif';
@@ -390,7 +393,7 @@ export class Enemy extends SpriteClass {
         break;
       case Enemies.enemyBlueTwo:
         if (randInt(0, 500) === 0) {
-          enemyProjectileManager.add(getEnemyBullet(this.x, this.y, { dy: this.dy + 10 }))
+          enemyProjectileManager.add(getEnemyBullet(this.x, this.y))
         }
         break;
       default:
@@ -463,8 +466,24 @@ function getEnemyBomb(x: number, y: number, override = {}) {
   })
 }
 
+export class EnemyBullet extends SpriteClass {
+  angle: number;
+
+  constructor(properties: any) {
+    super(properties)
+    this.angle = angleToTarget(this, data.sprites.player)
+  }
+
+  draw() {
+    const { x, y } = movePoint(this, this.angle, 20);
+    this.x = x;
+    this.y = y;
+    super.draw()
+  }
+}
+
 function getEnemyBullet(x: number, y: number, override = {}) {
-  return Sprite({
+  return new EnemyBullet({
     x,
     y,
     scaleX: 10,

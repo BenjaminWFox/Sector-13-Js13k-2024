@@ -3,7 +3,7 @@ import { Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./spr
 import { resetPowerups, state } from "./state";
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
-import { SCALE } from "./constants";
+import { SCALE, WIDTH } from "./constants";
 
 type spawnStartTime = number;
 type totalSpawns = number;
@@ -207,12 +207,25 @@ const yellowOne = (startX: number, startY: number, dx: number, dy: number, rotat
     enemy.dy = dy * -1;
   }
 }
+const zigZag = (startX: number, dx: number, dy: number) => (enemy: Enemy) => {
+  if (!enemy.initialized) {
+    enemy.x = startX * SCALE;
+    enemy.y = 0;
+    enemy.dx = dx;
+    enemy.dy = dy;
+    enemy.initialized = true;
+  }
+  if ((enemy.x + (enemy.width * SCALE)) > WIDTH || (enemy.x - (enemy.width * SCALE)) < 0) {
+    enemy.dx *= -1;
+  }
+}
 
 const spawns = 13
 
 const sector1 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 200, 1200))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -200, 300))],
+  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 12, 2))],
+  // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 200, 1200))],
+  // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -200, 300))],
 ]);
 const sector2 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450))],

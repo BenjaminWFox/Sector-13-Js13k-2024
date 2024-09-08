@@ -2,7 +2,7 @@ import { state } from './state';
 import { collides, lerp, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { Enemy, getExplosion, getShield } from './sprites';
+import { Enemy, EnemyBullet, getExplosion, getShield } from './sprites';
 import { currentSector } from './sectorManager';
 
 // Enemy Spawn Numbers
@@ -10,7 +10,7 @@ const xPosition = 300;
 const waveXSpread = -200;
 const shipXSpeed = 120; // Higher = Slower
 
-type UpdaterFn<T extends Sprite | Enemy> = (sprite: T) => void;
+type UpdaterFn<T extends Sprite | Enemy | EnemyBullet> = (sprite: T) => void;
 export class Manager<T extends Sprite | Enemy> {
   assets: Array<T> = [];
   spawned = 0;
@@ -153,6 +153,9 @@ class BombManager extends Manager<Sprite> {
 // const enemyBulletManager = new Manager();
 // const enemyBombManager = new Manager();
 const enemyProjectileManager = new Manager();
+const enemyBulletManager = new Manager<EnemyBullet>((bullet: EnemyBullet) => {
+
+})
 
 const bombManager = new BombManager();
 
@@ -170,5 +173,6 @@ export {
   powerupManager,
   playerShieldManager,
   bombManager,
-  enemyProjectileManager
+  enemyProjectileManager,
+  enemyBulletManager,
 }
