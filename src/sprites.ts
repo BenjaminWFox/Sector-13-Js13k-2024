@@ -271,7 +271,11 @@ export class Enemy extends SpriteClass {
   }
 
   hit() {
-
+    if (this.shield) {
+      this.shieldIntegrity -= 1;
+    } else {
+      this.opacity = 0;
+    }
   }
 
   update() {
