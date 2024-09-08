@@ -18,6 +18,7 @@ html, body {
     align-items: center;
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 /* Input whatever aspect ratio you use here */

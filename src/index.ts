@@ -130,8 +130,6 @@ const loop = GameLoop({
             state.invulnableralFlash *= -1
           }
         }
-      } else if (state.gameOver && data.sprites.player.opacity !== 0) {
-        data.sprites.player.opacity = 0;
       }
 
       state.currentSectorClass.render(state.sectorTime);
