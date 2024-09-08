@@ -274,12 +274,12 @@ const sector7 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450, 8))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, -200, 1050, 8))],
 ])
-const sector8 = new Sector([]);
-const sector9 = new Sector([]);
-const sector10 = new Sector([]);
-const sector11 = new Sector([]);
-const sector12 = new Sector([]);
-const sector13 = new Sector([]);
+// const sector8 = new Sector([]);
+// const sector9 = new Sector([]);
+// const sector10 = new Sector([]);
+// const sector11 = new Sector([]);
+// const sector12 = new Sector([]);
+// const sector13 = new Sector([]);
 const sectors = [sector1, sector2, sector3, sector4, sector5, sector6, sector7]
 const currentSector = () => sectors[state.currentSectorNumber - 1]
 

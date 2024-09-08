@@ -44,7 +44,9 @@ export class Manager<T extends Sprite | Enemy> {
     for (const asset of this.assets) {
       if (
         asset.y - asset.height * SCALE > data.calculations.canvasMaxHeight ||
-        asset.y + asset.height * SCALE < 0
+        asset.y + asset.height * SCALE < 0 ||
+        asset.x + asset.width * SCALE < 0 ||
+        asset.x - asset.width * SCALE > data.calculations.canvasMaxWidth
       ) {
         asset.opacity = 0;
       }

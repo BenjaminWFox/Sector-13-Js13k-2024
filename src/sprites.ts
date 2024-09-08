@@ -18,6 +18,7 @@ import enemyBombPath from './assets/images/enemyBomb.gif';
 import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
+import lettersFullPath from './assets/images/lettersFull.gif';
 import numbersPath from './assets/images/numbers.gif';
 import explosionPath from './assets/images/explosion.gif';
 import powerupPath from './assets/images/powerups.gif';
@@ -29,7 +30,7 @@ import { sfx } from './music';
 import { enemyProjectileManager } from './spriteManager';
 
 const loaded = [];
-const totalLoads = 16;
+const totalLoads = 17;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -294,6 +295,11 @@ function makeSprites(startFn: () => void) {
   data.images.letters.src = lettersPath;
   data.images.letters.onload = () => {
     checkLoaded(data.images.letters)
+  }
+
+  data.images.lettersFull.src = lettersFullPath;
+  data.images.lettersFull.onload = () => {
+    checkLoaded(data.images.lettersFull)
   }
 
   data.images.numbersBold.src = numbersBoldPath;
@@ -591,6 +597,12 @@ const textTypes: Record<string, TextType> = {
     letterHeight: 5,
     characters: 'ceorst',
   },
+  letterFull: {
+    image: data.images.lettersFull,
+    letterWidth: 4,
+    letterHeight: 5,
+    characters: 'abcdefghijklmnopqrstuvwxyz',
+  },
   numberBold: {
     image: data.images.numbersBold,
     letterWidth: 7,
@@ -637,7 +649,7 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
 }
 
 const getBoldText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterBold, { ...options, bold: true });
-const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letter, options);
+const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterFull, options);
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
 const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);

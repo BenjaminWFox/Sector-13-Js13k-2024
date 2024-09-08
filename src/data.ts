@@ -75,6 +75,7 @@ function initData(): Data {
     labels,
     images: {
       letters: makeImage(),
+      lettersFull: makeImage(),
       lettersBold: makeImage(),
       numbers: makeImage(),
       numbersBold: makeImage(),
