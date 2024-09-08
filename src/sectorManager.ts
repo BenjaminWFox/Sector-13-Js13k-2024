@@ -1,5 +1,5 @@
 import { collides, degToRad, randInt, Sprite } from "kontra"
-import { Enemy, getEnemyLaser, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
+import { Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
@@ -154,10 +154,6 @@ export class Sector {
         if (!state.invulnerable) {
           // Check enemies against player
           manager.assets.forEach(enemy => {
-            // if (randInt(0, 500) === 0) {
-            //   enemyProjectileManager.add(getEnemyLaser(enemy.x, enemy.y, { dy: enemy.dy + 10 }))
-            // }
-
             if (collides(data.sprites.player, enemy.shield ? enemy.shield : enemy)) {
               managePlayerHit(enemy);
             }
@@ -215,9 +211,8 @@ const yellowOne = (startX: number, startY: number, dx: number, dy: number, rotat
 const spawns = 13
 
 const sector1 = new Sector([
-  // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 200, 1200))],
-  // [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -200, 300))],
-  // [0, spawns, 40, getEnemyShip, Enemies.enemyGreen, new Manager(cosFn(120, -200, 300))],
+  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 200, 1200))],
+  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -200, 300))],
 ]);
 const sector2 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450))],

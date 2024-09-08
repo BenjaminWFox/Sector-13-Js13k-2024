@@ -132,7 +132,7 @@ function initData(): Data {
       doublerate: [200, 215],
       bomb: [300, 315],
       wingbomb: [400, 415],
-      shield: [500, 820],
+      shield: [500, 520],
       extralife: [600, 605],
     }
   }
