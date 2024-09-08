@@ -2,13 +2,8 @@ import { state } from './state';
 import { collides, lerp, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { Enemy, EnemyBullet, getExplosion, getShield } from './sprites';
+import { adjustFear, Enemy, EnemyBullet, getExplosion, getShield } from './sprites';
 import { currentSector } from './sectorManager';
-
-// Enemy Spawn Numbers
-const xPosition = 300;
-const waveXSpread = -200;
-const shipXSpeed = 120; // Higher = Slower
 
 type UpdaterFn<T extends Sprite | Enemy | EnemyBullet> = (sprite: T) => void;
 export class Manager<T extends Sprite | Enemy> {
@@ -43,11 +38,15 @@ export class Manager<T extends Sprite | Enemy> {
   render() {
     for (const asset of this.assets) {
       if (
+        asset.opacity !== 0 &&
         asset.y - asset.height * SCALE > data.calculations.canvasMaxHeight ||
         asset.y + asset.height * SCALE < 0 ||
         asset.x + asset.width * SCALE < 0 ||
         asset.x - asset.width * SCALE > data.calculations.canvasMaxWidth
       ) {
+        if (!!asset.type) {
+          adjustFear(2)
+        }
         asset.opacity = 0;
       }
       asset.render()
@@ -60,14 +59,8 @@ export class Manager<T extends Sprite | Enemy> {
   }
 }
 
-// const enemyManager = new EnemyManager();
-const enemyManager = new Manager(
-  (enemy) => enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition
-)
 const bulletManager = new Manager();
-
 const lifeManager = new Manager();
-
 const powerupManager = new Manager(
   (powerup) => {
     if (collides(data.sprites.player, powerup)) {
@@ -91,7 +84,6 @@ const powerupManager = new Manager(
     }
   }
 );
-
 const playerShieldManager = new Manager(
   (shield) => {
     if (state.playershield === 0) {
@@ -161,7 +153,6 @@ const explosionManager = new Manager(
 );
 
 export {
-  enemyManager,
   bulletManager,
   lifeManager,
   explosionManager,

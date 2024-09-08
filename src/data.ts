@@ -43,6 +43,7 @@ const labels = {
   loser: 'loser',
   extralife: 'extralife',
   communication: 'comms',
+  fear: 'fear'
 }
 
 export enum Enemies {
@@ -72,7 +73,8 @@ function initData(): Data {
       game: Scene({ id: labels.game }),
       stars: Scene({ id: labels.stars }),
       end: Scene({ id: labels.end }),
-      communication: Scene({ id: labels.communication })
+      communication: Scene({ id: labels.communication }),
+      fear: Scene({ id: labels.fear })
     },
     labels,
     images: {

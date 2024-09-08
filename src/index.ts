@@ -6,7 +6,7 @@ import {
   Sprite,
 } from 'kontra';
 import { state } from './state'
-import { getBomb, getBullet, getLife, getScore, makeSprites } from './sprites';
+import { adjustFear, getBomb, getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes, playGameSector } from './scenes';
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
@@ -31,7 +31,7 @@ function nextSector() {
     endGame();
   } else {
     setStoreItem(`${state.currentSectorNumber}`, 1)
-
+    adjustFear(-10)
     state.currentSectorClass = currentSector();
   }
 }
@@ -66,6 +66,7 @@ const loop = GameLoop({
     data.scenes.game.update();
     data.scenes.end.update();
     data.scenes.communication.update();
+    data.scenes.fear.update();
   },
 
   render: function () {
@@ -155,6 +156,7 @@ const loop = GameLoop({
     data.scenes.game.render();
     data.scenes.end.render();
     data.scenes.communication.render();
+    data.scenes.fear.render();
 
     state.totalTime += 1;
     state.sectorTime += 1;
@@ -172,10 +174,12 @@ let startGame = () => {
   initElements(canvas, document.getElementById('body')!)
   initCalculations(canvas);
   initScenes();
+  adjustFear();
   state.loop = loop;
   // data.scenes.end.show();
   // data.scenes.game.show();
   data.scenes.title.show();
+  data.scenes.fear.show();
   // data.scenes.communication.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
@@ -227,7 +231,8 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   }
 
   if (!data.scenes.communication.hidden) {
-    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0] as Sprite)) {
+    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0] as Sprite, 1)) {
+      console.group(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0]);
       data.scenes.communication.hide();
     }
   }

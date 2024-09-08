@@ -1,5 +1,6 @@
 import {
   angleToTarget,
+  clamp,
   movePoint,
   randInt,
   Sprite,
@@ -470,6 +471,44 @@ function getEnemyBomb(x: number, y: number, override = {}) {
   })
 }
 
+const commsSprite = Sprite({
+  x: 10, width: WIDTH - 20, y: 800, height: 800, color: 'black',
+  render: function () {
+    this.draw();
+    this.context!.strokeStyle = 'white';
+    this.context!.lineWidth = 2;
+    this.context!.strokeRect(0, 0, this.width!, this.height!);
+  }
+})
+
+const fearSprite = Sprite({
+  x: 22 * SCALE,
+  y: 256 * SCALE,
+  width: WIDTH - (25 * SCALE),
+  height: 7 * SCALE,
+  color: 'black',
+  render: function () {
+    this.draw();
+    this.context!.strokeStyle = 'white';
+    this.context!.lineWidth = 2;
+    this.context!.strokeRect(0, 0, this.width!, this.height!);
+  }
+})
+
+const fearSpriteInner = Sprite({
+  x: fearSprite.x + 10,
+  y: fearSprite.y + 10,
+  width: fearSprite.width - 20,
+  height: fearSprite.height - 20,
+  color: 'white',
+})
+
+function adjustFear(amount: number = 0) {
+  state.fear = clamp(0, 100, state.fear + amount);
+
+  fearSpriteInner.width = (fearSprite.width - 20) * (state.fear / 100);
+}
+
 export class EnemyBullet extends SpriteClass {
   angle: number;
 
@@ -497,8 +536,9 @@ function getEnemyBullet(x: number, y: number, override = {}) {
   })
 }
 
-function getPowerup(x: number, y: number): Sprite | undefined {
-  const prob = randInt(1, 1000);
+function getPowerup(x: number, y: number, override?: number): Sprite | undefined {
+  const prob = override || randInt(1, 1000);
+  console.log('Starting with powerup', prob);
   for (const [key, value] of Object.entries(data.powerupprobability)) {
     if (prob >= value[0] && prob <= value[1]) {
       const s = Sprite({
@@ -511,6 +551,7 @@ function getPowerup(x: number, y: number): Sprite | undefined {
         dy: randInt(2, 9),
         animations: data.spriteSheets.powerups?.animations
       });
+      console.log('Playing animation', key)
       s.playAnimation(key);
       return s;
     }
@@ -672,5 +713,9 @@ export {
   getBomb,
   getEnemyLaser,
   getEnemyBomb,
-  getEnemyBullet
+  getEnemyBullet,
+  commsSprite,
+  fearSprite,
+  fearSpriteInner,
+  adjustFear,
 };

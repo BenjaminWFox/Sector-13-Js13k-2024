@@ -32,7 +32,8 @@ function initState() {
       shield: false,
     },
     playershield: 0,
-    comms: [] as Array<string>
+    comms: [] as Array<string>,
+    fear: 50,
   }
 }
 

@@ -1,5 +1,5 @@
 import { collides, degToRad, randInt, Sprite } from "kontra"
-import { Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
+import { commsSprite, Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
@@ -79,10 +79,12 @@ export class Sector {
   completed: boolean = false;
   managersCompleted = 0;
   comms: Array<string>;
+  powerupProbability: number | undefined;
 
-  constructor(sector: Array<SectorData>, sectorComms?: Array<string> = []) {
+  constructor(sector: Array<SectorData>, sectorComms: Array<string>, powerupProbability?: number) {
     this.data = sector;
     this.comms = sectorComms;
+    this.powerupProbability = powerupProbability;
   }
 
   getRandomEnemy() {
@@ -104,7 +106,7 @@ export class Sector {
     });
   }
 
-  proceede() {
+  proceed() {
     this.started = true;
   }
 
@@ -127,10 +129,14 @@ export class Sector {
         (data.scenes.game.objects[2] as Sprite).dy = 0;
         (data.scenes.game.objects[3] as Sprite).y = 12 * SCALE;
         (data.scenes.game.objects[3] as Sprite).dy = 0;
+        if (this.powerupProbability) {
+          console.log('Adding powerup');
+          powerupManager.add(getPowerup(commsSprite.width / 2, commsSprite.y + commsSprite.height + 80, this.powerupProbability)!);
+        }
         if (this.comms.length) {
           data.scenes.communication.show();
         } else {
-          this.started = true;
+          this.proceed()
         }
       }
     } else if (!this.completed) {
@@ -252,43 +258,51 @@ const sector1 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 200, 1200, 4))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -200, 300, 4))],
 ], [
-  'commander',
-  'good luck out there',
-  'do the best you can'
+  'commander we are all rooting for you',
+  'focus on flying we do the rest',
+  'we manage your ship systems',
+  'we fire weapons and make powerups',
+  'dont let the enemies through',
+  'good luck out there'
 ]);
 const sector2 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, -12, 8))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 12, 8))],
-]);
+], []);
 const sector3 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 800, 4))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 900, -4))],
-])
+], [])
 const sector4 = new Sector([
   [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(300, 4))],
   [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(600, 5))],
   [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 5))],
   [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 4))],
   [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
-])
+], [])
 const sector5 = new Sector([
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 266, -4, -4, 0))],
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 266, 4, -4, 90))],
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0))],
+  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90))],
   [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180))],
   [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270))],
-])
+], [
+  'commander here is a new powerup',
+  'bomb locks on to a target',
+  'good for enemies behind you',
+  'blows up if target disappears',
+], data.powerupprobability.bomb[0])
 const sector6 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(600, 18))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(900, 18))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
-])
+], [])
 const sector7 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450, 8))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, -200, 1050, 8))],
-])
+], [])
 // const sector8 = new Sector([]);
 // const sector9 = new Sector([]);
 // const sector10 = new Sector([]);

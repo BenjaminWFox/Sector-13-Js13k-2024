@@ -1,8 +1,8 @@
 import { getStoreItem, randInt, Sprite, SpriteClass } from 'kontra';
 import { data } from './data';
-import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
+import { getBoldText, getBoldNumbers, getText, getNumbers, commsSprite, fearSprite, fearSpriteInner } from './sprites';
 import { state } from './state';
-import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH, WIDTH_ORIGINAL } from './constants';
+import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
 
@@ -30,17 +30,8 @@ const playGameSector = (i: number) => {
   data.scenes.select.hide();
 }
 
-const commsSprite = Sprite({
-  x: 10, width: WIDTH - 20, y: 800, height: 800, color: 'black',
-  render: function () {
-    this.draw();
-    this.context!.strokeStyle = 'white';
-    this.context!.lineWidth = 2;
-    this.context!.strokeRect(0, 0, this.width!, this.height!);
-  }
-})
 function commsText(text: string, i: number) {
-  return getText(text, (commsSprite.width / SCALE) / 2, commsSprite.y / SCALE + 8 * (i + 1), { anchor: { x: .5, y: .5 } })
+  return getText(text, (commsSprite.width / SCALE) / 2, commsSprite.y / SCALE + 9 * (i + 1), { anchor: { x: .5, y: .5 } })
 }
 function getCommsText(arr: string[]): Sprite[] {
   return [...arr.map((text, i) => commsText(text, i))]
@@ -52,20 +43,29 @@ function initScenes() {
   data.scenes.game.hide();
   data.scenes.end.hide();
   data.scenes.communication.hide();
+  data.scenes.fear.hide();
+
+  data.scenes.fear.add(
+    getText('fear', 4, 257),
+    fearSprite,
+    fearSpriteInner
+  );
 
   data.scenes.communication.onShow = () => {
     data.scenes.communication.objects = []
 
     data.scenes.communication.add(
       commsSprite,
-      ...getCommsText(state.comms))
+      ...getCommsText(state.comms),
+      getText('click here to continue', (commsSprite.width / SCALE) / 2, (commsSprite.y / SCALE) + (commsSprite.height / SCALE) - 8, { anchor: { x: .5, y: .5 } })
+    )
 
     state.loop.stop();
   }
 
   data.scenes.communication.onHide = () => {
-    state.currentSectorClass.proceede();
-    state.loop.start();
+    if (state.currentSectorClass) state.currentSectorClass.proceed();
+    if (state.loop.isStopped) state.loop.start();
   }
 
   data.buttons.start = getBoldText(data.labels.start, 59, 164);
