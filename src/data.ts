@@ -127,11 +127,11 @@ function initData(): Data {
       sectors: {}
     },
     powerupprobability: {
-      wingshot: [1, 15],
-      trishot: [100, 115],
-      doublerate: [200, 215],
+      wingshot: [1, 20],
+      trishot: [100, 120],
+      doublerate: [200, 205],
       bomb: [300, 315],
-      wingbomb: [400, 415],
+      wingbomb: [400, 405],
       shield: [500, 520],
       extralife: [600, 605],
     }

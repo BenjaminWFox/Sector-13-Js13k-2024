@@ -4,7 +4,6 @@ import {
   randInt,
   Sprite,
   SpriteClass,
-  SpriteConstructor,
   SpriteSheet,
 } from 'kontra';
 import playerShipPath from './assets/images/player-ship.gif';
@@ -392,7 +391,7 @@ export class Enemy extends SpriteClass {
         }
         break;
       case Enemies.enemyBlueTwo:
-        if (randInt(0, 500) === 0) {
+        if (randInt(0, 250) === 0) {
           enemyProjectileManager.add(getEnemyBullet(this.x, this.y))
         }
         break;
@@ -411,7 +410,6 @@ function getEnemyShip(type: Enemies) {
     scaleX: 10,
     scaleY: 10,
     anchor: { x: 0.5, y: 0.5 },
-    dy: 4,
     animations: data.spriteSheets[type]!.animations,
     type
   });

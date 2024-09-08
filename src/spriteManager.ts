@@ -149,14 +149,7 @@ class BombManager extends Manager<Sprite> {
   }
 }
 
-// const enemyLaserManager = new Manager();
-// const enemyBulletManager = new Manager();
-// const enemyBombManager = new Manager();
 const enemyProjectileManager = new Manager();
-const enemyBulletManager = new Manager<EnemyBullet>((bullet: EnemyBullet) => {
-
-})
-
 const bombManager = new BombManager();
 
 
@@ -174,5 +167,4 @@ export {
   playerShieldManager,
   bombManager,
   enemyProjectileManager,
-  enemyBulletManager,
 }

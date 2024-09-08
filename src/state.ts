@@ -16,7 +16,7 @@ function initState() {
     totalTime: 0,
     sectorTime: 0,
     touchOffset: 0,
-    lives: 1,
+    lives: 3,
     score: 0,
     scoreMult: 1,
     invulnerableAt: -500,
