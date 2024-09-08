@@ -102,8 +102,12 @@ const playerShieldManager = new Manager(
   }
 )
 
+type targetInfo = {
+  target: Sprite;
+  isForward: boolean;
+}
 class BombManager extends Manager {
-  targets: WeakMap<Sprite, Sprite> = new WeakMap();
+  targets: WeakMap<Sprite, targetInfo> = new WeakMap();
 
   constructor() {
     super()
@@ -113,7 +117,7 @@ class BombManager extends Manager {
     this.assets.forEach((bomb) => {
       if (bomb.opacity === 0) return;
 
-      let target = this.targets.get(bomb)
+      let { target, isForward } = this.targets.get(bomb) || {}
 
       if (target && target.opacity === 0) {
         explosionManager.add(getExplosion(bomb.x, bomb.y));
@@ -122,7 +126,7 @@ class BombManager extends Manager {
       }
 
       if (!target) {
-        const enemy = currentSector().getRandomEnemy()
+        const enemy = currentSector()?.getRandomEnemy()
 
         if (!enemy) {
           explosionManager.add(getExplosion(bomb.x, bomb.y));
@@ -130,11 +134,12 @@ class BombManager extends Manager {
           return;
         }
 
-        this.targets.set(bomb, enemy)
+        this.targets.set(bomb, { target: enemy, isForward: state.playerY < enemy.y })
 
         target = enemy
       }
-      let lerpNum = state.playerY < target.y ? .075 : .025;
+
+      let lerpNum = isForward ? .1 : .025;
 
       bomb.x = lerp(bomb.x, target.x, lerpNum);
       bomb.y = lerp(bomb.y, target.y, lerpNum);
@@ -143,6 +148,8 @@ class BombManager extends Manager {
     })
   }
 }
+
+const enemyBulletManager = new Manager();
 
 const bombManager = new BombManager();
 
