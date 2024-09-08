@@ -149,7 +149,7 @@ class BombManager extends Manager {
   }
 }
 
-const enemyBulletManager = new Manager();
+const enemyLaserManager = new Manager();
 
 const bombManager = new BombManager();
 
@@ -159,4 +159,13 @@ const explosionManager = new Manager(
   (explosion) => { explosion.animations.explode.isStopped ? explosion.opacity = 0 : explosion.opacity -= .05 }
 );
 
-export { enemyManager, bulletManager, lifeManager, explosionManager, powerupManager, playerShieldManager, bombManager }
+export {
+  enemyManager,
+  bulletManager,
+  lifeManager,
+  explosionManager,
+  powerupManager,
+  playerShieldManager,
+  bombManager,
+  enemyLaserManager
+}

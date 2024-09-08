@@ -222,6 +222,17 @@ function getBomb(override = {}) {
   })
 }
 
+function getEnemyLaser(x: number, y: number, override = {}) {
+  return Sprite({
+    x,
+    y,
+    width: 10,
+    height: 100,
+    color: '#ff00ff',
+    ...override
+  })
+}
+
 function getPowerup(x: number, y: number): Sprite | undefined {
   const prob = randInt(1, 1000);
   for (const [key, value] of Object.entries(data.powerupprobability)) {
@@ -307,6 +318,7 @@ type TextType = {
   letterHeight: number,
   characters: string,
 }
+
 const textTypes: Record<string, TextType> = {
   letterBold: {
     image: data.images.lettersBold,
@@ -333,6 +345,7 @@ const textTypes: Record<string, TextType> = {
     characters: '0123456789',
   },
 }
+
 type Options = {
   bold?: boolean;
   scale?: number;
@@ -383,5 +396,6 @@ export {
   getScore,
   getExplosion,
   getPowerup,
-  getBomb
+  getBomb,
+  getEnemyLaser
 };

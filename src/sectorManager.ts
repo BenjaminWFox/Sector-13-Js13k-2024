@@ -1,7 +1,7 @@
 import { collides, randInt, Sprite } from "kontra"
-import { getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
+import { getEnemyLaser, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
-import { bombManager, bulletManager, explosionManager, Manager, powerupManager } from "./spriteManager";
+import { bombManager, bulletManager, enemyLaserManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data } from "./data";
 import { SCALE } from "./constants";
 
@@ -15,6 +15,23 @@ type spawnSpacing = number;
 type spriteFactory = () => Sprite;
 type manager = Manager;
 type SectorData = [spawnStartTime, totalSpawns, spawnSpacing, spriteFactory, manager]
+
+function checkProjectileAgainstEnemies(manager: Manager, projectile: Sprite) {
+  manager.assets.forEach(enemy => {
+    if (enemy.opacity === 0) return;
+
+    if (collides(projectile, enemy)) {
+      enemy.opacity = 0;
+      projectile.opacity = 0;
+      state.score += 100 * state.scoreMult;
+      explosionManager.add(getExplosion(enemy.x, enemy.y));
+      const powerup = getPowerup(enemy.x, enemy.y);
+      if (powerup) powerupManager.add(powerup);
+    }
+
+    if (state.invulnerable) return;
+  })
+}
 
 export class Sector {
   data: Array<SectorData>
@@ -81,67 +98,72 @@ export class Sector {
           return;
         }
 
-        function checkProjectileAgainstEnemies(projectile: Sprite) {
-          manager.assets.forEach(enemy => {
-            if (enemy.opacity === 0) return;
-
-            if (collides(projectile, enemy)) {
-              enemy.opacity = 0;
-              projectile.opacity = 0;
-              state.score += 100 * state.scoreMult;
-              explosionManager.add(getExplosion(enemy.x, enemy.y));
-              const powerup = getPowerup(enemy.x, enemy.y);
-              if (powerup) powerupManager.add(powerup);
-            }
-
-            if (state.invulnerable) return;
-          })
-        }
-
         // Check enemies against bullets
         bulletManager.assets.forEach(bullet => {
           if (bullet.opacity === 0) return;
 
-          checkProjectileAgainstEnemies(bullet);
+          checkProjectileAgainstEnemies(manager, bullet);
         })
 
         // Check enemies against bombs
         bombManager.assets.forEach(bomb => {
           if (bomb.opacity === 0) return;
 
-          checkProjectileAgainstEnemies(bomb);
+          checkProjectileAgainstEnemies(manager, bomb);
         })
 
-        // Check enemies against player
-        manager.assets.forEach(enemy => {
-          if (collides(data.sprites.player, enemy)) {
-            resetPowerups();
+        function managePlayerHit(enemy: Sprite) {
+          resetPowerups();
 
-            if (state.playershield > 0) {
-              explosionManager.add(getExplosion(enemy.x, enemy.y));
-              enemy.opacity = 0;
-              state.playershield -= 1;
-            } else if (state.lives >= 0) {
-              explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
-              enemy.opacity = 0;
-              data.sprites.player.opacity = 0;
+          if (state.playershield > 0) {
+            explosionManager.add(getExplosion(enemy.x, enemy.y));
+            enemy.opacity = 0;
+            state.playershield -= 1;
+          } else if (state.lives >= 0) {
+            explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
+            enemy.opacity = 0;
+            data.sprites.player.opacity = 0;
+
+            if (state.lives === 0) {
+              endGame();
+            } else {
               state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
               state.invulnerable = true;
 
-              if (state.lives === 0) {
-                endGame();
-              } else {
-                setTimeout(() => {
-                  data.sprites.player.opacity = .75
-                }, 250)
-              }
-
-              state.lives -= 1;
+              setTimeout(() => {
+                data.sprites.player.opacity = .75
+              }, 250)
             }
+
+            state.lives -= 1;
+          }
+        }
+
+        // Check enemies against player
+        manager.assets.forEach(enemy => {
+          if (randInt(0, 500) === 0) {
+            enemyLaserManager.add(getEnemyLaser(enemy.x, enemy.y, { dy: enemy.dy + 10 }))
+          }
+
+          if (collides(data.sprites.player, enemy)) {
+            managePlayerHit(enemy);
           }
         })
 
+        function checkProjectileAgainstPlayer(projectile: Sprite) {
+          if (collides(projectile, data.sprites.player)) {
+            managePlayerHit(projectile);
+          }
+        }
 
+        // Check player against enemy projectiles
+        if (!state.invulnerable) {
+          enemyLaserManager.assets.forEach(laser => {
+            if (laser.opacity === 0) return;
+
+            checkProjectileAgainstPlayer(laser);
+          })
+        }
 
         manager.render();
       }

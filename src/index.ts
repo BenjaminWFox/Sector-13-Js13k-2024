@@ -8,7 +8,7 @@ import {
 import { state } from './state'
 import { getBomb, getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes, playGameSector } from './scenes';
-import { bombManager, bulletManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
+import { bombManager, bulletManager, enemyLaserManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, sectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
@@ -58,6 +58,7 @@ const loop = GameLoop({
       powerupManager.update();
       playerShieldManager.update();
       bombManager.update()
+      enemyLaserManager.update();
     }
 
     data.scenes.title.update();
@@ -143,6 +144,7 @@ const loop = GameLoop({
       powerupManager.render();
       playerShieldManager.render();
       bombManager.render();
+      enemyLaserManager.render();
     }
 
     data.scenes.title.render();
