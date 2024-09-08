@@ -12,6 +12,7 @@ import { bombManager, bulletManager, enemyProjectileManager, explosionManager, l
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, sectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
+// import { sfx } from './music';
 import { SCALE } from './constants';
 
 const { canvas } = init();
