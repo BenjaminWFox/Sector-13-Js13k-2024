@@ -1,5 +1,5 @@
 import { state } from './state';
-import { collides, lerp, randInt, Sprite } from 'kontra'
+import { collides, lerp, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
 import { getExplosion, getShield } from './sprites';

@@ -107,8 +107,8 @@ function initData(): Data {
       wingshot: [1, 10],
       trishot: [100, 110],
       doublerate: [200, 210],
-      bomb: [0, 500],
-      wingbomb: [501, 999],
+      bomb: [300, 310],
+      wingbomb: [400, 410],
       shield: [500, 510],
       extralife: [600, 605],
     }
