@@ -29,13 +29,13 @@ function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Spri
 
     if (shield) {
       if (collides(projectile, shield)) {
-        enemy.shieldIntegrity -= 1;
+        enemy.hit();
         projectile.opacity = 0;
         explosionManager.add(getExplosion(projectile.x, projectile.y));
       }
     } else {
       if (collides(projectile, enemy)) {
-        enemy.opacity = 0;
+        enemy.hit()
         projectile.opacity = 0;
         state.score += 100 * state.scoreMult;
         explosionManager.add(getExplosion(enemy.x, enemy.y));
