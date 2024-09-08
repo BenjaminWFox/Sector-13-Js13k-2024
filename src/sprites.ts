@@ -621,6 +621,7 @@ type Options = {
   bold?: boolean;
   scale?: number;
   button?: boolean;
+  anchor?: { x: number, y: number };
 }
 
 function getTextSprite(text: string, x: number, y: number, type: TextType, options: Options = {}) {
@@ -645,6 +646,7 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
     scaleY: options.scale || SCALE,
     x: x * SCALE,
     y: y * SCALE,
+    anchor: options.anchor || { x: 0, y: 0 }
   });
 }
 

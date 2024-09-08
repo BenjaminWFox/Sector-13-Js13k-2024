@@ -78,9 +78,11 @@ export class Sector {
   started: boolean = false;
   completed: boolean = false;
   managersCompleted = 0;
+  comms: Array<string>;
 
-  constructor(sector: Array<SectorData>) {
+  constructor(sector: Array<SectorData>, sectorComms?: Array<string> = []) {
     this.data = sector;
+    this.comms = sectorComms;
   }
 
   getRandomEnemy() {
@@ -102,10 +104,15 @@ export class Sector {
     });
   }
 
+  proceede() {
+    this.started = true;
+  }
+
   render(t: number) {
     if (this.completed) {
       return;
     } else if (!this.loaded) {
+      state.comms = this.comms;
       // data.scenes.game.remove(data.scenes.game.objects[3]);
       // data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
       data.scenes.game.objects[3] = getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 });
@@ -120,7 +127,11 @@ export class Sector {
         (data.scenes.game.objects[2] as Sprite).dy = 0;
         (data.scenes.game.objects[3] as Sprite).y = 12 * SCALE;
         (data.scenes.game.objects[3] as Sprite).dy = 0;
-        this.started = true;
+        if (this.comms.length) {
+          data.scenes.communication.show();
+        } else {
+          this.started = true;
+        }
       }
     } else if (!this.completed) {
       for (const [spawnStart, totalSpawn, spawnSpacing, spriteFactory, enemy, manager] of this.data) {
@@ -240,6 +251,10 @@ const spawns = 13
 const sector1 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 200, 1200, 4))],
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -200, 300, 4))],
+], [
+  'commander',
+  'good luck out there',
+  'do the best you can'
 ]);
 const sector2 = new Sector([
   [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, -12, 8))],

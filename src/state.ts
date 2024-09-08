@@ -31,7 +31,8 @@ function initState() {
       wingbomb: false,
       shield: false,
     },
-    playershield: 0
+    playershield: 0,
+    comms: [] as Array<string>
   }
 }
 

@@ -65,6 +65,7 @@ const loop = GameLoop({
     data.scenes.select.update();
     data.scenes.game.update();
     data.scenes.end.update();
+    data.scenes.communication.update();
   },
 
   render: function () {
@@ -153,6 +154,7 @@ const loop = GameLoop({
     data.scenes.select.render();
     data.scenes.game.render();
     data.scenes.end.render();
+    data.scenes.communication.render();
 
     state.totalTime += 1;
     state.sectorTime += 1;
@@ -174,6 +176,7 @@ let startGame = () => {
   // data.scenes.end.show();
   // data.scenes.game.show();
   data.scenes.title.show();
+  // data.scenes.communication.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 
@@ -220,6 +223,12 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   if (!data.scenes.game.hidden) {
     if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.pause)) {
       state.loop.isStopped ? state.loop.start() : state.loop.stop()
+    }
+  }
+
+  if (!data.scenes.communication.hidden) {
+    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0] as Sprite)) {
+      data.scenes.communication.hide();
     }
   }
 

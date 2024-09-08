@@ -2,7 +2,7 @@ import { getStoreItem, randInt, Sprite, SpriteClass } from 'kontra';
 import { data } from './data';
 import { getBoldText, getBoldNumbers, getText, getNumbers } from './sprites';
 import { state } from './state';
-import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
+import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
 
@@ -30,23 +30,55 @@ const playGameSector = (i: number) => {
   data.scenes.select.hide();
 }
 
+const commsSprite = Sprite({
+  x: 10, width: WIDTH - 20, y: 800, height: 800, color: 'black',
+  render: function () {
+    this.draw();
+    this.context!.strokeStyle = 'white';
+    this.context!.lineWidth = 2;
+    this.context!.strokeRect(0, 0, this.width!, this.height!);
+  }
+})
+function commsText(text: string, i: number) {
+  return getText(text, (commsSprite.width / SCALE) / 2, commsSprite.y / SCALE + 8 * (i + 1), { anchor: { x: .5, y: .5 } })
+}
+function getCommsText(arr: string[]): Sprite[] {
+  return [...arr.map((text, i) => commsText(text, i))]
+}
+
 function initScenes() {
   data.scenes.title.hide();
   data.scenes.select.hide();
   data.scenes.game.hide();
   data.scenes.end.hide();
+  data.scenes.communication.hide();
 
-  data.buttons.start = getBoldText(data.labels.start, 59, 164),
-    data.scenes.title.add(
-      ...(() => [
-        // title
-        getBoldText(data.labels.sector, 11, 38, { scale: 32 }),
-        // number 13
-        getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
-        // start
-        data.buttons.start
-      ])(),
-    )
+  data.scenes.communication.onShow = () => {
+    data.scenes.communication.objects = []
+
+    data.scenes.communication.add(
+      commsSprite,
+      ...getCommsText(state.comms))
+
+    state.loop.stop();
+  }
+
+  data.scenes.communication.onHide = () => {
+    state.currentSectorClass.proceede();
+    state.loop.start();
+  }
+
+  data.buttons.start = getBoldText(data.labels.start, 59, 164);
+  data.scenes.title.add(
+    ...(() => [
+      // title
+      getBoldText(data.labels.sector, 11, 38, { scale: 32 }),
+      // number 13
+      getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
+      // start
+      data.buttons.start,
+    ])(),
+  )
 
   // coordinates of each button for sector selection
   const arr = [[93, 234], [93, 205], [93, 176], [93, 147], [93, 118], [93, 89], [33, 234], [33, 205], [33, 176], [33, 147], [33, 118], [33, 89], [63, 58]];

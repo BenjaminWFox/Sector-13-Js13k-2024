@@ -42,6 +42,7 @@ const labels = {
   winner: 'winner',
   loser: 'loser',
   extralife: 'extralife',
+  communication: 'comms',
 }
 
 export enum Enemies {
@@ -71,6 +72,7 @@ function initData(): Data {
       game: Scene({ id: labels.game }),
       stars: Scene({ id: labels.stars }),
       end: Scene({ id: labels.end }),
+      communication: Scene({ id: labels.communication })
     },
     labels,
     images: {
