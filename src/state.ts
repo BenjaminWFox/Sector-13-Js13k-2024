@@ -33,7 +33,9 @@ function initState() {
     },
     playershield: 0,
     comms: [] as Array<string>,
-    fear: 50,
+    fear: 100,
+    rofAdjust: 0,
+    rngAdjust: 0,
   }
 }
 

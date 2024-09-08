@@ -63,13 +63,17 @@ const bulletManager = new Manager();
 const lifeManager = new Manager();
 const powerupManager = new Manager(
   (powerup) => {
+    if (state.gameOver || data.sprites.player.opacity === 0) return;
+
     if (collides(data.sprites.player, powerup)) {
 
       powerup.opacity = 0;
 
+      adjustFear(-2);
+
       const kind = (powerup.currentAnimation.name as keyof typeof state.powerups);
 
-      if ((powerup.currentAnimation.frames as unknown as string[])[0] === '6' && state.lives < 4) {
+      if ((powerup.currentAnimation.frames as unknown as string[])[0] === '6' && state.lives < 3) {
         state.lives += 1
       } else if ((powerup.currentAnimation.frames as unknown as string[])[0] === '5') {
         state.playershield = 4;

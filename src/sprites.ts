@@ -327,6 +327,7 @@ export class Enemy extends SpriteClass {
   type: Enemies;
   odx: number = 0;
   ody: number = 0;
+  maxLife: number = 360;
 
   constructor(properties: any) {
     super(properties);
@@ -505,7 +506,9 @@ const fearSpriteInner = Sprite({
 
 function adjustFear(amount: number = 0) {
   state.fear = clamp(0, 100, state.fear + amount);
-
+  state.rofAdjust = Math.ceil((100 - state.fear) / 20) || 0
+  state.rngAdjust = Math.floor(100 - state.fear) * 2 || 0
+  console.log('Adjustments', state.rofAdjust, state.rngAdjust)
   fearSpriteInner.width = (fearSprite.width - 20) * (state.fear / 100);
 }
 
@@ -537,10 +540,13 @@ function getEnemyBullet(x: number, y: number, override = {}) {
 }
 
 function getPowerup(x: number, y: number, override?: number): Sprite | undefined {
-  const prob = override || randInt(1, 1000);
-  console.log('Starting with powerup', prob);
-  for (const [key, value] of Object.entries(data.powerupprobability)) {
-    if (prob >= value[0] && prob <= value[1]) {
+  const prob = override || randInt(1, 1000 - state.rngAdjust);
+
+  // No shield renew
+  if (!override && state.playershield > 0 && prob >= data.powerupprobability.shield[0] && prob <= data.powerupprobability.shield[1]) return;
+
+  for (const [key, [lowBound, highBound, firstSectorAllowed]] of Object.entries(data.powerupprobability)) {
+    if (prob >= lowBound && prob <= highBound && state.currentSectorNumber >= firstSectorAllowed) {
       const s = Sprite({
         x,
         y,
@@ -551,8 +557,9 @@ function getPowerup(x: number, y: number, override?: number): Sprite | undefined
         dy: randInt(2, 9),
         animations: data.spriteSheets.powerups?.animations
       });
-      console.log('Playing animation', key)
+
       s.playAnimation(key);
+
       return s;
     }
   }

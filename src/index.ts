@@ -83,29 +83,29 @@ const loop = GameLoop({
       // Weaponry
       if (!state.gameOver) {
         // Singe shot (possible double ROF)
-        if (!state.gameOver && state.totalTime % (state.powerups.doublerate ? 10 : 20) === 0) {
+        if (!state.gameOver && state.totalTime % (state.powerups.doublerate ? 10 - state.rofAdjust : 20 - state.rofAdjust) === 0) {
           bulletManager.add(getBullet())
         }
 
         // Tri-shot (regular ROF)
-        if (state.powerups.trishot && state.totalTime % 20 === 0) {
+        if (state.powerups.trishot && state.totalTime % 20 - state.rofAdjust === 0) {
           bulletManager.add(getBullet({ dx: -10 }))
           bulletManager.add(getBullet({ dx: 10 }))
         }
 
         // Wing-show (regular ROF)
-        if (state.powerups.wingshot && state.totalTime % 20 === 0) {
+        if (state.powerups.wingshot && state.totalTime % 20 - state.rofAdjust === 0) {
           bulletManager.add(getBullet({ x: state.playerX - 90, y: state.playerY }))
           bulletManager.add(getBullet({ x: state.playerX + 90, y: state.playerY }))
         }
 
         // Single-Bomb
-        if (state.powerups.bomb && state.totalTime % 60 === 0) {
+        if (state.powerups.bomb && state.totalTime % 60 - state.rofAdjust === 0) {
           bombManager.add(getBomb())
         }
 
         // Single-Bomb
-        if (state.powerups.wingbomb && state.totalTime % 60 === 0) {
+        if (state.powerups.wingbomb && state.totalTime % 60 - state.rofAdjust === 0) {
           bombManager.add(getBomb({ x: state.playerX - 80, y: state.playerY }))
           bombManager.add(getBomb({ x: state.playerX + 80, y: state.playerY }))
         }
@@ -121,7 +121,6 @@ const loop = GameLoop({
       }
 
       if (!state.gameOver && state.invulnerable) {
-        console.log('Index resetting opacity');
         // Loop runs 60fps, so 2.25 seconds invulnerable:
         if (state.totalTime - state.invulnerableAt > 135) {
           state.invulnerable = false;
@@ -134,7 +133,7 @@ const loop = GameLoop({
         }
       }
 
-      state.currentSectorClass.render(state.sectorTime);
+      state.currentSectorClass.render();
 
       if (state.currentSectorClass.completed && !state.gameOver) {
         nextSector();
@@ -203,50 +202,59 @@ document.getElementById('c')!.addEventListener('touchmove', (e) => {
   }
 })
 
-function clickedInBounds(x: number, y: number, s: Sprite, scale = SCALE) {
+let lastDownX = 0;
+let lastDownY = 0;
+let lastUpX = 0;
+let lastUpY = 0;
+function clickedInBounds(s: Sprite, scale = SCALE) {
   if (
-    x > s.x &&
-    x < s.x + (s.width * scale) &&
-    y > s.y &&
-    y < s.y + (s.height * scale)
+    lastDownX > s.x && lastUpX > s.x &&
+    lastDownX < s.x + (s.width * scale) && lastUpX < s.x + (s.width * scale) &&
+    lastDownY > s.y && lastUpY > s.y &&
+    lastDownY < s.y + (s.height * scale) && lastUpY < s.y + (s.height * scale)
   ) {
     return true;
   }
 
   return false;
 }
-
+document.getElementById('c')!.addEventListener('mousedown', (e) => {
+  lastDownX = adjustedX(e.x);
+  lastDownY = adjustedY(e.y);
+})
 document.getElementById('c')!.addEventListener('mouseup', (e) => {
+  lastUpX = adjustedX(e.x);
+  lastUpY = adjustedY(e.y);
+
   if (!data.scenes.title.hidden) {
-    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.start)) {
+    if (clickedInBounds(data.buttons.start)) {
       data.scenes.title.hide(); data.scenes.select.show();
       playSong(zzfxSong);
     }
   }
 
   if (!data.scenes.game.hidden) {
-    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.pause)) {
+    if (clickedInBounds(data.buttons.pause)) {
       state.loop.isStopped ? state.loop.start() : state.loop.stop()
     }
   }
 
   if (!data.scenes.communication.hidden) {
-    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0] as Sprite, 1)) {
-      console.group(adjustedX(e.x), adjustedY(e.y), data.scenes.communication.objects[0]);
+    if (clickedInBounds(data.scenes.communication.objects[0] as Sprite, 1)) {
       data.scenes.communication.hide();
     }
   }
 
   if (!data.scenes.select.hidden) {
     for (const [index, sprite] of Object.entries(data.buttons.sectors)) {
-      if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), sprite) && sprite.opacity === 1) {
+      if (clickedInBounds(sprite) && sprite.opacity === 1) {
         playGameSector(Number(index) + 1)
       }
     }
   }
 
   if (!data.scenes.end.hidden) {
-    if (clickedInBounds(adjustedX(e.x), adjustedY(e.y), data.buttons.restart)) {
+    if (clickedInBounds(data.buttons.restart)) {
       window.location.reload();
     }
   }

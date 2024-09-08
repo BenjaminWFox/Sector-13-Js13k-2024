@@ -131,14 +131,15 @@ function initData(): Data {
       restart: Sprite(),
       sectors: {}
     },
+    // Index 0 & 1 are bounds for RNG. Index 2 is first sector powerup is found.
     powerupprobability: {
-      wingshot: [1, 20],
-      trishot: [100, 120],
-      doublerate: [200, 205],
-      bomb: [300, 315],
-      wingbomb: [400, 405],
-      shield: [500, 520],
-      extralife: [600, 605],
+      wingshot: [1, 20, 3],
+      trishot: [30, 50, 7],
+      doublerate: [60, 65, 1],
+      bomb: [70, 85, 5],
+      wingbomb: [90, 95, 8],
+      shield: [100, 120, 2],
+      extralife: [130, 135, 6],
     }
   }
 }
