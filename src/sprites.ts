@@ -1,10 +1,15 @@
 import {
   randInt,
   Sprite,
+  SpriteClass,
   SpriteSheet,
 } from 'kontra';
 import playerShipPath from './assets/images/player-ship.gif';
-import enemyShipPath from './assets/images/enemy-ship.gif';
+import enemyBlueOnePath from './assets/images/enemy-ship.gif';
+import enemyGreenPath from './assets/images/enemyGreen.gif';
+import enemyYellowPath from './assets/images/enemyYellow.gif';
+import enemyPinkPath from './assets/images/enemyPink.gif';
+import enemyBlueTwoPath from './assets/images/enemyBlueTwo.gif';
 import lettersBoldPath from './assets/images/lettersBold2.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
@@ -13,12 +18,12 @@ import explosionPath from './assets/images/explosion.gif';
 import powerupPath from './assets/images/powerups.gif';
 import shieldPath from './assets/images/shield.png';
 import { SCALE, WIDTH } from './constants';
-import { data } from './data';
+import { data, Enemies } from './data';
 import { state } from './state';
 import { sfx } from './music';
 
 const loaded = [];
-const totalLoads = 9;
+const totalLoads = 13;
 
 function makeSprites(startFn: () => void) {
   function checkLoaded(loadedImage: HTMLImageElement) {
@@ -70,10 +75,10 @@ function makeSprites(startFn: () => void) {
     checkLoaded(data.images.player);
   }
 
-  data.images.enemy.src = enemyShipPath;
-  data.images.enemy.onload = function () {
-    data.spriteSheets.enemy = SpriteSheet({
-      image: data.images.enemy,
+  data.images[Enemies.enemyBlueOne].src = enemyBlueOnePath;
+  data.images[Enemies.enemyBlueOne].onload = function () {
+    data.spriteSheets[Enemies.enemyBlueOne] = SpriteSheet({
+      image: data.images[Enemies.enemyBlueOne],
       frameWidth: 15,
       frameHeight: 12,
       animations: {
@@ -84,7 +89,75 @@ function makeSprites(startFn: () => void) {
       }
     });
 
-    checkLoaded(data.images.enemy);
+    checkLoaded(data.images[Enemies.enemyBlueOne]);
+  }
+
+  data.images[Enemies.enemyGreen].src = enemyGreenPath;
+  data.images[Enemies.enemyGreen].onload = function () {
+    data.spriteSheets[Enemies.enemyGreen] = SpriteSheet({
+      image: data.images[Enemies.enemyGreen],
+      frameWidth: 15,
+      frameHeight: 16,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 10
+        }
+      }
+    });
+
+    checkLoaded(data.images[Enemies.enemyGreen]);
+  }
+
+  data.images[Enemies.enemyYellow].src = enemyYellowPath;
+  data.images[Enemies.enemyYellow].onload = function () {
+    data.spriteSheets[Enemies.enemyYellow] = SpriteSheet({
+      image: data.images[Enemies.enemyYellow],
+      frameWidth: 11,
+      frameHeight: 11,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 10
+        }
+      }
+    });
+
+    checkLoaded(data.images[Enemies.enemyYellow]);
+  }
+
+  data.images[Enemies.enemyPink].src = enemyPinkPath;
+  data.images[Enemies.enemyPink].onload = function () {
+    data.spriteSheets[Enemies.enemyPink] = SpriteSheet({
+      image: data.images[Enemies.enemyPink],
+      frameWidth: 9,
+      frameHeight: 16,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 10
+        }
+      }
+    });
+
+    checkLoaded(data.images[Enemies.enemyPink]);
+  }
+
+  data.images[Enemies.enemyBlueTwo].src = enemyBlueTwoPath;
+  data.images[Enemies.enemyBlueTwo].onload = function () {
+    data.spriteSheets[Enemies.enemyBlueTwo] = SpriteSheet({
+      image: data.images[Enemies.enemyBlueTwo],
+      frameWidth: 15,
+      frameHeight: 13,
+      animations: {
+        engine: {
+          frames: '0..1',
+          frameRate: 10
+        }
+      }
+    });
+
+    checkLoaded(data.images[Enemies.enemyBlueTwo]);
   }
 
   data.images.shield.src = shieldPath;
@@ -183,15 +256,72 @@ function makeSprites(startFn: () => void) {
   }
 }
 
-function getEnemyShip() {
-  return Sprite({
+export class Enemy extends SpriteClass {
+  shield?: Sprite = undefined;
+  shieldIntegrity: number = 0;
+
+  constructor(properties: any) {
+    super(properties);
+    this.type = properties.type;
+
+    if (this.type === Enemies.enemyGreen) {
+      this.shield = getShield(this.x, this.y)
+      this.shieldIntegrity = 4;
+    }
+  }
+
+  hit() {
+
+  }
+
+  update() {
+    this.shield?.update();
+    super.update()
+  }
+
+  render() {
+    this.shield?.render();
+    super.render();
+  }
+
+  draw() {
+    switch (this.shieldIntegrity) {
+      default:
+      case 0:
+        this.shield = undefined;
+        break;
+      case 1:
+        this.shield?.playAnimation('1')
+        break;
+      case 2:
+        this.shield?.playAnimation('2')
+        break;
+      case 3:
+        this.shield?.playAnimation('3')
+        break;
+      case 4:
+        this.shield?.playAnimation('4')
+        break;
+    }
+    if (this.shield) {
+      this.shield.x = this.x;
+      this.shield.y = this.y;
+    }
+
+    super.draw();
+  }
+}
+
+function getEnemyShip(type: Enemies) {
+  return new Enemy({
     x: 0,
     y: -10 * SCALE,
     scaleX: 10,
     scaleY: 10,
     anchor: { x: 0.5, y: 0.5 },
     dy: 4,
-    animations: data.spriteSheets.enemy!.animations
+    animations: data.spriteSheets[type]!.animations,
+    type
   });
 }
 
@@ -301,14 +431,15 @@ function getLife(x: number) {
   })
 }
 
-function getShield(x: number, y: number) {
+function getShield(x: number, y: number, overrides = {}) {
   return Sprite({
     x,
     y,
     scaleX: SCALE,
     scaleY: SCALE,
     anchor: { x: 0.5, y: 0.5 },
-    animations: data.spriteSheets.shield?.animations
+    animations: data.spriteSheets.shield?.animations,
+    ...overrides
   })
 }
 

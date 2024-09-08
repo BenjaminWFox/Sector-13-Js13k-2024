@@ -44,6 +44,14 @@ const labels = {
   extralife: 'extralife',
 }
 
+export enum Enemies {
+  enemyBlueOne = 'blueOne',
+  enemyBlueTwo = 'blueTwo',
+  enemyGreen = 'green',
+  enemyPink = 'pink',
+  enemyYellow = 'yellow',
+}
+
 function initData(): Data {
   return {
     sounds: {
@@ -70,10 +78,14 @@ function initData(): Data {
       numbers: makeImage(),
       numbersBold: makeImage(),
       player: makeImage(),
-      enemy: makeImage(),
       explosion: makeImage(),
       powerups: makeImage(),
       shield: makeImage(),
+      [Enemies.enemyBlueOne]: makeImage(),
+      [Enemies.enemyBlueTwo]: makeImage(),
+      [Enemies.enemyGreen]: makeImage(),
+      [Enemies.enemyYellow]: makeImage(),
+      [Enemies.enemyPink]: makeImage(),
     },
     sprites: {
       player: Sprite(),
@@ -84,10 +96,14 @@ function initData(): Data {
     },
     spriteSheets: {
       player: undefined,
-      enemy: undefined,
       explosion: undefined,
       powerups: undefined,
       shield: undefined,
+      [Enemies.enemyBlueOne]: undefined,
+      [Enemies.enemyBlueTwo]: undefined,
+      [Enemies.enemyGreen]: undefined,
+      [Enemies.enemyYellow]: undefined,
+      [Enemies.enemyPink]: undefined,
     },
     calculations: {
       canvasRatioWidth: 0,

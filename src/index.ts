@@ -117,7 +117,9 @@ const loop = GameLoop({
           lifeManager.pop();
         }
       }
-      if (state.invulnerable) {
+
+      if (!state.gameOver && state.invulnerable) {
+        console.log('Index resetting opacity');
         // Loop runs 60fps, so 2.25 seconds invulnerable:
         if (state.totalTime - state.invulnerableAt > 135) {
           state.invulnerable = false;
@@ -128,6 +130,8 @@ const loop = GameLoop({
             state.invulnableralFlash *= -1
           }
         }
+      } else if (state.gameOver && data.sprites.player.opacity !== 0) {
+        data.sprites.player.opacity = 0;
       }
 
       state.currentSectorClass.render(state.sectorTime);

@@ -2,7 +2,7 @@ import { state } from './state';
 import { collides, lerp, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { getExplosion, getShield } from './sprites';
+import { Enemy, getExplosion, getShield } from './sprites';
 import { currentSector } from './sectorManager';
 
 // Enemy Spawn Numbers
@@ -11,8 +11,8 @@ const waveXSpread = -200;
 const shipXSpeed = 120; // Higher = Slower
 
 type UpdaterFn = (sprite: Sprite) => void;
-export class Manager {
-  assets: Array<Sprite> = [];
+export class Manager<T extends Sprite | Enemy> {
+  assets: Array<T> = [];
   spawned = 0;
   id: string | undefined;
   completed: boolean = false;
@@ -23,7 +23,7 @@ export class Manager {
     this.id = id;
   }
 
-  add(sprite: Sprite) {
+  add(sprite: T) {
     this.assets.push(sprite);
     this.spawned += 1;
   }
@@ -106,7 +106,7 @@ type targetInfo = {
   target: Sprite;
   isForward: boolean;
 }
-class BombManager extends Manager {
+class BombManager extends Manager<Sprite> {
   targets: WeakMap<Sprite, targetInfo> = new WeakMap();
 
   constructor() {
