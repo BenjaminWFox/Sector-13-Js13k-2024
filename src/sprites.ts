@@ -594,7 +594,7 @@ function getExplosion(x: number, y: number) {
 
 function getLife(x: number) {
   return Sprite({
-    y: 210,
+    y: 230,
     x: WIDTH - ((18 * 6) * (1 + x)),
     scaleX: 6,
     scaleY: 6,
@@ -669,6 +669,7 @@ type Options = {
   bold?: boolean;
   scale?: number;
   button?: boolean;
+  sectorButton?: boolean;
   anchor?: { x: number, y: number };
 }
 
@@ -694,7 +695,17 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
     scaleY: options.scale || SCALE,
     x: x * SCALE,
     y: y * SCALE,
-    anchor: options.anchor || { x: 0, y: 0 }
+    anchor: options.anchor || { x: 0, y: 0 },
+    render: function () {
+      // draw the game object normally (perform rotation and other transforms)
+      this.draw();
+      if (options.button || options.sectorButton) {
+        // outline the game object
+        this.context!.strokeStyle = 'white';
+        this.context!.lineWidth = 1;
+        this.context!.strokeRect(-2, -2, this.width! + (options.bold ? 2 : 3), this.height! + (options.sectorButton ? 10 : 4));
+      }
+    }
   });
 }
 

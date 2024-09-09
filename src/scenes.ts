@@ -11,7 +11,7 @@ const playGameSector = (i: number) => {
   state.currentSectorNumber = i;
   state.currentSectorClass = currentSector();
 
-  data.buttons.pause = getBoldText(data.labels.pause, 112, 7)
+  data.buttons.pause = getBoldText(data.labels.pause, 112, 7, { button: true })
   data.scenes.game.add(
     ...(() => [
       // score
@@ -68,7 +68,7 @@ function initScenes() {
     if (state.loop.isStopped) state.loop.start();
   }
 
-  data.buttons.start = getBoldText(data.labels.start, 59, 164);
+  data.buttons.start = getBoldText(data.labels.start, 59, 164, { button: true });
   data.scenes.title.add(
     ...(() => [
       // title
@@ -94,7 +94,7 @@ function initScenes() {
   }
 
   const textSprites = [...arr.map(([x, y], i) => clearUnreached(
-    getText(data.labels.sector, x, y), i)
+    getText(data.labels.sector, x, y, { sectorButton: true }), i)
   )]
   const numberSprites = [...arr.map(([x, y], i) => clearUnreached(
     getNumbers((i + 1).toString(), x + 8, y + 6), i
@@ -121,7 +121,7 @@ function initScenes() {
     ])(),
   );
 
-  data.buttons.restart = getBoldText(data.labels.restart, 52, 151)
+  data.buttons.restart = getBoldText(data.labels.restart, 52, 151, { button: true })
   data.scenes.end.add(
     ...(() => [
       getBoldText(data.labels.gameover, 5, 51, { scale: 26 }),

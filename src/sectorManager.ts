@@ -1,5 +1,5 @@
 import { collides, degToRad, randInt, Sprite } from "kontra"
-import { commsSprite, Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
+import { adjustFear, commsSprite, Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
@@ -60,6 +60,7 @@ function managePlayerHit(enemy: Sprite) {
     } else {
       state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
       state.invulnerable = true;
+      adjustFear(50)
 
       setTimeout(() => {
         if (!state.gameOver) {
