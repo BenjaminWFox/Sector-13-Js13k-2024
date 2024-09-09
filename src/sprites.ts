@@ -445,7 +445,7 @@ function getBomb(override = {}) {
     y: state.playerY - 100,
     width: 30,
     height: 30,
-    color: 'purple',
+    color: 'orange',
     ...override
   })
 }

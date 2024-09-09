@@ -208,11 +208,12 @@ let lastDownY = 0;
 let lastUpX = 0;
 let lastUpY = 0;
 function clickedInBounds(s: Sprite, scale = SCALE) {
+  console.log({ lastDownX, lastDownY, lastUpX, lastUpY, s, scale })
   if (
-    lastDownX > s.x && lastUpX > s.x &&
-    lastDownX < s.x + (s.width * scale) && lastUpX < s.x + (s.width * scale) &&
-    lastDownY > s.y && lastUpY > s.y &&
-    lastDownY < s.y + (s.height * scale) && lastUpY < s.y + (s.height * scale)
+    lastDownX > s.x - 20 && lastUpX > s.x - 20 &&
+    lastDownX < s.x + (s.width * scale) + 20 && lastUpX < s.x + (s.width * scale) + 20 &&
+    lastDownY > s.y - 20 && lastUpY > s.y - 20 &&
+    lastDownY < s.y + (s.height * scale) + 20 && lastUpY < s.y + (s.height * scale) + 20
   ) {
     return true;
   }
