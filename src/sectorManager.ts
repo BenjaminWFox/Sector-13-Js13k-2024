@@ -60,7 +60,7 @@ function managePlayerHit(enemy: Sprite) {
     } else {
       state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
       state.invulnerable = true;
-      adjustFear(50)
+      adjustFear(20)
 
       setTimeout(() => {
         if (!state.gameOver) {
@@ -118,6 +118,7 @@ export class Sector {
       return;
     } else if (!this.loaded) {
       state.comms = this.comms;
+      adjustFear(7.5)
       // data.scenes.game.remove(data.scenes.game.objects[3]);
       // data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
       data.scenes.game.objects[3] = getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 });

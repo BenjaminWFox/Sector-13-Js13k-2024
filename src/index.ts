@@ -32,7 +32,6 @@ function nextSector() {
     endGame();
   } else {
     setStoreItem(`${state.currentSectorNumber}`, 1)
-    adjustFear(-10)
     state.currentSectorClass = currentSector();
   }
 }
@@ -84,7 +83,7 @@ const loop = GameLoop({
       // Weaponry
       if (!state.gameOver) {
         // Singe shot (possible double ROF)
-        if (!state.gameOver && state.totalTime % (state.powerups.doublerate ? 10 - state.rofAdjust : 20 - state.rofAdjust) === 0) {
+        if (!state.gameOver && state.totalTime % (state.powerups.doublerate ? 15 - state.rofAdjust : 20 - state.rofAdjust) === 0) {
           bulletManager.add(getBullet())
         }
 

@@ -349,6 +349,7 @@ export class Enemy extends SpriteClass {
       this.shieldIntegrity -= 1;
     } else {
       this.opacity = 0;
+      adjustFear(-1)
     }
   }
 
@@ -485,31 +486,31 @@ const commsSprite = Sprite({
 const fearSprite = Sprite({
   x: 22 * SCALE,
   y: 256 * SCALE,
-  width: WIDTH - (25 * SCALE),
+  width: WIDTH - (24 * SCALE),
   height: 7 * SCALE,
   color: 'black',
   render: function () {
     this.draw();
     this.context!.strokeStyle = 'white';
-    this.context!.lineWidth = 2;
+    this.context!.lineWidth = 10;
     this.context!.strokeRect(0, 0, this.width!, this.height!);
   }
 })
 
 const fearSpriteInner = Sprite({
-  x: fearSprite.x + 10,
-  y: fearSprite.y + 10,
-  width: fearSprite.width - 20,
-  height: fearSprite.height - 20,
+  x: fearSprite.x + 20,
+  y: fearSprite.y + 25,
+  width: fearSprite.width - 40,
+  height: fearSprite.height - 50,
   color: 'white',
 })
 
 function adjustFear(amount: number = 0) {
   state.fear = clamp(0, 100, state.fear + amount);
-  state.rofAdjust = Math.ceil((100 - state.fear) / 20) || 0
-  state.rngAdjust = Math.floor(100 - state.fear) * 2 || 0
+  state.rofAdjust = Math.ceil((0 + state.fear) / 10) || 0
+  state.rngAdjust = Math.floor(0 + state.fear) * 4 || 0
   console.log('Adjustments', state.rofAdjust, state.rngAdjust)
-  fearSpriteInner.width = (fearSprite.width - 20) * (state.fear / 100);
+  fearSpriteInner.width = (fearSprite.width - 40) * (state.fear / 100);
 }
 
 export class EnemyBullet extends SpriteClass {

@@ -1,6 +1,6 @@
 import { getStoreItem, randInt, Sprite, SpriteClass } from 'kontra';
 import { data } from './data';
-import { getBoldText, getBoldNumbers, getText, getNumbers, commsSprite, fearSprite, fearSpriteInner } from './sprites';
+import { getBoldText, getBoldNumbers, getText, getNumbers, commsSprite, fearSprite, fearSpriteInner, adjustFear } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
@@ -10,6 +10,7 @@ const playGameSector = (i: number) => {
   sfx(data.sounds.sectorClear);
   state.currentSectorNumber = i;
   state.currentSectorClass = currentSector();
+  adjustFear((i - 1) * 7.5)
 
   data.buttons.pause = getBoldText(data.labels.pause, 112, 7, { button: true })
   data.scenes.game.add(
