@@ -1,6 +1,6 @@
 import { getStoreItem, randInt, Sprite, SpriteClass } from 'kontra';
 import { data } from './data';
-import { getBoldText, getBoldNumbers, getText, getNumbers, commsSprite, fearSprite, fearSpriteInner, adjustFear } from './sprites';
+import { getBoldText, getBoldNumbers, getText, getNumbers, commsSprite, fearSprite, fearSpriteInner, adjustFear, getScore } from './sprites';
 import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
@@ -28,6 +28,7 @@ const playGameSector = (i: number) => {
   );
 
   data.scenes.game.show();
+  data.scenes.fear.show();
   data.scenes.select.hide();
 }
 
@@ -69,15 +70,25 @@ function initScenes() {
     if (state.loop.isStopped) state.loop.start();
   }
 
-  data.buttons.start = getBoldText(data.labels.start, 59, 164, { button: true });
+  data.buttons.story = getBoldText(data.labels.story, 59, 149, { button: true });
+  data.buttons.hardcore = getBoldText(data.labels.hardcore, 48, 189, { button: true });
   data.scenes.title.add(
     ...(() => [
       // title
-      getBoldText(data.labels.sector, 11, 38, { scale: 32 }),
+      getBoldText(data.labels.sector, 11, 30, { scale: 32 }),
       // number 13
-      getBoldNumbers(data.labels.thirteen, 59, 70, { scale: 32 }),
-      // start
-      data.buttons.start,
+      getBoldNumbers(data.labels.thirteen, 57, 62, { scale: 32 }),
+      // highscore
+      getBoldText(data.labels.highscore, 46, 113),
+      Sprite({ ...getScore(getStoreItem(data.labels.highscore)), x: 560, y: 1250 }),
+
+      // start story mode
+      data.buttons.story,
+      getText('hints and help from the crew', 20, 163),
+
+      // start hardcore mode
+      data.buttons.hardcore,
+      getText('just you and a lot of enemies', 18, 203),
     ])(),
   )
 

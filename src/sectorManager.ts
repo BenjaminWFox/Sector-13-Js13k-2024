@@ -1,5 +1,5 @@
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
-import { collides, degToRad, randInt, Sprite } from "kontra"
+import { collides, degToRad, getStoreItem, randInt, setStoreItem, Sprite } from "kontra"
 import { adjustFear, commsSprite, Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
 import { data, Enemies } from "./data";
@@ -136,11 +136,11 @@ export class Sector {
         (data.scenes.game.objects[2] as Sprite).dy = 0;
         (data.scenes.game.objects[3] as Sprite).y = 12 * SCALE;
         (data.scenes.game.objects[3] as Sprite).dy = 0;
-        if (this.powerupProbability) {
+        if (this.powerupProbability && !state.hardcore) {
           // Specially granted powerups from pre-sector communication:
           powerupManager.add(getPowerup(commsSprite.width / 2, commsSprite.y + commsSprite.height + 80, this.powerupProbability)!);
         }
-        if (this.comms.length) {
+        if (this.comms.length && !state.hardcore) {
           data.scenes.communication.show();
         } else {
           this.proceed()
@@ -290,7 +290,8 @@ function getAllSectors() {
     [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 12, 8))],
   ], [
     'commander we are scared',
-    'but we will not fail you',
+    'more sector miss enemy more fear',
+    'kill enemy get powerup less fear',
     'we channel our fear',
     'shooting faster',
     'finding more powerups'
@@ -521,6 +522,8 @@ const currentSector = () => state.sectors[state.currentSectorNumber - 1];
 
 function endGame() {
   state.gameOver = true;
+  const hs = getStoreItem(data.labels.highscore) || 0;
+  if (state.score > hs) setStoreItem(data.labels.highscore, state.score);
   setTimeout(() => {
     data.scenes.game.hide();
     data.scenes.end.show();

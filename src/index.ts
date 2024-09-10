@@ -170,6 +170,7 @@ const loop = GameLoop({
 });
 
 let startGame = () => {
+  console.log('Starting game...');
   initElements(canvas, document.getElementById('body')!)
 
   initCalculations(canvas);
@@ -183,7 +184,6 @@ let startGame = () => {
   // data.scenes.end.show();
   // data.scenes.game.show();
   data.scenes.title.show();
-  data.scenes.fear.show();
   // data.scenes.communication.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
@@ -234,8 +234,15 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   lastUpY = adjustedY(e.y);
 
   if (!data.scenes.title.hidden) {
-    if (clickedInBounds(data.buttons.start)) {
+    if (clickedInBounds(data.buttons.story)) {
+      console.log('STROY')
       data.scenes.title.hide(); data.scenes.select.show();
+      playSong(zzfxSong);
+    }
+
+    if (clickedInBounds(data.buttons.hardcore)) {
+      data.scenes.title.hide(); data.scenes.select.show();
+      state.hardcore = true;
       playSong(zzfxSong);
     }
   }

@@ -4,6 +4,7 @@ import { data } from "./data";
 import { SCALE } from './constants';
 import { adjustFear, Enemy, EnemyBullet, getExplosion, getShield } from './sprites';
 import { currentSector } from './sectorManager';
+import { sfx } from './music';
 
 type UpdaterFn<T extends Sprite | Enemy | EnemyBullet> = (sprite: T) => void;
 export class Manager<T extends Sprite | Enemy> {
@@ -45,7 +46,7 @@ export class Manager<T extends Sprite | Enemy> {
         asset.x - asset.width * SCALE > data.calculations.canvasMaxWidth
       ) {
         if (!!asset.type) {
-          adjustFear(2)
+          adjustFear(4)
         }
         asset.opacity = 0;
       }
@@ -68,6 +69,8 @@ const powerupManager = new Manager(
     if (collides(data.sprites.player, powerup)) {
 
       powerup.opacity = 0;
+
+      sfx(data.sounds.powerup);
 
       adjustFear(-1);
 

@@ -17,9 +17,10 @@ type Data = {
   spriteSheets: Record<string, SpriteSheet | undefined>;
   calculations: Record<string, number>;
   buttons: {
-    start: Sprite;
     pause: Sprite;
     restart: Sprite;
+    story: Sprite;
+    hardcore: Sprite;
     sectors: Record<string, Sprite>;
   },
   powerupprobability: Record<string, Array<number>>
@@ -30,7 +31,6 @@ const labels = {
   pause: 'pause',
   score: 'score',
   thirteen: '13',
-  start: 'start',
   select: 'select',
   title: 'title',
   game: 'game',
@@ -43,7 +43,10 @@ const labels = {
   loser: 'loser',
   extralife: 'extralife',
   communication: 'comms',
-  fear: 'fear'
+  fear: 'fear',
+  highscore: 'highscore',
+  story: 'story',
+  hardcore: 'hardcore',
 }
 
 export enum Enemies {
@@ -61,6 +64,7 @@ function initData(): Data {
       sectorClear: [1.5, , 52, .18, .19, .21, 1, 1.4, , , 418, .14, .18, .2, , , .39, .63, .24],
       bullet: [.2, , 450, .03, .08, .17, 1, 1.1, -6, 16, , , , , , , , .85, .2, , 161],
       explode: [1, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952],
+      powerup: [.7, .01, 65.40639, , .01, , , 1.9, , , 100, .04, , .5, , .1, , .98, .03, , 329] // [.7, .01, 201, , .01, , 1, 1.9, , , 486, .04, , .5, , .1, , .98, .03, , 329]// [.7, .01, 601, , .01, , 1, 1.9, , , 486, .04, , .2, , , , .98, .03, , 329] // [, 0, 162, .01, .02, .15, 1, , 4, -5, 498, .07, , 1, , .1, , .97, .04, , 104] // [, 0, 162, .01, .02, .15, 1, , 4, -5, 398, .07, , , , .1, , .97, .04, , 104] // [.75, , 362, .01, .02, .19, , 3, 1, -5, 398, .07, , , , .1, , .97, .04, , 104],
     },
     elements: {
       body: makeElement<HTMLElement>('body'),
@@ -126,9 +130,10 @@ function initData(): Data {
       canvasMaxWidth: 0,
     },
     buttons: {
-      start: Sprite(),
       pause: Sprite(),
       restart: Sprite(),
+      story: Sprite(),
+      hardcore: Sprite(),
       sectors: {}
     },
     // Index 0 & 1 are bounds for RNG. Index 2 is first sector powerup is found.

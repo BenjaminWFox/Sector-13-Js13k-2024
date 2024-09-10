@@ -16,7 +16,7 @@ import enemyPinkPath from './assets/images/enemyPink.gif';
 import enemyBlueTwoPath from './assets/images/enemyBlueTwo.gif';
 import enemyBulletPath from './assets/images/enemyBullet.gif';
 import enemyBombPath from './assets/images/enemyBomb.gif';
-import lettersBoldPath from './assets/images/lettersBold2.gif';
+import lettersBoldPath from './assets/images/lettersBold3.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import lettersFullPath from './assets/images/lettersFull.gif';
@@ -34,10 +34,12 @@ const loaded = [];
 const totalLoads = 17;
 
 function makeSprites(startFn: () => void) {
+  console.log('Window Loaded');
   function checkLoaded(loadedImage: HTMLImageElement) {
     loaded.push(loadedImage);
 
     if (loaded.length === totalLoads && startFn) {
+      console.log('All sprites loaded');
       startFn();
     }
   }
@@ -506,6 +508,7 @@ const fearSpriteInner = Sprite({
 })
 
 function adjustFear(amount: number = 0) {
+  console.log('Fear Adjusted');
   state.fear = clamp(0, 100, state.fear + amount);
   state.rofAdjust = Math.ceil((0 + state.fear) / 10) || 0
   state.rngAdjust = Math.floor(0 + state.fear) * 4 || 0
@@ -643,7 +646,7 @@ const textTypes: Record<string, TextType> = {
     image: data.images.lettersBold,
     letterWidth: 7,
     letterHeight: 8,
-    characters: 'ACEGILMNOPRSTUVW',
+    characters: 'ACDEGHILMNOPRSTUVWY',
   },
   letter: {
     image: data.images.letters,
@@ -719,7 +722,7 @@ const getBoldText = (text: string, x: number, y: number, options?: {}) => getTex
 const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterFull, options);
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
-const getScore = () => getNumbers((new Array(10 - state.score.toString().length).fill(0).join('') + state.score.toString()), 5, 18);
+const getScore = (score?: number) => getNumbers((new Array(10 - (score || state.score).toString().length).fill(0).join('') + (score || state.score).toString()), 5, 18);
 
 export {
   makeSprites,
