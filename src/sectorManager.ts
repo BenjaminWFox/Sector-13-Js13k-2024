@@ -1,7 +1,7 @@
+import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { collides, degToRad, randInt, Sprite } from "kontra"
 import { adjustFear, commsSprite, Enemy, getEnemyShip, getExplosion, getNumbers, getPowerup } from "./sprites"
 import { resetPowerups, state } from "./state";
-import { bombManager, bulletManager, enemyProjectileManager, explosionManager, Manager, powerupManager } from "./spriteManager";
 import { data, Enemies } from "./data";
 import { HEIGHT, SCALE, WIDTH } from "./constants";
 
@@ -118,7 +118,7 @@ export class Sector {
       return;
     } else if (!this.loaded) {
       state.comms = this.comms;
-      adjustFear(7.5)
+      if (state.currentSectorNumber !== 1) adjustFear(7.5);
       // data.scenes.game.remove(data.scenes.game.objects[3]);
       // data.scenes.game.add(getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 }));
       data.scenes.game.objects[3] = getNumbers(state.currentSectorNumber.toString(), state.currentSectorNumber < 10 ? 74 : 70, 12, { scale: 20 });
@@ -207,7 +207,15 @@ export class Sector {
  */
 const cosFn = (shipXSpeed: number, waveXSpread: number, xPosition: number, dy: number) =>
   (enemy: Enemy) => { if (!enemy.initialized) { enemy.dy = dy; enemy.initialized = true; } enemy.x = (Math.cos((enemy.y) / shipXSpeed) * waveXSpread) + xPosition }
-const neutral = (startX: number, dy?: number) => (enemy: Enemy) => { enemy.x = startX; enemy.dy = dy || 8; }
+const neutral = (startX: number, dy: number, rotation: 180 | 0 = 0) => (enemy: Enemy) => {
+  if (!enemy.initialized) {
+    if (rotation === 180) enemy.y = HEIGHT + 50;
+    enemy.x = startX;
+    enemy.dy = dy;
+    enemy.rotation = degToRad(rotation);
+    enemy.initialized = true;
+  }
+}
 const yellowOne = (startX: number, startY: number, dx: number, dy: number, rotation: 90 | 180 | 270 | 0, maxLife: number = 360) => (enemy: Enemy) => {
   if (!enemy.initialized) {
     enemy.x = startX * SCALE;
@@ -262,192 +270,220 @@ const across = (startX: number, startY: number, dx: number) => (enemy: Enemy) =>
 
 const spawns = 13
 
-const sector1 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 200, 1200, 4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -200, 300, 4))],
-], [
-  'commander we are all rooting for you',
-  'focus on flying we do the rest',
-  'we manage your ship systems',
-  'we fire weapons and make powerups',
-  'dont let the enemies through',
-  'good luck out there'
-]);
-const sector2 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -12, 8))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 12, 8))],
-], [
-  'commander',
-  'we have fashioned you a shield',
-  'absorbs four projectiles',
-  'or enemy collisions'
-], data.powerupprobability.shield[0]);
-const sector3 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 800, 4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 900, -4))],
-], [])
-const sector4 = new Sector([
-  [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(300, 4))],
-  [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(600, 5))],
-  [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 5))],
-  [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 4))],
-  [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
-], [
-  'commander',
-  'watch out for shield enemies',
-  'here is some extra firepower',
-], data.powerupprobability.wingshot[0])
-const sector5 = new Sector([
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0))],
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90))],
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180))],
-  [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270))],
-], [
-  'commander here is a new powerup',
-  'bomb locks on to a target',
-  'good for enemies behind you',
-  'blows up if target disappears',
-], data.powerupprobability.bomb[0])
-const sector6 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(600, 18))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(900, 18))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
-], [])
-const sector7 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450, 8))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, -200, 1050, 8))],
-], [])
-const sector8 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
-  [spawns * 20, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(750, 12))],
-  [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, spawns * 40))],
-  [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, spawns * 40))],
-  [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, spawns * 40))],
-  [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, spawns * 40))],
+function getAllSectors() {
+  const sector1 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 200, 1200, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -200, 300, 4))],
+  ], [
+    'commander we are ready',
+    'focus on flying',
+    'we do the rest',
+    'we fire all weapons',
+    'we handle the powerups',
+    'good luck out there'
+  ]);
+  const sector2 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -12, 8))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 12, 8))],
+  ], [
+    'commander we are scared',
+    'but we will not fail you',
+    'we channel our fear',
+    'shooting faster',
+    'finding more powerups'
+  ], data.powerupprobability.shield[0]);
+  const sector3 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 800, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 900, -4))],
+  ], [])
+  const sector4 = new Sector([
+    [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(300, 4))],
+    [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(600, 5))],
+    [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 5))],
+    [0, 3, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 4))],
+    [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
+  ], [
+    'commander',
+    'watch out for shield enemies',
+    'here is some extra firepower',
+  ], data.powerupprobability.wingshot[0])
+  const sector5 = new Sector([
+    [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0))],
+    [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90))],
+    [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180))],
+    [0, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270))],
+  ], [
+    'commander a new powerup is ready',
+    'the bomb',
+    'locks on to a targets',
+    'good for enemies behind',
+    'blows up if target disappears',
+  ], data.powerupprobability.bomb[0])
+  const sector6 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(600, 18))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(900, 18))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
+  ], [])
+  const sector7 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, 200, 450, 8))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(200, -200, 1050, 8))],
+  ], [])
+  const sector8 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 200, 1200, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -200, 300, 4))],
 
-  [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, spawns * 40))],
-  [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, spawns * 40))],
-  [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, spawns * 40))],
-  [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, spawns * 40))],
-], []);
-const sector9 = new Sector([
-  [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(300, 8))],
-  [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(600, 8))],
-  [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 8))],
-  [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 8))],
-  [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
-  [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-  [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
-  [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-  [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
-], []);
-const sector10 = new Sector([
-  [0, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 400, 1000, 2))],
-  [0, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -400, 500, 2))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(300, 12))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1200, 12))],
+    [spawns * 20, spawns, 40, getEnemyShip, Enemies.enemyPink, new Manager(neutral(750, 12))],
 
-  [0, spawns, 60, getEnemyShip, Enemies.enemyGreen, new Manager(across(0, 1100, 4))],
-  [0, spawns, 60, getEnemyShip, Enemies.enemyGreen, new Manager(across(WIDTH, 1200, -4))],
+    [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, spawns * 40))],
+    [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, spawns * 40))],
+    [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, spawns * 40))],
+    [120, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, spawns * 40))],
 
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
-  [40, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 700, 4))],
-  [80, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 900, 4))],
+    [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, spawns * 40))],
+    [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, spawns * 40))],
+    [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, spawns * 40))],
+    [280, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, spawns * 40))],
+  ], []);
+  const sector9 = new Sector([
+    [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(300, 8))],
+    [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(600, 8))],
+    [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 8))],
+    [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 8))],
+    [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
+    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
+    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+  ], []);
+  const sector10 = new Sector([
+    [0, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 400, 1000, 2))],
+    [0, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, -400, 500, 2))],
 
-  [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
-  [40, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 800, -4))],
-  [80, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 1000, -4))],
-], []);
+    [0, spawns, 60, getEnemyShip, Enemies.enemyGreen, new Manager(across(0, 1100, 4))],
+    [0, spawns, 60, getEnemyShip, Enemies.enemyGreen, new Manager(across(WIDTH, 1200, -4))],
 
-const s11YellowOneSpawns: Array<SectorData> = []
-new Array(5).fill('').forEach((_, i: number) => {
-  s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, 360))]);
-  s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, 360))]);
-  s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, 360))]);
-  s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, 360))]);
-})
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
+    [40, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 700, 4))],
+    [80, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 900, 4))],
 
-const sector11 = new Sector([
-  ...s11YellowOneSpawns,
-  [120, spawns, 120, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, HEIGHT, -8, -4, 180))],
-], []);
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
+    [40, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 800, -4))],
+    [80, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 1000, -4))],
+  ], []);
 
-const s12YellowOneSpawns: Array<SectorData> = []
-new Array(5).fill('').forEach((_, i: number) => {
-  s12YellowOneSpawns.push([400 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 8))]);
-  s12YellowOneSpawns.push([450 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 700, 8))]);
-  s12YellowOneSpawns.push([400 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -8))]);
-  s12YellowOneSpawns.push([450 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 800, -8))]);
-})
+  const s11YellowOneSpawns: Array<SectorData> = []
+  new Array(5).fill('').forEach((_, i: number) => {
+    s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 256, -4, -4, 0, 360))]);
+    s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 256, 4, -4, 90, 360))]);
+    s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, 360))]);
+    s11YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, 360))]);
+  })
 
-const sector12 = new Sector([
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
-  [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+  const sector11 = new Sector([
+    ...s11YellowOneSpawns,
 
-  [spawns * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
-  [spawns * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
 
-  [spawns * 2 * 40 + 40, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
-  [spawns * 2 * 40 + 40, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+    [40 * spawns, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 700, 4))],
+    [40 * spawns, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 800, -4))],
 
-  [spawns * 3 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
-  [spawns * 3 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+    [40 * spawns * 2, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
+    [40 * spawns * 2, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -4))],
 
-  [spawns * 4 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
-  [spawns * 4 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+    [120, spawns, 120, getEnemyShip, Enemies.enemyBlueTwo, new Manager(neutral(200, -8, 180))],
+    [120, spawns, 120, getEnemyShip, Enemies.enemyBlueTwo, new Manager(neutral(1300, -8, 180))],
+  ], [
+    'captain look out',
+    'behind you'
+  ], data.powerupprobability.wingbomb[0]);
+
+  const s12YellowOneSpawns: Array<SectorData> = []
+  new Array(5).fill('').forEach((_, i: number) => {
+    s12YellowOneSpawns.push([400 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 8))]);
+    s12YellowOneSpawns.push([450 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 700, 8))]);
+    s12YellowOneSpawns.push([400 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 600, -8))]);
+    s12YellowOneSpawns.push([450 + (spawns * 40 * i), spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, 800, -8))]);
+  })
+
+  const sector12 = new Sector([
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+
+    [spawns * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
+    [spawns * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+
+    [spawns * 2 * 40 + 40, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
+    [spawns * 2 * 40 + 40, spawns, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+
+    [spawns * 3 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
+    [spawns * 3 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
+
+    [spawns * 4 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, 300, 1000, 10))],
+    [spawns * 4 * 40 + 40, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(120, -300, 500, 10))],
 
 
-  [0, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
-  [0, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
+    [0, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
+    [0, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
 
-  [spawns * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
-  [spawns * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
+    [spawns * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
+    [spawns * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
 
-  [spawns * 2 * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
-  [spawns * 2 * 80 + 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
+    [spawns * 2 * 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, 50, 1200, 5))],
+    [spawns * 2 * 80, spawns, 50, getEnemyShip, Enemies.enemyBlueTwo, new Manager(cosFn(80, -50, 300, 5))],
 
 
-  [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(150, 24))],
-  [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1350, 24))],
+    [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(150, 24))],
+    [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1350, 24))],
 
-  [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(150, 24))],
-  [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1350, 24))],
+    [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(150, 24))],
+    [400, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(neutral(1350, 24))],
 
-  ...s12YellowOneSpawns,
-], []);
+    ...s12YellowOneSpawns,
+  ], []);
 
-const s13YellowOneSpawns: Array<SectorData> = []
-new Array(10).fill('').forEach((_, i: number) => {
-  s13YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, 360))])
-  s13YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, 360))])
-})
+  const s13YellowOneSpawns: Array<SectorData> = []
+  new Array(10).fill('').forEach((_, i: number) => {
+    s13YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(0, 30, 4, 4, 180, 360))])
+    s13YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, 360))])
+  })
 
-const sector13 = new Sector([
-  [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
-  [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
-  [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
-  [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
+  const sector13 = new Sector([
+    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
+    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
+    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
+    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
 
-  ...s13YellowOneSpawns,
+    [240, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(across(WIDTH, 700, -8))],
+    [240, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(across(0, 500, 8))],
 
-  [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-  [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+    ...s13YellowOneSpawns,
 
-  [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
-  [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
-  [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
-  [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
-], [
-  'commander this is it',
-  ' ',
-  'good luck'
-]);
-const sectors = [sector1, sector2, sector3, sector4, sector5, sector6, sector7, sector8, sector9, sector10, sector11, sector12, sector13]
-const currentSector = () => sectors[state.currentSectorNumber - 1]
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+
+    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
+    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
+    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
+    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
+  ], [
+    'commander this is it',
+    ' ',
+    'good luck'
+  ], data.powerupprobability.extralife[0]);
+  const sectors = [sector1, sector2, sector3, sector4, sector5, sector6, sector7, sector8, sector9, sector10, sector11, sector12, sector13]
+  return sectors;
+}
+
+const currentSector = () => state.sectors[state.currentSectorNumber - 1]
+
 
 function endGame() {
   state.gameOver = true;
@@ -457,4 +493,4 @@ function endGame() {
   }, 2000)
 }
 
-export { currentSector, sectors, sector1, sector2, sector3, endGame }
+export { getAllSectors, currentSector, endGame }

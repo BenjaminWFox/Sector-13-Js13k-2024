@@ -1,11 +1,12 @@
 import { GameLoop } from "kontra"
 import { SCALE } from "./constants"
-import { sectors } from "./sectorManager"
+import { Sector } from "./sectorManager"
+// import { sectors } from "./sectorManager"
 
 function initState() {
   return {
     currentSectorNumber: 1,
-    currentSectorClass: sectors[0],
+    currentSectorClass: undefined as unknown as Sector,
     shipEngaged: false,
     loop: undefined as unknown as GameLoop,
     paused: false,

@@ -10,7 +10,7 @@ const playGameSector = (i: number) => {
   sfx(data.sounds.sectorClear);
   state.currentSectorNumber = i;
   state.currentSectorClass = currentSector();
-  adjustFear((i - 1) * 7.5)
+  adjustFear((i - 2) * 7.5)
 
   data.buttons.pause = getBoldText(data.labels.pause, 112, 7, { button: true })
   data.scenes.game.add(

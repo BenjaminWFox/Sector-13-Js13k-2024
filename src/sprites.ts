@@ -486,7 +486,7 @@ const commsSprite = Sprite({
 const fearSprite = Sprite({
   x: 22 * SCALE,
   y: 256 * SCALE,
-  width: WIDTH - (24 * SCALE),
+  width: WIDTH - (26 * SCALE),
   height: 7 * SCALE,
   color: 'black',
   render: function () {

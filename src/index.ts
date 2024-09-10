@@ -10,7 +10,7 @@ import { adjustFear, getBomb, getBullet, getLife, getScore, makeSprites } from '
 import { initScenes, playGameSector } from './scenes';
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
-import { currentSector, endGame, sectors } from './sectorManager';
+import { currentSector, endGame, getAllSectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
 // import { sfx } from './music';
 import { SCALE } from './constants';
@@ -28,7 +28,7 @@ function nextSector() {
 
   sfx(data.sounds.sectorClear);
 
-  if (state.currentSectorNumber > sectors.length) {
+  if (state.currentSectorNumber > state.sectors.length) {
     endGame();
   } else {
     setStoreItem(`${state.currentSectorNumber}`, 1)
@@ -172,6 +172,7 @@ const loop = GameLoop({
 let startGame = () => {
   initElements(canvas, document.getElementById('body')!)
   initCalculations(canvas);
+  state.sectors = getAllSectors();
   initScenes();
   adjustFear();
   state.loop = loop;
@@ -206,15 +207,15 @@ let lastDownX = 0;
 let lastDownY = 0;
 let lastUpX = 0;
 let lastUpY = 0;
+let inComms = false;
 function clickedInBounds(s: Sprite, scale = SCALE) {
-  console.log({ lastDownX, lastDownY, lastUpX, lastUpY, s, scale })
   if (
     lastDownX > s.x - 20 && lastUpX > s.x - 20 &&
     lastDownX < s.x + (s.width * scale) + 20 && lastUpX < s.x + (s.width * scale) + 20 &&
     lastDownY > s.y - 20 && lastUpY > s.y - 20 &&
     lastDownY < s.y + (s.height * scale) + 20 && lastUpY < s.y + (s.height * scale) + 20
   ) {
-    return true;
+    return !data.scenes.communication.hidden ? inComms : true;
   }
 
   return false;
@@ -222,6 +223,7 @@ function clickedInBounds(s: Sprite, scale = SCALE) {
 document.getElementById('c')!.addEventListener('mousedown', (e) => {
   lastDownX = adjustedX(e.x);
   lastDownY = adjustedY(e.y);
+  inComms = data.scenes.communication.hidden ? false : true;
 })
 document.getElementById('c')!.addEventListener('mouseup', (e) => {
   lastUpX = adjustedX(e.x);
