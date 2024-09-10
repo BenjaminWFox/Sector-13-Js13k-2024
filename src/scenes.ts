@@ -70,6 +70,11 @@ function initScenes() {
     if (state.loop.isStopped) state.loop.start();
   }
 
+  const highscore = () => [
+    getBoldText(data.labels.highscore, 46, 113),
+    Sprite({ ...getScore(getStoreItem(data.labels.highscore)), x: 560, y: 1250 }),
+  ]
+
   data.buttons.story = getBoldText(data.labels.story, 59, 149, { button: true });
   data.buttons.hardcore = getBoldText(data.labels.hardcore, 48, 189, { button: true });
   data.scenes.title.add(
@@ -78,9 +83,7 @@ function initScenes() {
       getBoldText(data.labels.sector, 11, 30, { scale: 32 }),
       // number 13
       getBoldNumbers(data.labels.thirteen, 57, 62, { scale: 32 }),
-      // highscore
-      getBoldText(data.labels.highscore, 46, 113),
-      Sprite({ ...getScore(getStoreItem(data.labels.highscore)), x: 560, y: 1250 }),
+      ...highscore(),
 
       // start story mode
       data.buttons.story,
@@ -133,19 +136,22 @@ function initScenes() {
     ])(),
   );
 
-  data.buttons.restart = getBoldText(data.labels.restart, 52, 151, { button: true })
+  data.buttons.restart = getBoldText(data.labels.restart, 52, 191, { button: true })
   data.scenes.end.add(
     ...(() => [
       getBoldText(data.labels.gameover, 5, 51, { scale: 26 }),
+      ...highscore(),
+      getBoldText('your score', 41, 145),
       data.buttons.restart,
     ])()
   );
   data.scenes.end.onShow = () => {
     if (state.lives < 0) {
-      data.scenes.end.add(getBoldText(data.labels.loser, 40, 101, { scale: 22 }))
+      data.scenes.end.add(getBoldText(data.labels.loser, 28, 86, { scale: 18 }))
     } else {
-      data.scenes.end.add(getBoldText(data.labels.winner, 32, 101, { scale: 22 }))
+      data.scenes.end.add(getBoldText(data.labels.winner, 32, 86, { scale: 19 }))
     }
+    data.scenes.end.add(Sprite({ ...getScore(state.score), x: 560, y: 1570 }))
     data.sprites.player.dy = -30;
   }
 

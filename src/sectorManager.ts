@@ -87,7 +87,6 @@ export class Sector {
     this.data = sector;
     this.comms = sectorComms;
     this.powerupProbability = powerupProbability;
-    console.log('Sector Constructor', powerupProbability)
   }
 
   getRandomEnemy() {
@@ -118,7 +117,6 @@ export class Sector {
     if (this.completed) {
       return;
     } else if (!this.loaded) {
-      console.log('Loading sector');
       state.comms = this.comms;
       if (state.currentSectorNumber !== 1) adjustFear(7.5);
       // data.scenes.game.remove(data.scenes.game.objects[3]);
@@ -130,7 +128,6 @@ export class Sector {
       (data.scenes.game.objects[3] as Sprite).dy = -40;
       this.loaded = true;
     } else if (!this.started) {
-      console.log('Powerup Probability?', this.powerupProbability);
       if ((data.scenes.game.objects[2] as Sprite).y < 2 * SCALE) {
         (data.scenes.game.objects[2] as Sprite).y = 2 * SCALE;
         (data.scenes.game.objects[2] as Sprite).dy = 0;
@@ -149,7 +146,6 @@ export class Sector {
     } else if (!this.completed) {
       if (!this.hasFirstSpawn) { state.sectorTime = 0; this.hasFirstSpawn = true }
       for (const [spawnStart, totalSpawn, spawnSpacing, spriteFactory, enemy, manager] of this.data) {
-        console.log()
         if (state.sectorTime >= spawnStart && manager.spawned < totalSpawn && (state.sectorTime + spawnStart) % spawnSpacing === 0) {
           manager.add(spriteFactory(enemy))
         } else if (!manager.completed && manager.spawned >= totalSpawn && manager.assets.length === 0) {

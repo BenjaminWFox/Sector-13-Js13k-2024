@@ -20,7 +20,7 @@ import lettersBoldPath from './assets/images/lettersBold3.gif';
 import numbersBoldPath from './assets/images/numbersBold.gif';
 import lettersPath from './assets/images/letters.gif';
 import lettersFullPath from './assets/images/lettersFull.gif';
-import numbersPath from './assets/images/numbers.gif';
+import numbersPath from './assets/images/numbers2.gif';
 import explosionPath from './assets/images/explosion.gif';
 import powerupPath from './assets/images/powerups.gif';
 import shieldPath from './assets/images/shield.png';
@@ -508,11 +508,9 @@ const fearSpriteInner = Sprite({
 })
 
 function adjustFear(amount: number = 0) {
-  console.log('Fear Adjusted');
   state.fear = clamp(0, 100, state.fear + amount);
   state.rofAdjust = Math.ceil((0 + state.fear) / 10) || 0
   state.rngAdjust = Math.floor(0 + state.fear) * 4 || 0
-  // console.log('Adjustments', state.rofAdjust, state.rngAdjust)
   fearSpriteInner.width = (fearSprite.width - 40) * (state.fear / 100);
 }
 
@@ -550,8 +548,6 @@ function getPowerup(x: number, y: number, override?: number): Sprite | undefined
   if (!override && state.playershield > 0 && prob >= data.powerupprobability.shield[0] && prob <= data.powerupprobability.shield[1]) {
     return
 
-  } else if (!!override) {
-    console.log('Override is', prob);
   }
 
   for (const [key, [lowBound, highBound, firstSectorAllowed]] of Object.entries(data.powerupprobability)) {
@@ -718,11 +714,12 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
   });
 }
 
+const getScoreText = (score?: number) => (new Array(10 - (score || state.score).toString().length).fill(0).join('') + (score || state.score).toString());
 const getBoldText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterBold, { ...options, bold: true });
 const getText = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.letterFull, options);
 const getBoldNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.numberBold, { ...options, bold: true });
 const getNumbers = (text: string, x: number, y: number, options?: {}) => getTextSprite(text, x, y, textTypes.number, options);
-const getScore = (score?: number) => getNumbers((new Array(10 - (score || state.score).toString().length).fill(0).join('') + (score || state.score).toString()), 5, 18);
+const getScore = (score?: number) => getNumbers(getScoreText(score), 5, 18);
 
 export {
   makeSprites,
@@ -745,4 +742,5 @@ export {
   fearSprite,
   fearSpriteInner,
   adjustFear,
+  getScoreText
 };

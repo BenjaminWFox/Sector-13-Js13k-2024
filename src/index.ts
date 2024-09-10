@@ -170,7 +170,6 @@ const loop = GameLoop({
 });
 
 let startGame = () => {
-  console.log('Starting game...');
   initElements(canvas, document.getElementById('body')!)
 
   initCalculations(canvas);
@@ -235,7 +234,6 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
 
   if (!data.scenes.title.hidden) {
     if (clickedInBounds(data.buttons.story)) {
-      console.log('STROY')
       data.scenes.title.hide(); data.scenes.select.show();
       playSong(zzfxSong);
     }
