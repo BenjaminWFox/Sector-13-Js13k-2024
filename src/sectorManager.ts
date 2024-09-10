@@ -482,8 +482,7 @@ function getAllSectors() {
   return sectors;
 }
 
-const currentSector = () => state.sectors[state.currentSectorNumber - 1]
-
+const currentSector = () => state.sectors[state.currentSectorNumber - 1];
 
 function endGame() {
   state.gameOver = true;

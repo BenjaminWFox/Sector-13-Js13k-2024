@@ -5,6 +5,7 @@ import { Sector } from "./sectorManager"
 
 function initState() {
   return {
+    sectors: [] as Array<Sector>,
     currentSectorNumber: 1,
     currentSectorClass: undefined as unknown as Sector,
     shipEngaged: false,
