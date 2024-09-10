@@ -509,7 +509,7 @@ function adjustFear(amount: number = 0) {
   state.fear = clamp(0, 100, state.fear + amount);
   state.rofAdjust = Math.ceil((0 + state.fear) / 10) || 0
   state.rngAdjust = Math.floor(0 + state.fear) * 4 || 0
-  console.log('Adjustments', state.rofAdjust, state.rngAdjust)
+  // console.log('Adjustments', state.rofAdjust, state.rngAdjust)
   fearSpriteInner.width = (fearSprite.width - 40) * (state.fear / 100);
 }
 
@@ -544,7 +544,12 @@ function getPowerup(x: number, y: number, override?: number): Sprite | undefined
   const prob = override || randInt(1, 1000 - state.rngAdjust);
 
   // No shield renew
-  if (!override && state.playershield > 0 && prob >= data.powerupprobability.shield[0] && prob <= data.powerupprobability.shield[1]) return;
+  if (!override && state.playershield > 0 && prob >= data.powerupprobability.shield[0] && prob <= data.powerupprobability.shield[1]) {
+    return
+
+  } else if (!!override) {
+    console.log('Override is', prob);
+  }
 
   for (const [key, [lowBound, highBound, firstSectorAllowed]] of Object.entries(data.powerupprobability)) {
     if (prob >= lowBound && prob <= highBound && state.currentSectorNumber >= firstSectorAllowed) {

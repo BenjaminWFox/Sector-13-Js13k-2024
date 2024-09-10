@@ -171,10 +171,14 @@ const loop = GameLoop({
 
 let startGame = () => {
   initElements(canvas, document.getElementById('body')!)
+
   initCalculations(canvas);
-  state.sectors = getAllSectors();
+
   initScenes();
+
   adjustFear();
+
+  state.sectors = getAllSectors();
   state.loop = loop;
   // data.scenes.end.show();
   // data.scenes.game.show();

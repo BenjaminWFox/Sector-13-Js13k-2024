@@ -87,6 +87,7 @@ export class Sector {
     this.data = sector;
     this.comms = sectorComms;
     this.powerupProbability = powerupProbability;
+    console.log('Sector Constructor', powerupProbability)
   }
 
   getRandomEnemy() {
@@ -117,6 +118,7 @@ export class Sector {
     if (this.completed) {
       return;
     } else if (!this.loaded) {
+      console.log('Loading sector');
       state.comms = this.comms;
       if (state.currentSectorNumber !== 1) adjustFear(7.5);
       // data.scenes.game.remove(data.scenes.game.objects[3]);
@@ -128,6 +130,7 @@ export class Sector {
       (data.scenes.game.objects[3] as Sprite).dy = -40;
       this.loaded = true;
     } else if (!this.started) {
+      console.log('Powerup Probability?', this.powerupProbability);
       if ((data.scenes.game.objects[2] as Sprite).y < 2 * SCALE) {
         (data.scenes.game.objects[2] as Sprite).y = 2 * SCALE;
         (data.scenes.game.objects[2] as Sprite).dy = 0;
@@ -248,7 +251,7 @@ const yellowOne = (startX: number, startY: number, dx: number, dy: number, rotat
 }
 const zigZag = (startX: number, startY: number, dx: number, dy: number, rotation: 90 | 180 | 270 | 0 = 0) => (enemy: Enemy) => {
   if (!enemy.initialized) {
-    enemy.x = startX * SCALE;
+    enemy.x = startX;
     enemy.y = startY;
     enemy.dx = dx;
     enemy.dy = dy;
@@ -283,8 +286,8 @@ function getAllSectors() {
     'good luck out there'
   ]);
   const sector2 = new Sector([
-    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -12, 8))],
-    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 12, 8))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -12, 8))],
+    [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 12, 8))],
   ], [
     'commander we are scared',
     'but we will not fail you',
@@ -357,10 +360,10 @@ function getAllSectors() {
     [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 8))],
     [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 8))],
     [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
-    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
-    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -8, 4))],
+    [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 8, 4))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -8, 4))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 8, 4))],
   ], []);
   const sector10 = new Sector([
     [0, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(cosFn(80, 400, 1000, 2))],
@@ -455,24 +458,54 @@ function getAllSectors() {
     s13YellowOneSpawns.push([380 * i, 1, 40, getEnemyShip, Enemies.enemyYellowOne, new Manager(yellowOne(150, 30, -4, 4, 270, 360))])
   })
 
+  // Sector is 3640 long with the green spawns and 3800 long for the yellow
   const sector13 = new Sector([
-    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
-    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
-    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
-    [0, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
+    [0, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
+    [0, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
+    [0, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
+    [0, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
 
+    [130, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
+    [130, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
+    [130, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
+    [130, spawns, 280, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
+
+    // 1040 long, starting from 240 - 1280
     [240, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(across(WIDTH, 700, -8))],
     [240, spawns * 2, 40, getEnemyShip, Enemies.enemyBlueOne, new Manager(across(0, 500, 8))],
 
     ...s13YellowOneSpawns,
 
-    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(130, 0, -8, 4))],
-    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(20, 0, 8, 4))],
+    // 520 long starting from 1040 - 1560
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -8, 7))],
+    [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 8, 7))],
 
-    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(150, 8))],
-    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(550, 8))],
-    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(950, 8))],
-    [130, spawns, 260, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1350, 8))],
+    // 2080 long starting from 0 - 2080
+    [0, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(zigZag(200, 0, 3, 10))],
+    [0, spawns * 2, 80, getEnemyShip, Enemies.enemyPink, new Manager(zigZag(1300, 0, -3, 10))],
+
+    // 1300 long starting from 1750 - 3040
+    [1740, spawns, 100, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, HEIGHT - 300, 6))],
+    [1740, spawns, 100, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(WIDTH, HEIGHT - 200, -6))],
+
+    // 1300 long starting from 2080 - 3380
+    [spawns * 2 * 80, spawns, 100, getEnemyShip, Enemies.enemyPink, new Manager(zigZag(200, 0, 3, 20))],
+    [spawns * 2 * 80, spawns, 100, getEnemyShip, Enemies.enemyPink, new Manager(zigZag(1300, 0, -3, 20))],
+
+    // 520 starting from 2320 - 2840
+    [2320, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(zigZag(200, 0, 12, 12))],
+    [2320, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(zigZag(1300, 0, -12, 12))],
+    [2320, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(350, 8))],
+    [2320, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(750, 8))],
+    [2320, spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(1150, 8))],
+
+    // 520 starting from 2840 - 3360
+    [2320 + (spawns * 40), spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(zigZag(200, 0, 12, 12))],
+    [2320 + (spawns * 40), spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(zigZag(1300, 0, -12, 12))],
+    [2320 + (spawns * 40), spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(350, 8))],
+    [2320 + (spawns * 40), spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(750, 8))],
+    [2320 + (spawns * 40), spawns, 60, getEnemyShip, Enemies.enemyBlueOne, new Manager(neutral(1150, 8))],
+
   ], [
     'commander this is it',
     ' ',
