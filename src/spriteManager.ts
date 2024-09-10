@@ -69,7 +69,7 @@ const powerupManager = new Manager(
 
       powerup.opacity = 0;
 
-      adjustFear(-2);
+      adjustFear(-1);
 
       const kind = (powerup.currentAnimation.name as keyof typeof state.powerups);
 

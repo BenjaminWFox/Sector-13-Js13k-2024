@@ -60,7 +60,7 @@ function managePlayerHit(enemy: Sprite) {
     } else {
       state.invulnerableAt = state.lives === 0 ? state.totalTime + 5000 : state.totalTime;
       state.invulnerable = true;
-      adjustFear(20)
+      adjustFear(50)
 
       setTimeout(() => {
         if (!state.gameOver) {
@@ -320,7 +320,7 @@ function getAllSectors() {
   ], [
     'commander a new powerup is ready',
     'the bomb',
-    'locks on to a targets',
+    'locks on to a target',
     'good for enemies behind',
     'blows up if target disappears',
   ], data.powerupprobability.bomb[0])
@@ -360,8 +360,10 @@ function getAllSectors() {
     [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(900, 8))],
     [0, spawns, 120, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(1200, 8))],
     [120 * 3, 1, 40, getEnemyShip, Enemies.enemyGreen, new Manager(neutral(750, 10))],
+
     [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -8, 4))],
     [120, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 8, 4))],
+
     [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(1300, 0, -8, 4))],
     [80 * spawns, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 8, 4))],
   ], []);

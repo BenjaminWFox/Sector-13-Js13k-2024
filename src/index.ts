@@ -193,14 +193,14 @@ let startGame = () => {
 
 // Mouse Handler
 document.getElementById('c')!.addEventListener('mousemove', (e) => {
-  if (!data.scenes.game.hidden && state.shipEngaged) {
+  if (!data.scenes.game.hidden && state.shipEngaged && !state.loop.isStopped && data.scenes.communication.hidden && e.y > 200) {
     state.touchOffset = 150;
     state.moveToX = e.x;
     state.moveToY = e.y;
   }
 });
 document.getElementById('c')!.addEventListener('touchmove', (e) => {
-  if (!data.scenes.game.hidden && state.shipEngaged) {
+  if (!data.scenes.game.hidden && state.shipEngaged && !state.loop.isStopped && data.scenes.communication.hidden) {
     state.touchOffset = 150;
     state.moveToX = e.targetTouches[0].clientX;
     state.moveToY = e.targetTouches[0].clientY;
@@ -240,7 +240,7 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
     }
   }
 
-  if (!data.scenes.game.hidden) {
+  if (!data.scenes.game.hidden && data.scenes.communication.hidden) {
     if (clickedInBounds(data.buttons.pause)) {
       state.loop.isStopped ? state.loop.start() : state.loop.stop()
     }
