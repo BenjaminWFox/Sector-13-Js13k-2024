@@ -177,6 +177,8 @@ const loop = GameLoop({
 let startGame = () => {
   console.log('12. StartGame')
 
+  state.isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1 ? true : false;
+
   initElements(canvas, document.getElementById('body')!)
 
   initCalculations(canvas);

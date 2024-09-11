@@ -333,12 +333,14 @@ export class Enemy extends SpriteClass {
   ody: number = 0;
   maxLife: number = 360;
   points: number = 10;
+  spawnAdjust: number;
 
   constructor(properties: any) {
     super(properties);
     this.type = properties.type;
     this.points = data.points[this.type];
     this.startTime = state.totalTime;
+    this.spawnAdjust = state.isAndroid && state.currentSectorNumber === 11 ? 2 : 1;
 
     if (this.type === Enemies.enemyGreen) {
       this.shield = getShield(this.x, this.y)
@@ -404,12 +406,12 @@ export class Enemy extends SpriteClass {
         }
         break;
       case Enemies.enemyYellowOne:
-        if (this.lifespan % 120 === 0) {
+        if (this.lifespan % (120 * this.spawnAdjust) === 0) {
           enemyProjectileManager.add(getEnemyBomb(this.x, this.y, { dy: this.ody, dx: this.odx }))
         }
         break;
       case Enemies.enemyBlueTwo:
-        if (randInt(0, 250) === 0) {
+        if (randInt(0, 250 * this.spawnAdjust) === 0) {
           enemyProjectileManager.add(getEnemyBullet(this.x, this.y))
         }
         break;
@@ -551,14 +553,16 @@ function adjustFear(amount: number = 0) {
 
 export class EnemyBullet extends SpriteClass {
   angle: number;
+  speed: number;
 
   constructor(properties: any) {
     super(properties)
     this.angle = angleToTarget(this, data.sprites.player)
+    this.speed = state.isAndroid && state.currentSectorNumber === 11 ? 5 : 20;
   }
 
   draw() {
-    const { x, y } = movePoint(this, this.angle, 20);
+    const { x, y } = movePoint(this, this.angle, this.speed);
     this.x = x;
     this.y = y;
     super.draw()

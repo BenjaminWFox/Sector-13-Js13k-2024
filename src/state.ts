@@ -6,6 +6,9 @@ import { Sector } from "./sectorManager"
 console.log('2. State');
 
 const state = {
+  // The android phone I tested on seemed to run at 2x speed, making lvl 11 impossible.
+  // Tracking for special-case adjustments
+  isAndroid: false,
   sectors: [] as Array<Sector>,
   currentSectorNumber: 1,
   currentSectorClass: undefined as unknown as Sector,
