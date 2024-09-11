@@ -2,7 +2,7 @@ import { state } from './state';
 import { collides, lerp, Sprite } from 'kontra'
 import { data } from "./data";
 import { SCALE } from './constants';
-import { adjustFear, Enemy, EnemyBullet, getExplosion, getShield } from './sprites';
+import { adjustFear, Enemy, EnemyBullet, getExplosion, scoreDisplay, getShield } from './sprites';
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
 
@@ -75,16 +75,23 @@ const powerupManager = new Manager(
       adjustFear(-1);
 
       const kind = (powerup.currentAnimation.name as keyof typeof state.powerups);
-
-      if ((powerup.currentAnimation.frames as unknown as string[])[0] === '6' && state.lives < 3) {
+      const frame = (powerup.currentAnimation.frames as unknown as string[])[0];
+      if (frame === '6' && state.lives < 3) {
         state.lives += 1
-      } else if ((powerup.currentAnimation.frames as unknown as string[])[0] === '5') {
+      } else if (frame === '5') {
         state.playershield = 4;
         if (playerShieldManager.assets.length === 0) {
           playerShieldManager.add(getShield(state.playerX, state.playerY));
         }
-      } else if (state.powerups[kind]) {
-        // Something about score multiplyer?
+      } else if (state.powerups[kind] || (frame === '6' && state.lives === 3)) {
+
+        console.log('Score mult!');
+
+        state.scoreMult += .5
+        const m = Math.round(state.scoreMult)
+
+        // Powerup Picked Up:
+        if (m === state.scoreMult) scoreDisplay(m, powerup.x, powerup.y, true);
       } else {
         state.powerups[kind] = true;
       }
@@ -152,6 +159,8 @@ class BombManager extends Manager<Sprite> {
 
 const enemyProjectileManager = new Manager();
 const bombManager = new BombManager();
+const scoreDisplayManager = new Manager((sprite) => sprite.opacity = sprite.opacity -= .05);
+const scoreMultDisplayManager = new Manager((sprite) => sprite.opacity = sprite.opacity -= .01);
 
 
 
@@ -167,4 +176,6 @@ export {
   playerShieldManager,
   bombManager,
   enemyProjectileManager,
+  scoreDisplayManager,
+  scoreMultDisplayManager
 }

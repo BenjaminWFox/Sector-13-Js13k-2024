@@ -2,7 +2,7 @@ import { GameLoop } from "kontra"
 import { SCALE } from "./constants"
 import { Sector } from "./sectorManager"
 // import { sectors } from "./sectorManager"
-
+console.log('state');
 const state = {
   sectors: [] as Array<Sector>,
   currentSectorNumber: 1,
@@ -40,11 +40,8 @@ const state = {
   hardcore: false,
 }
 
-// let state: ReturnType<typeof initState>;
-
-// state = !isInit ? initState() : state;
-
 function resetPowerups() {
+  state.scoreMult = 1;
   Object.keys(state.powerups).forEach((key) => {
     state.powerups[key as keyof typeof state.powerups] = false;
   })

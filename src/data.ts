@@ -3,7 +3,7 @@ import { HEIGHT, WIDTH } from "./constants";
 
 function makeElement<T>(el: string) { return document.createElement(el) as T };
 const makeImage = () => makeElement<HTMLImageElement>('img');
-
+console.log('data');
 type Data = {
   sounds: Record<string, Array<number | undefined>>
   elements: {
@@ -23,6 +23,7 @@ type Data = {
     hardcore: Sprite;
     sectors: Record<string, Sprite>;
   },
+  points: Record<string, number>,
   powerupprobability: Record<string, Array<number>>
 }
 
@@ -120,6 +121,14 @@ function initData(): Data {
       [Enemies.enemyYellowOne]: undefined,
       [Enemies.enemyYellowTwo]: undefined,
       [Enemies.enemyPink]: undefined,
+    },
+    points: {
+      [Enemies.enemyBlueOne]: 20,
+      [Enemies.enemyBlueTwo]: 40,
+      [Enemies.enemyGreen]: 60,
+      [Enemies.enemyYellowOne]: 100,
+      [Enemies.enemyYellowTwo]: 10,
+      [Enemies.enemyPink]: 80,
     },
     calculations: {
       canvasRatioWidth: 0,

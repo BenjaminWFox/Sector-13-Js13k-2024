@@ -18,6 +18,8 @@ function checkProjectileAgainstPlayer(projectile: Sprite) {
   }
 }
 
+console.log('sectorManager');
+
 function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Sprite) {
   manager.assets.forEach(enemy => {
     if (enemy.opacity === 0) return;
@@ -33,7 +35,6 @@ function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Spri
       if (collides(projectile, enemy)) {
         enemy.hit()
         projectile.opacity = 0;
-        state.score += 100 * state.scoreMult;
         explosionManager.add(getExplosion(enemy.x, enemy.y));
 
         const powerup = getPowerup(enemy.x, enemy.y);

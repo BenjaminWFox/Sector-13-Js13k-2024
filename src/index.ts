@@ -8,7 +8,7 @@ import {
 import { state } from './state'
 import { adjustFear, getBomb, getBullet, getLife, getScore, makeSprites } from './sprites';
 import { initScenes, playGameSector } from './scenes';
-import { bombManager, bulletManager, enemyProjectileManager, explosionManager, lifeManager, playerShieldManager, powerupManager } from './spriteManager';
+import { bombManager, bulletManager, enemyProjectileManager, explosionManager, lifeManager, playerShieldManager, powerupManager, scoreDisplayManager, scoreMultDisplayManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, getAllSectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
@@ -16,6 +16,8 @@ import { playSong, sfx, zzfxSong } from './music';
 import { SCALE } from './constants';
 
 const { canvas } = init();
+
+console.log('index');
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
@@ -59,6 +61,8 @@ const loop = GameLoop({
       playerShieldManager.update();
       bombManager.update()
       enemyProjectileManager.update();
+      scoreDisplayManager.update();
+      scoreMultDisplayManager.update();
     }
 
     data.scenes.title.update();
@@ -156,6 +160,8 @@ const loop = GameLoop({
     data.scenes.end.render();
     data.scenes.communication.render();
     data.scenes.fear.render();
+    scoreDisplayManager.render();
+    scoreMultDisplayManager.render();
 
     state.totalTime += 1;
     state.sectorTime += 1;
@@ -183,6 +189,7 @@ let startGame = () => {
   // data.scenes.end.show();
   // data.scenes.game.show();
   data.scenes.title.show();
+  data.scenes.fear.show();
   // data.scenes.communication.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;

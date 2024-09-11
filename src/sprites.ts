@@ -28,10 +28,12 @@ import { SCALE, WIDTH } from './constants';
 import { data, Enemies } from './data';
 import { state } from './state';
 import { sfx } from './music';
-import { enemyProjectileManager } from './spriteManager';
+import { enemyProjectileManager, scoreDisplayManager, scoreMultDisplayManager } from './spriteManager';
 
 const loaded = [];
 const totalLoads = 17;
+
+console.log('Sprites');
 
 function makeSprites(startFn: () => void) {
   console.log('Window Loaded');
@@ -330,10 +332,12 @@ export class Enemy extends SpriteClass {
   odx: number = 0;
   ody: number = 0;
   maxLife: number = 360;
+  points: number = 10;
 
   constructor(properties: any) {
     super(properties);
     this.type = properties.type;
+    this.points = data.points[this.type];
     this.startTime = state.totalTime;
 
     if (this.type === Enemies.enemyGreen) {
@@ -350,6 +354,9 @@ export class Enemy extends SpriteClass {
     if (this.shield) {
       this.shieldIntegrity -= 1;
     } else {
+      const points = Math.round(this.points * state.scoreMult)
+      scoreDisplay(points, this.x, this.y)
+      state.score += points;
       this.opacity = 0;
       adjustFear(-1)
     }
@@ -473,6 +480,34 @@ function getEnemyBomb(x: number, y: number, override = {}) {
     animations: data.spriteSheets.enemyBomb?.animations,
     ...override
   })
+}
+
+export function scoreDisplay(num: number, x: number, y: number, isPowerup: boolean = false) {
+  let manager = isPowerup ? scoreMultDisplayManager : scoreDisplayManager;
+  let dxDir;
+
+  if (isPowerup) {
+    dxDir = 1;
+
+  } else {
+    dxDir = (!!randInt(0, 1) ? -1 : 1);
+  }
+
+  const dx = (isPowerup ? 0 : randInt(3, 7)) * dxDir;
+  const dy = isPowerup ? -1 : -randInt(4, 8);
+
+  const options = {
+    opacity: isPowerup ? 1 : .8,
+    anchor: { x: 0, y: 0 },
+    dx,
+    dy,
+  }
+
+  let _x = (isPowerup ? data.sprites.player.x : x) * .1 + 8;
+  let _y = (isPowerup ? data.sprites.player.y : y) * .1 - 10;
+
+  if (isPowerup) manager.add(getText('x', _x - 3, _y + 1, { ...options, scale: 7 }));
+  manager.add(getNumbers((num).toString(), _x, _y, { ...options }));
 }
 
 const commsSprite = Sprite({
@@ -676,6 +711,8 @@ type Options = {
   button?: boolean;
   sectorButton?: boolean;
   anchor?: { x: number, y: number };
+  dx?: number;
+  dy?: number;
 }
 
 function getTextSprite(text: string, x: number, y: number, type: TextType, options: Options = {}) {
@@ -700,6 +737,8 @@ function getTextSprite(text: string, x: number, y: number, type: TextType, optio
     scaleY: options.scale || SCALE,
     x: x * SCALE,
     y: y * SCALE,
+    dx: options.dx || 0,
+    dy: options.dy || 0,
     anchor: options.anchor || { x: 0, y: 0 },
     render: function () {
       // draw the game object normally (perform rotation and other transforms)

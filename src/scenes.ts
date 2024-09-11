@@ -5,7 +5,7 @@ import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
-
+console.log('scenes');
 const playGameSector = (i: number) => {
   sfx(data.sounds.sectorClear);
   state.currentSectorNumber = i;
