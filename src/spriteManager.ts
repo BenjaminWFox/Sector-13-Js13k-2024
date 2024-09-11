@@ -6,6 +6,8 @@ import { adjustFear, Enemy, EnemyBullet, getExplosion, scoreDisplay, getShield }
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
 
+console.log('6. SpriteManager');
+
 type UpdaterFn<T extends Sprite | Enemy | EnemyBullet> = (sprite: T) => void;
 export class Manager<T extends Sprite | Enemy> {
   assets: Array<T> = [];

@@ -15,9 +15,9 @@ import { playSong, sfx, zzfxSong } from './music';
 // import { sfx } from './music';
 import { SCALE } from './constants';
 
-const { canvas } = init();
+console.log('9. Index');
 
-console.log('index');
+const { canvas } = init();
 
 export function getRandomIntMinMaxInclusive(min: number, max: number) {
   // min and max included
@@ -176,6 +176,8 @@ const loop = GameLoop({
 });
 
 let startGame = () => {
+  console.log('12. StartGame')
+
   initElements(canvas, document.getElementById('body')!)
 
   initCalculations(canvas);
@@ -189,12 +191,13 @@ let startGame = () => {
   // data.scenes.end.show();
   // data.scenes.game.show();
   data.scenes.title.show();
-  data.scenes.fear.show();
+  // data.scenes.fear.show();
   // data.scenes.communication.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 
   loop.start();
+  console.log('-------------------- Finishing Here --------------------\n')
 }
 
 // Mouse Handler

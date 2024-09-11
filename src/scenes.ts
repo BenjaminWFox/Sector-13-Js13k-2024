@@ -5,7 +5,9 @@ import { state } from './state';
 import { HEIGHT, HEIGHT_ORIGINAL, SCALE, WIDTH_ORIGINAL } from './constants';
 import { currentSector } from './sectorManager';
 import { sfx } from './music';
-console.log('scenes');
+
+console.log('8. Scenes');
+
 const playGameSector = (i: number) => {
   sfx(data.sounds.sectorClear);
   state.currentSectorNumber = i;
@@ -23,7 +25,7 @@ const playGameSector = (i: number) => {
       getBoldText(data.labels.sector, 56, 2),
       // sector number
       getNumbers(i.toString(), i < 10 ? 74 : 70, 12, { scale: 20 }),
-      getNumbers('0000000000', 5, 18),
+      getScore(),
     ])(),
   );
 

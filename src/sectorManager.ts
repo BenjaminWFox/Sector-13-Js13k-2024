@@ -12,13 +12,13 @@ type spriteFactory = (enemy: Enemies) => Enemy;
 type manager = Manager<Enemy>;
 type SectorData = [spawnStartTime, totalSpawns, spawnSpacing, spriteFactory, Enemies, manager]
 
+console.log('5. SectorManager');
+
 function checkProjectileAgainstPlayer(projectile: Sprite) {
   if (collides(projectile, data.sprites.player)) {
     managePlayerHit(projectile);
   }
 }
-
-console.log('sectorManager');
 
 function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Sprite) {
   manager.assets.forEach(enemy => {

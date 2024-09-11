@@ -2,7 +2,9 @@ import { GameLoop } from "kontra"
 import { SCALE } from "./constants"
 import { Sector } from "./sectorManager"
 // import { sectors } from "./sectorManager"
-console.log('state');
+
+console.log('2. State');
+
 const state = {
   sectors: [] as Array<Sector>,
   currentSectorNumber: 1,

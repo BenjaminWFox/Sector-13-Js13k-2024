@@ -30,18 +30,18 @@ import { state } from './state';
 import { sfx } from './music';
 import { enemyProjectileManager, scoreDisplayManager, scoreMultDisplayManager } from './spriteManager';
 
+console.log('7. Sprites');
+
 const loaded = [];
 const totalLoads = 17;
 
-console.log('Sprites');
-
 function makeSprites(startFn: () => void) {
-  console.log('Window Loaded');
+  console.log('10. Window Loaded');
   function checkLoaded(loadedImage: HTMLImageElement) {
     loaded.push(loadedImage);
 
     if (loaded.length === totalLoads && startFn) {
-      console.log('All sprites loaded');
+      console.log('11. All sprites loaded');
       startFn();
     }
   }
@@ -503,8 +503,8 @@ export function scoreDisplay(num: number, x: number, y: number, isPowerup: boole
     dy,
   }
 
-  let _x = (isPowerup ? data.sprites.player.x : x) * .1 + 8;
-  let _y = (isPowerup ? data.sprites.player.y : y) * .1 - 10;
+  let _x = (isPowerup ? data.sprites.player.x : x) * .1 + (isPowerup ? 8 : 0);
+  let _y = (isPowerup ? data.sprites.player.y : y) * .1 - (isPowerup ? 10 : 0);
 
   if (isPowerup) manager.add(getText('x', _x - 3, _y + 1, { ...options, scale: 7 }));
   manager.add(getNumbers((num).toString(), _x, _y, { ...options }));

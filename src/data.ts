@@ -1,9 +1,11 @@
 import { Scene, Sprite, SpriteSheet } from "kontra";
 import { HEIGHT, WIDTH } from "./constants";
 
+console.log('3. Data');
+
 function makeElement<T>(el: string) { return document.createElement(el) as T };
 const makeImage = () => makeElement<HTMLImageElement>('img');
-console.log('data');
+
 type Data = {
   sounds: Record<string, Array<number | undefined>>
   elements: {
@@ -65,7 +67,7 @@ function initData(): Data {
       sectorClear: [1.5, , 52, .18, .19, .21, 1, 1.4, , , 418, .14, .18, .2, , , .39, .63, .24],
       bullet: [.2, , 450, .03, .08, .17, 1, 1.1, -6, 16, , , , , , , , .85, .2, , 161],
       explode: [1, , 39, .07, .13, .5, 2, 3.1, -8, , , , , .2, , .3, , .32, .06, , 1952],
-      powerup: [.7, .01, 65.40639, , .01, , , 1.9, , , 100, .04, , .5, , .1, , .98, .03, , 329] // [.7, .01, 201, , .01, , 1, 1.9, , , 486, .04, , .5, , .1, , .98, .03, , 329]// [.7, .01, 601, , .01, , 1, 1.9, , , 486, .04, , .2, , , , .98, .03, , 329] // [, 0, 162, .01, .02, .15, 1, , 4, -5, 498, .07, , 1, , .1, , .97, .04, , 104] // [, 0, 162, .01, .02, .15, 1, , 4, -5, 398, .07, , , , .1, , .97, .04, , 104] // [.75, , 362, .01, .02, .19, , 3, 1, -5, 398, .07, , , , .1, , .97, .04, , 104],
+      powerup: [.7, .01, 65.40639, , .01, , , 1.9, , , 100, .04, , .5, , .1, , .98, .03, , 329],
     },
     elements: {
       body: makeElement<HTMLElement>('body'),
