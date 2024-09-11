@@ -229,7 +229,9 @@ function clickedInBounds(s: Sprite, scale = SCALE) {
     lastDownY > s.y - 20 && lastUpY > s.y - 20 &&
     lastDownY < s.y + (s.height * scale) + 20 && lastUpY < s.y + (s.height * scale) + 20
   ) {
-    return !data.scenes.communication.hidden ? inComms : true;
+    const r = !data.scenes.communication.hidden ? inComms : true;
+    if (r) sfx(data.sounds.button);
+    return r;
   }
 
   return false;
@@ -239,6 +241,7 @@ document.getElementById('c')!.addEventListener('mousedown', (e) => {
   lastDownY = adjustedY(e.y);
   inComms = data.scenes.communication.hidden ? false : true;
 })
+
 document.getElementById('c')!.addEventListener('mouseup', (e) => {
   lastUpX = adjustedX(e.x);
   lastUpY = adjustedY(e.y);
