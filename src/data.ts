@@ -35,17 +35,17 @@ const labels = {
   score: 'score',
   thirteen: '13',
   select: 'select',
-  title: 'title',
-  game: 'game',
-  pregame: 'pregame',
-  stars: 'stars',
-  end: 'end',
+  title: 't',
+  game: 'g',
+  pregame: 'pg',
+  stars: 'st',
+  end: 'e',
   restart: 'restart',
   gameover: 'gameover',
   winner: 'you win',
   loser: 'you lose',
-  extralife: 'extralife',
-  communication: 'comms',
+  extralife: 'xl',
+  communication: 'co',
   fear: 'fear',
   highscore: 'highscore',
   story: 'story',
@@ -53,12 +53,12 @@ const labels = {
 }
 
 export enum Enemies {
-  enemyBlueOne = 'blueOne',
-  enemyBlueTwo = 'blueTwo',
-  enemyGreen = 'green',
-  enemyPink = 'pink',
-  enemyYellowOne = 'yellowOne',
-  enemyYellowTwo = 'yellowTwo',
+  enemyBlueOne = 'a',
+  enemyBlueTwo = 'b',
+  enemyGreen = 'c',
+  enemyPink = 'd',
+  enemyYellowOne = 'e',
+  enemyYellowTwo = 'f',
 }
 
 function initData(): Data {

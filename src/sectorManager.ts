@@ -287,11 +287,11 @@ function getAllSectors() {
     [0, spawns, 40, getEnemyShip, Enemies.enemyBlueTwo, new Manager(zigZag(200, 0, 12, 8))],
   ], [
     'commander we are scared',
-    'more sector miss enemy more fear',
-    'kill enemy get powerup less fear',
-    'we channel our fear',
-    'shooting faster',
-    'finding more powerups'
+    'of sectors and escaped enemies',
+    'but our fear makes us faster',
+    ' ',
+    'we will overcome',
+    'we have made you something',
   ], data.powerupprobability.shield[0]);
   const sector3 = new Sector([
     [0, spawns, 40, getEnemyShip, Enemies.enemyYellowTwo, new Manager(across(0, 500, 4))],
@@ -404,7 +404,8 @@ function getAllSectors() {
     [120, spawns, 120, getEnemyShip, Enemies.enemyBlueTwo, new Manager(neutral(200, -8, 180))],
     [120, spawns, 120, getEnemyShip, Enemies.enemyBlueTwo, new Manager(neutral(1300, -8, 180))],
   ], [
-    'captain look out',
+    'commander look out',
+    ' ',
     'behind you'
   ], data.powerupprobability.wingbomb[0]);
 
@@ -508,6 +509,8 @@ function getAllSectors() {
 
   ], [
     'commander this is it',
+    ' ',
+    'we will finally conquer our fear',
     ' ',
     'good luck'
   ], data.powerupprobability.extralife[0]);

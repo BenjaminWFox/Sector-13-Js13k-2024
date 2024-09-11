@@ -511,11 +511,11 @@ export function scoreDisplay(num: number, x: number, y: number, isPowerup: boole
 }
 
 const commsSprite = Sprite({
-  x: 10, width: WIDTH - 20, y: 800, height: 800, color: 'black',
+  x: 30, width: WIDTH - 60, y: 800, height: 800, color: 'black',
   render: function () {
     this.draw();
     this.context!.strokeStyle = 'white';
-    this.context!.lineWidth = 2;
+    this.context!.lineWidth = 10;
     this.context!.strokeRect(0, 0, this.width!, this.height!);
   }
 })
