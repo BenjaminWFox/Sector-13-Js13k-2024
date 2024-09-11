@@ -11,7 +11,7 @@ import { initScenes, playGameSector } from './scenes';
 import { bombManager, bulletManager, enemyProjectileManager, explosionManager, lifeManager, playerShieldManager, powerupManager, scoreDisplayManager, scoreMultDisplayManager } from './spriteManager';
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, getAllSectors } from './sectorManager';
-import { playSong, sfx, zzfxSong } from './music';
+import { playSong, sfx } from './music';
 import { SCALE } from './constants';
 
 console.log('9. Index');
@@ -246,13 +246,13 @@ document.getElementById('c')!.addEventListener('mouseup', (e) => {
   if (!data.scenes.title.hidden) {
     if (clickedInBounds(data.buttons.story)) {
       data.scenes.title.hide(); data.scenes.select.show();
-      playSong(zzfxSong);
+      playSong();
     }
 
     if (clickedInBounds(data.buttons.hardcore)) {
       data.scenes.title.hide(); data.scenes.select.show();
       state.hardcore = true;
-      playSong(zzfxSong);
+      playSong();
     }
   }
 

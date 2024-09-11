@@ -47,13 +47,21 @@ function checkProjectileAgainstEnemies(manager: Manager<Enemy>, projectile: Spri
 function managePlayerHit(enemy: Sprite) {
   if (state.playershield > 0) {
     explosionManager.add(getExplosion(enemy.x, enemy.y));
-    enemy.opacity = 0;
     state.playershield -= 1;
+    if (!!enemy.type) {
+      enemy.hit();
+    } else {
+      enemy.opacity = 0;
+    }
   } else if (state.lives >= 0) {
     resetPowerups();
 
     explosionManager.add(getExplosion(data.sprites.player.x, data.sprites.player.y));
-    enemy.opacity = 0;
+    if (!!enemy.type) {
+      enemy.hit();
+    } else {
+      enemy.opacity = 0;
+    }
     data.sprites.player.opacity = 0;
 
     if (state.lives === 0) {

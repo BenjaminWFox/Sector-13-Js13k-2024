@@ -1,127 +1,65 @@
-/**
- * ZzFX Music Renderer v2.0.3 by Keith Clark and Frank Force
- */
-
-import { zzfxG, zzfxR } from './zzfx';
-
-/**
- * @typedef Channel
- * @type {Array.<Number>}
- * @property {Number} 0 - Channel instrument
- * @property {Number} 1 - Channel panning (-1 to +1)
- * @property {Number} 2 - Note
- */
-type Channel = (number | undefined)[]; //[number, number, number];
-
-/**
- * @typedef Pattern
- * @type {Array.<Channel>}
- */
-type Pattern = Channel[];
-
-/**
- * @typedef Instrument
- * @type {Array.<Number>} ZzFX sound parameters
- */
-type Instrument = (number | undefined)[];
-
-/**
- * Generate a song
- *
- * @param instruments - Array of ZzFX sound paramaters.
- * @param patterns - Array of pattern data.
- * @param sequence - Array of pattern indexes.
- * @param [speed=125] - Playback speed of the song (in BPM).
- * @returns Left and right channel sample data.
- */
-export const zzfxM = (instruments: Instrument[], patterns: Pattern[], sequence: number[], BPM = 125): number[][] => {
-  let instrumentParameters: Instrument;
-  let i: number;
-  let j: number;
-  let k: number;
-  let note: number | undefined;
-  let sample: number;
-  let patternChannel: Channel;
-  let notFirstBeat: number | undefined;
-  let stop: number;
-  let instrument = 0;
-  let attenuation = 0;
-  let outSampleOffset = 0;
-  let isSequenceEnd: number;
-  let sampleOffset = 0;
-  let nextSampleOffset: number;
-  let sampleBuffer: number[] = [];
-  const leftChannelBuffer: number[] = [];
-  const rightChannelBuffer: number[] = [];
-  let channelIndex = 0;
-  let panning = 0;
-  let hasMore = 1;
-  const sampleCache: Record<string, any> = {};
-  const beatLength = ((zzfxR / BPM) * 60) >> 2;
-
-  // for each channel in order until there are no more
-  for (; hasMore; channelIndex++) {
-    // reset current values
-    sampleBuffer = [(hasMore = notFirstBeat = outSampleOffset = 0)];
-
-    // for each pattern in sequence
-    sequence.map((patternIndex, sequenceIndex) => {
-      // get pattern for current channel, use empty 1 note pattern if none found
-      patternChannel = patterns[patternIndex][channelIndex] || [0, 0, 0];
-
-      // check if there are more channels
-      hasMore |= !!patterns[patternIndex][channelIndex] as unknown as number;
-
-      // get next offset, use the length of first channel
-      nextSampleOffset =
-        outSampleOffset + (patterns[patternIndex][0].length - 2 - (!notFirstBeat as unknown as number)) * beatLength;
-      // for each beat in pattern, plus one extra if end of sequence
-      isSequenceEnd = (sequenceIndex === sequence.length - 1) as unknown as number;
-      for (i = 2, k = outSampleOffset; i < patternChannel.length + isSequenceEnd; notFirstBeat = ++i) {
-        // <channel-note>
-        note = patternChannel[i];
-
-        // stop if end, different instrument or new note
-        stop =
-          (i === patternChannel.length + isSequenceEnd - 1 && isSequenceEnd) ||
-          ((instrument !== (patternChannel[0] || 0)) as unknown as number) | (note as number) | 0;
-
-        // fill buffer with samples for previous beat, most cpu intensive part
+// @ts-nocheck
+import { zzfxR, zzfxG } from "./zzfx";
+//! ZzFXM (v2.0.3) | (C) Keith Clark | MIT | https://github.com/keithclark/ZzFXM
+export const zzfxM = (n, f, t, e = 125) => {
+  let l,
+    o,
+    z,
+    r,
+    g,
+    h,
+    x,
+    a,
+    u,
+    c,
+    d,
+    i,
+    m,
+    p,
+    G,
+    M = 0,
+    R = [],
+    b = [],
+    j = [],
+    k = 0,
+    q = 0,
+    s = 1,
+    v = {},
+    w = ((zzfxR / e) * 60) >> 2;
+  for (; s; k++)
+    (R = [(s = a = d = m = 0)]),
+      t.map((e, d) => {
         for (
-          j = 0;
-          j < beatLength && notFirstBeat;
-          // fade off attenuation at end of beat if stopping note, prevents clicking
-          j++ > beatLength - 99 && stop && (attenuation += ((attenuation < 1) as unknown as number) / 99)
+          x = f[e][k] || [0, 0, 0],
+          s |= !!f[e][k],
+          G = m + (f[e][0].length - 2 - !a) * w,
+          p = d == t.length - 1,
+          o = 2,
+          r = m;
+          o < x.length + p;
+          a = ++o
         ) {
-          // copy sample to stereo buffers with panning
-          sample = ((1 - attenuation) * sampleBuffer[sampleOffset++]) / 2 || 0;
-          leftChannelBuffer[k] = (leftChannelBuffer[k] || 0) - sample * panning + sample;
-          rightChannelBuffer[k] = (rightChannelBuffer[k++] || 0) + sample * panning + sample;
+          for (
+            g = x[o],
+            u = (o == x.length + p - 1 && p) || (c != (x[0] || 0)) | g | 0,
+            z = 0;
+            z < w && a;
+            z++ > w - 99 && u ? (i += (i < 1) / 99) : 0
+          )
+            (h = ((1 - i) * R[M++]) / 2 || 0),
+              (b[r] = (b[r] || 0) - h * q + h),
+              (j[r] = (j[r++] || 0) + h * q + h);
+          g &&
+            ((i = g % 1),
+              (q = x[1] || 0),
+              (g |= 0) &&
+              (R = v[[(c = x[(M = 0)] || 0), g]] =
+                v[[c, g]] ||
+                ((l = [...n[c]]),
+                  (l[2] *= 2 ** ((g - 12) / 12)),
+                  g > 0 ? zzfxG(...l) : [])));
         }
-
-        // set up for next note
-        if (note) {
-          // set attenuation
-          attenuation = note % 1;
-          panning = patternChannel[1] || 0;
-          if ((note |= 0)) {
-            // get cached sample
-            sampleBuffer = sampleCache[`i${(instrument = patternChannel[(sampleOffset = 0)] || 0)}n${note}`] =
-              sampleCache[`i${instrument}n${note}`] ||
-              // add sample to cache
-              ((instrumentParameters = [...instruments[instrument]]),
-              // biome-ignore lint/style/noCommaOperator: <explanation>
-              ((instrumentParameters[2] as number) *= 2 ** ((note - 12) / 12)),
-              // allow negative values to stop notes
-              note > 0 ? zzfxG(...instrumentParameters) : []);
-          }
-        }
-      }
-
-      // update the sample offset
-      outSampleOffset = nextSampleOffset;
-    });
-  }
-
-  return [leftChannelBuffer, rightChannelBuffer];
+        m = G;
+      });
+  return [b, j];
 };
