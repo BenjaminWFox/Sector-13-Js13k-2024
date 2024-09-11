@@ -12,7 +12,6 @@ import { bombManager, bulletManager, enemyProjectileManager, explosionManager, l
 import { adjustedX, adjustedY, data, initCalculations, initElements } from './data';
 import { currentSector, endGame, getAllSectors } from './sectorManager';
 import { playSong, sfx, zzfxSong } from './music';
-// import { sfx } from './music';
 import { SCALE } from './constants';
 
 console.log('9. Index');
@@ -188,11 +187,13 @@ let startGame = () => {
 
   state.sectors = getAllSectors();
   state.loop = loop;
+
   // data.scenes.end.show();
   // data.scenes.game.show();
-  data.scenes.title.show();
   // data.scenes.fear.show();
   // data.scenes.communication.show();
+
+  data.scenes.title.show();
   data.sprites.player.x = state.playerX;
   data.sprites.player.y = state.playerY;
 
